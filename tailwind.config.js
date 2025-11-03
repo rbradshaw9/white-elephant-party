@@ -15,7 +15,7 @@ export default {
       },
       fontFamily: {
         'christmas': ['"Mountains of Christmas"', 'cursive'],
-        'body': ['"Open Sans"', 'sans-serif'],
+        'body': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       animation: {
         'float': 'float 3s ease-in-out infinite',

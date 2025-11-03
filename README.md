@@ -49,23 +49,25 @@ This microsite is both an invitation and a playful experience. Guests can explor
 ├── package.json
 └── # White Elephant Party 2025 🎄
 
-A festive, interactive White Elephant Party website built with React, Vite, Tailwind CSS, and Framer Motion. Inspired by the movie *Elf* with joyful animations, playful design, and interactive features.
+A beautifully crafted White Elephant Party website with Apple-level design polish. Built with React, Vite, Tailwind CSS, and Framer Motion. Inspired by the movie *Elf* with joyful animations, modern design, and delightful interactions.
 
 ## 🎁 Features
 
-- **Animated Landing Page** - Festive design with snowfall, candy-cane borders, and playful typography
-- **Gift Pile Game** - Interactive game where users click wrapped gifts to reveal random funny presents
+- **Stunning Landing Page** - Refined design with animated snowfall, candy-cane borders, and elegant typography
+- **RSVP System** - Beautiful form with validation, smooth animations, and success states
+- **AI Memory Match Game** - Play against an intelligent AI opponent with adjustable difficulty levels
 - **Rules Page** - Clear, beautifully formatted White Elephant game rules
-- **Gallery Page** - Showcase last year's party highlights (customizable with your own photos)
 - **Background Music** - Toggle-able sleigh bells audio for extra holiday cheer
-- **Fully Responsive** - Works beautifully on desktop, tablet, and mobile
-- **Smooth Animations** - Powered by Framer Motion for delightful interactions
+- **Fully Responsive** - Pixel-perfect on desktop, tablet, and mobile
+- **Smooth Animations** - Apple-quality micro-interactions powered by Framer Motion
+- **Modern Design System** - Clean, accessible, and delightful
 
 ## 🎨 Design
 
 - **Color Palette**: Christmas red (#FF3B3B), snow white (#FFFFFF), Christmas green (#2ECC71), gold accents
-- **Fonts**: "Mountains of Christmas" for headings, "Open Sans" for body text
-- **Animations**: Snowfall, floating elements, gift reveals, and more!
+- **Fonts**: "Mountains of Christmas" for headings, Inter for body text
+- **Animations**: Snowfall, floating elements, card flips, form transitions
+- **Philosophy**: Apple-level polish meets Elf's whimsical spirit
 
 ## 🚀 Getting Started
 
@@ -111,11 +113,11 @@ white-elephant-party/
 │   ├── components/
 │   │   ├── Snowfall.jsx    # Animated snowfall effect
 │   │   ├── MusicToggle.jsx # Background music control
-│   │   └── GiftPileGame.jsx # Interactive gift game
+│   │   └── MatchingGame.jsx # AI-powered memory game
 │   ├── pages/
 │   │   ├── Home.jsx        # Landing page
 │   │   ├── Rules.jsx       # Game rules page
-│   │   └── Gallery.jsx     # Photo gallery page
+│   │   └── RSVP.jsx        # RSVP form page
 │   ├── App.jsx             # Main app with routing
 │   ├── main.jsx            # App entry point
 │   └── index.css           # Global styles with Tailwind
@@ -135,21 +137,21 @@ To add sleigh bells audio:
 3. Add your audio file as `sleigh-bells.mp3`
 4. The music toggle button will automatically work!
 
-## 🖼️ Customizing Gallery Photos
+## 🎮 Customizing the Game
 
-To add your own party photos:
+The AI memory match game features three difficulty levels:
+- **Easy**: AI has 50% memory accuracy
+- **Medium**: AI has 75% memory accuracy  
+- **Hard**: AI has 95% memory accuracy
 
-1. Option A - Local files:
-   - Add images to `public/images/`
-   - Update the `PHOTOS` array in `src/pages/Gallery.jsx`
+Edit `src/components/MatchingGame.jsx` to adjust difficulty settings or change the Christmas emojis used in the game.
 
-2. Option B - External hosting:
-   - Upload images to a service like Imgur or Cloudinary
-   - Update the `src` URLs in the `PHOTOS` array
+## 📝 Customizing Content
 
-## 🎮 Customizing Gift Ideas
-
-Edit the `GIFTS` array in `src/components/GiftPileGame.jsx` to add your own funny gift ideas!
+- **Rules**: Update the `RULES` array in `src/pages/Rules.jsx`
+- **Colors**: Edit `tailwind.config.js` to change the color scheme
+- **Text**: Search for text strings in component files to personalize messages
+- **Animations**: Adjust Framer Motion parameters for different animation effects
 
 ## 🌟 Deployment on Vercel
 
@@ -159,27 +161,32 @@ Edit the `GIFTS` array in `src/components/GiftPileGame.jsx` to add your own funn
 
 3. Click "New Project" and import your GitHub repository
 
-4. Vercel will automatically detect Vite settings
+4. Vercel will automatically detect Vite settings:
+   - Framework Preset: **Vite**
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
 
 5. Click "Deploy"
 
 Your site will be live in minutes! 🎉
 
-## 📝 Customization Tips
-
-- **Colors**: Edit `tailwind.config.js` to change the color scheme
-- **Rules**: Update the `RULES` array in `src/pages/Rules.jsx`
-- **Gifts**: Modify the `GIFTS` array in `src/components/GiftPileGame.jsx`
-- **Text**: Search for text strings in component files to personalize messages
-- **Animations**: Adjust Framer Motion parameters for different animation effects
-
 ## 🎄 Technologies Used
 
 - **React 18** - UI framework
-- **Vite** - Build tool and dev server
+- **Vite** - Lightning-fast build tool
 - **Tailwind CSS** - Utility-first styling
-- **Framer Motion** - Animation library
+- **Framer Motion** - Production-ready animations
 - **React Router** - Client-side routing
+- **Inter Font** - Modern, readable typography
+
+## ✨ Design Highlights
+
+- Glassmorphism effects with backdrop blur
+- Smooth page transitions and micro-interactions
+- Accessible form validation with helpful feedback
+- 3D card flip animations in the memory game
+- Responsive design that works beautifully on all devices
+- Dark mode optimized with carefully chosen opacity levels
 
 ## 📄 License
 
@@ -187,7 +194,7 @@ This project is open source and available for personal use. Have fun and happy h
 
 ## 🎊 Credits
 
-Designed with love and inspiration from the movie *Elf*. May your White Elephant party be filled with laughter, chaos, and questionable gifts!
+Designed with love and inspiration from the movie *Elf*. Built with the same attention to detail and polish you'd expect from Apple. May your White Elephant party be filled with laughter, friendly competition, and unforgettable moments!
 
 ---
 

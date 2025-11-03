@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Rules from './pages/Rules';
-import Gallery from './pages/Gallery';
+import RSVP from './pages/RSVP';
 import Snowfall from './components/Snowfall';
 import MusicToggle from './components/MusicToggle';
 
@@ -23,7 +23,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/rules" element={<Rules />} />
-        <Route path="/gallery" element={<Gallery />} />
+        <Route path="/rsvp" element={<RSVP />} />
       </Routes>
     </Router>
   );

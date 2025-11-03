@@ -1,5 +1,5 @@
 /* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Open+Sans:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 /* Tailwind directives */
 @tailwind base;
@@ -9,17 +9,23 @@
 /* Custom base styles */
 @layer base {
   body {
-    @apply font-body bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900 text-snow-white min-h-screen;
+    @apply font-body bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900 text-snow-white min-h-screen antialiased;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-christmas;
+    letter-spacing: -0.02em;
+  }
+  
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
   }
 }
 
 /* Custom component styles */
 @layer components {
-  /* Candy cane border effect */
+  /* Candy cane border effect - more refined */
   .candy-cane-border {
     background: 
       repeating-linear-gradient(
@@ -29,21 +35,39 @@
         #FFFFFF 10px,
         #FFFFFF 20px
       );
-    padding: 8px;
+    padding: 6px;
   }
   
-  /* Festive button style */
+  /* Festive button style - enhanced with better shadows */
   .btn-festive {
     @apply bg-christmas-red hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95;
+    box-shadow: 0 4px 14px 0 rgba(255, 59, 59, 0.39);
+  }
+  
+  .btn-festive:hover {
+    box-shadow: 0 6px 20px rgba(255, 59, 59, 0.5);
   }
   
   .btn-festive-green {
     @apply bg-christmas-green hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95;
+    box-shadow: 0 4px 14px 0 rgba(46, 204, 113, 0.39);
+  }
+  
+  .btn-festive-green:hover {
+    box-shadow: 0 6px 20px rgba(46, 204, 113, 0.5);
   }
   
   /* Gift box style */
   .gift-box {
     @apply cursor-pointer transform transition-all duration-300 hover:scale-110 hover:rotate-6;
+  }
+  
+  /* Glassmorphism effect */
+  .glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -54,6 +78,16 @@
   }
   
   .text-shadow-gold {
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.4);
+  }
+  
+  /* Perspective for 3D transforms */
+  .perspective {
+    perspective: 1000px;
+  }
+  
+  /* Better focus states for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-christmas-gold focus:ring-offset-2 focus:ring-offset-blue-900;
   }
 }

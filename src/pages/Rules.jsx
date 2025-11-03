@@ -165,13 +165,13 @@ const Rules = () => {
             </motion.button>
           </Link>
 
-          <Link to="/gallery">
+          <Link to="/rsvp">
             <motion.button
               className="btn-festive-green text-xl w-full sm:w-auto"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              📸 View Gallery
+              ✉️ RSVP Now
             </motion.button>
           </Link>
         </motion.div>
