@@ -1,0 +1,59 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Open+Sans:wght@300;400;600;700&display=swap');
+
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom base styles */
+@layer base {
+  body {
+    @apply font-body bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900 text-snow-white min-h-screen;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-christmas;
+  }
+}
+
+/* Custom component styles */
+@layer components {
+  /* Candy cane border effect */
+  .candy-cane-border {
+    background: 
+      repeating-linear-gradient(
+        45deg,
+        #FF3B3B,
+        #FF3B3B 10px,
+        #FFFFFF 10px,
+        #FFFFFF 20px
+      );
+    padding: 8px;
+  }
+  
+  /* Festive button style */
+  .btn-festive {
+    @apply bg-christmas-red hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95;
+  }
+  
+  .btn-festive-green {
+    @apply bg-christmas-green hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95;
+  }
+  
+  /* Gift box style */
+  .gift-box {
+    @apply cursor-pointer transform transition-all duration-300 hover:scale-110 hover:rotate-6;
+  }
+}
+
+/* Custom utility classes */
+@layer utilities {
+  .text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  
+  .text-shadow-gold {
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+  }
+}

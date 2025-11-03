@@ -1,0 +1,5 @@
+# Block all search engines from indexing this site
+# This is a private party website not meant for public search
+
+User-agent: *
+Disallow: /
