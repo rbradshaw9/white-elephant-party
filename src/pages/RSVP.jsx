@@ -26,16 +26,27 @@ const RSVP = () => {
       title: 'White Elephant Party 2025',
       description: 'Annual White Elephant Gift Exchange - Bring a $20-40 gift!',
       location: "Ryan's Place",
-      start: '20251213T183000',
-      end: '20251213T230000',
+      start: '20251213T183000', // 6:30 PM AST
+      end: '20251213T230000',   // 11:00 PM AST
+      timezone: 'America/Puerto_Rico',
     };
 
     const icsContent = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
+      'PRODID:-//White Elephant Party//EN',
+      'BEGIN:VTIMEZONE',
+      'TZID:America/Puerto_Rico',
+      'BEGIN:STANDARD',
+      'DTSTART:19700101T000000',
+      'TZOFFSETFROM:-0400',
+      'TZOFFSETTO:-0400',
+      'TZNAME:AST',
+      'END:STANDARD',
+      'END:VTIMEZONE',
       'BEGIN:VEVENT',
-      `DTSTART:${event.start}`,
-      `DTEND:${event.end}`,
+      `DTSTART;TZID=America/Puerto_Rico:${event.start}`,
+      `DTEND;TZID=America/Puerto_Rico:${event.end}`,
       `SUMMARY:${event.title}`,
       `DESCRIPTION:${event.description}`,
       `LOCATION:${event.location}`,

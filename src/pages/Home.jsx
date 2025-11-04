@@ -10,7 +10,9 @@ import PresentStackingGame from '../components/PresentStackingGame';
 const Home = () => {
   // Countdown timer logic
   const calculateTimeLeft = () => {
-    const partyDate = new Date('2025-12-13T18:30:00');
+    // Party date in Puerto Rico time (Atlantic Standard Time, UTC-4)
+    // December 13, 2025 at 6:30 PM AST
+    const partyDate = new Date('2025-12-13T18:30:00-04:00');
     const now = new Date();
     const difference = partyDate - now;
 
