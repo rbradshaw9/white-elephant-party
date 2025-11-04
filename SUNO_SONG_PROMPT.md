@@ -10,59 +10,59 @@
 
 ```
 [Verse 1]
-Red alert from the North Pole base
-Mission briefing, time to embrace
-Santa's list has been compromised  
-Agents gather, gifts are the prize
+Alert from the North Pole base
+Party invitation, time to embrace
+Santa's list has been prepared  
+Elves are gathering, gifts to be shared
 
 [Pre-Chorus]
 Sleigh bells ringing, countdown's on
 Wrap it up before the dawn
-Secret codes and holiday cheer
-The greatest heist of the year
+Elf codenames and holiday cheer
+The greatest party of the year
 
 [Chorus]
-It's the Great Gift Heist tonight
-Stealing presents left and right
+It's the Great Gift Party tonight
+Swapping presents left and right
 White Elephant, oh what a sight
 Christmas chaos, pure delight
 Operation Santa's Manifest
-Put your gift-stealing skills to the test
+Put your gift-swapping skills to the test
 Jingle all the way to victory
 This is our holiday mystery!
 
 [Verse 2]
-Undercover in our ugly sweaters
-Trading gifts like secret letters
+Dressed up in our ugly sweaters
+Trading gifts like festive letters
 Budget's set at twenty-five to fifty
 Keep it fun and keep it thrifty
 
 [Bridge]
-HQ calling all field agents
+North Pole calling all elf agents
 Holiday joy is contagious
 Transmissions live from candy cane control
 Let the gift exchange unroll
 
 [Final Chorus]
-It's the Great Gift Heist tonight
-Stealing presents left and right
+It's the Great Gift Party tonight
+Swapping presents left and right
 White Elephant, oh what a sight
 Christmas chaos, pure delight
-Your codename's ready, mission's clear
+Your codename's ready, party's clear
 Spread the joy and Christmas cheer!
 
 [Outro]
-Mission accomplished, presents unwrapped
+Party accomplished, presents unwrapped
 Memories made, that's a wrap
-See you next December, agents stand by
-For the greatest gift heist in the sky!
+See you next December, elves stand by
+For the greatest gift party in the sky!
 ```
 
 ---
 
 ## Alternative Shorter Version
 
-**Title:** "North Pole Agents"
+**Title:** "North Pole Party Elves"
 
 **Style:** Funky Christmas synth-pop, playful, upbeat, with sleigh bells and bass drops
 
@@ -70,19 +70,19 @@ For the greatest gift heist in the sky!
 
 ```
 [Verse]
-Calling all agents to the North Pole base
-Gift exchange mission, let's pick up the pace
+Calling all elves to the North Pole base
+Gift exchange party, let's pick up the pace
 Codenames ready, Christmas vibes strong
 White Elephant party, come sing along!
 
 [Chorus]
-We're North Pole agents on a festive mission
-Stealing gifts is our holiday tradition
-Jingle bells and secret intel
-The Great Gift Heist, oh it's swell!
+We're North Pole elves on a festive mission
+Swapping gifts is our holiday tradition
+Jingle bells and candy cane intel
+The Great Gift Party, oh it's swell!
 
 [Bridge]
-HQ transmissions lighting up the night
+North Pole transmissions lighting up the night
 Christmas chaos feels so right
 Operation Santa's Manifest is go
 Let the holiday magic flow!

@@ -85,18 +85,18 @@ const HQTerminal = ({ onComplete }) => {
         // Welcome back returning agent
         setTimeout(() => {
           addHQMessage(
-            `🎯 NORTH POLE INTELLIGENCE - CLASSIFIED TERMINAL\n\n` +
+            `� NORTH POLE COMMAND - ELF AGENT NETWORK\n\n` +
             `> ACCESS GRANTED\n` +
-            `> AGENT CREDENTIALS VERIFIED\n` +
-            `> CLEARANCE: CONFIRMED\n\n` +
-            `Welcome back, **Agent ${returningAgent.codename}**.\n\n` +
-            `Your profile is already in our system. ` +
-            `Status: ${returningAgent.attendance_status === 'attending' ? 'MISSION CONFIRMED ✅' : returningAgent.attendance_status === 'not_attending' ? 'MISSION DECLINED' : 'PENDING CONFIRMATION'}\n\n` +
-            `Would you like to:\n` +
-            `• Type "update" to modify your RSVP\n` +
-            `• Type "card" to view your agent card\n` +
-            `• Type "roster" to see other confirmed agents\n` +
-            `• Ask me anything about the mission`
+            `> ELF CREDENTIALS VERIFIED\n` +
+            `> NICE LIST CLEARANCE: CONFIRMED\n\n` +
+            `Welcome back, **Elf Agent ${returningAgent.codename}**!\n\n` +
+            `Your workshop profile is active. ` +
+            `Status: ${returningAgent.attendance_status === 'attending' ? 'PARTY CONFIRMED ✅' : returningAgent.attendance_status === 'not_attending' ? 'UNABLE TO ATTEND ❌' : 'AWAITING RESPONSE 🤔'}\n\n` +
+            `What would you like to do?\n` +
+            `• Type "update" to change your party RSVP\n` +
+            `• Type "card" to view your elf agent card\n` +
+            `• Type "roster" to see all recruited elves\n` +
+            `• Ask me anything about the party!`
           );
           setAgentData(returningAgent);
           setAgentId(returningAgent.id);
@@ -108,13 +108,14 @@ const HQTerminal = ({ onComplete }) => {
       // New agent - normal greeting
       setTimeout(() => {
         addHQMessage(
-          `🎯 NORTH POLE INTELLIGENCE - CLASSIFIED TERMINAL\n\n` +
-          `> ACCESS GRANTED\n` +
-          `> SECURE CHANNEL ESTABLISHED\n` +
-          `> ENCRYPTION: ACTIVE\n\n` +
-          `Welcome to Operation Santa's Manifest.\n\n` +
-          `I'm HQ - your handler for this mission. Before we proceed with clearance protocols, I need to verify your identity.\n\n` +
-          `What's your real name, agent?`
+          `� NORTH POLE COMMAND - ELF AGENT NETWORK\n\n` +
+          `> INITIALIZING WORKSHOP CONNECTION...\n` +
+          `> CANDY CANE ENCRYPTION: ACTIVE\n` +
+          `> NICE LIST PROTOCOLS: LOADED\n\n` +
+          `Ho ho hello! Welcome to Operation Santa's Manifest.\n\n` +
+          `I'm North Pole Command - your friendly coordinator for this festive mission. ` +
+          `Before we assign you an elf codename, I need to know who you are!\n\n` +
+          `What's your name?`
         );
         setConversationState('name');
       }, 1000);
@@ -161,16 +162,18 @@ const HQTerminal = ({ onComplete }) => {
    */
   const showInteractivePrompts = () => {
     addHQMessage(
-      `✅ **AGENT PROFILE CREATED**\n\n` +
-      `Welcome to the operation, Agent ${agentData.codename}!\n\n` +
-      `Your profile is saved. I'm here if you need mission support.\n\n` +
+      `✅ **ELF AGENT PROFILE CREATED**\n\n` +
+      `Welcome to the workshop, Elf Agent ${agentData.codename}!\n\n` +
+      `Your profile is saved in Santa's database. I'm here if you need help with party planning.\n\n` +
       `**Quick Actions:**\n` +
-      `• Type "gift ideas" for great gift suggestions\n` +
+      `• Type "gift ideas" for great gift suggestions ($25-50)\n` +
       `• Type "food" to see what's on the menu\n` +
       `• Type "rules" for White Elephant game rules\n` +
-      `• Type "card" to view your agent card\n` +
-      `• Type "exit" when you're ready to leave\n\n` +
-      `Or just ask me anything about the mission!`,
+      `• Type "card" to view your elf agent card\n` +
+      `• Type "exit" to close this terminal and return to HQ\n\n` +
+      `**To return to this terminal later:**\n` +
+      `Click the "HQ Terminal" button from your agent card, or use the navigation menu below.\n\n` +
+      `What would you like to know?`,
       500
     );
     setConversationState('complete');
@@ -184,8 +187,8 @@ const HQTerminal = ({ onComplete }) => {
 
     if (lowerInput.includes('exit') || lowerInput.includes('leave')) {
       addHQMessage(
-        `Roger that, Agent ${agentData.codename}. Redirecting to your Agent Card...\n\n` +
-        `You can return to this terminal anytime from your profile.`,
+        `Understood, Elf Agent ${agentData.codename}! Closing workshop terminal...\n\n` +
+        `Redirecting to your agent card. See you at the party! 🎄`,
         300
       );
       setTimeout(() => {
@@ -202,7 +205,7 @@ const HQTerminal = ({ onComplete }) => {
     if (lowerInput.includes('gift')) {
       addHQMessage(
         `🎁 **GIFT IDEAS FOR $25-$50**\n\n` +
-        `Based on mission intel, here are some crowd-pleasers:\n\n` +
+        `Based on workshop intel, here are some crowd-pleasers:\n\n` +
         `**Cozy & Practical:**\n` +
         `• Fleece blanket or heated throw\n` +
         `• Quality coffee beans + fun mug\n` +
@@ -225,15 +228,15 @@ const HQTerminal = ({ onComplete }) => {
 
     if (lowerInput.includes('food') || lowerInput.includes('menu')) {
       addHQMessage(
-        `🍽️ **MISSION MENU INTEL**\n\n` +
-        `HQ will provide the main dishes, but contributions are welcome!\n\n` +
+        `🍽️ **PARTY MENU INTEL**\n\n` +
+        `The hosts will provide the main dishes, but contributions are welcome!\n\n` +
         `**Great Additions:**\n` +
         `• Appetizers or finger foods\n` +
-        `• Desserts (cookies, brownies, etc.)\n` +
+        `• Desserts (cookies, brownies, holiday treats)\n` +
         `• Drinks (wine, beer, festive cocktails)\n` +
         `• Chips and dip\n\n` +
-        `Coordinate with other agents in the WhatsApp channel to avoid duplicates!\n\n` +
-        `Any dietary restrictions? Let the hosts know.`,
+        `Coordinate with other elves in the WhatsApp channel to avoid duplicates!\n\n` +
+        `Any dietary restrictions? Let the hosts know in advance.`,
         500
       );
       return;
@@ -301,10 +304,10 @@ const HQTerminal = ({ onComplete }) => {
         setAgentData(prev => ({ ...prev, real_name: input }));
         
         addHQMessage(
-          `Excellent. Welcome to the team, ${input}.\n\n` +
-          `Before we assign your operational codename, I need to run a quick personality profile. ` +
-          `Standard procedure - helps us match you with the right alias.\n\n` +
-          `Generating first question...`,
+          `Perfect! Welcome to the workshop, ${input}.\n\n` +
+          `Before we assign you an elf codename, I need to learn about your Christmas spirit! ` +
+          `Think of it as a festive personality assessment.\n\n` +
+          `Consulting with the elves...`,
           500
         );
         
@@ -351,10 +354,10 @@ const HQTerminal = ({ onComplete }) => {
         } else {
           // Generate AI codename
           addHQMessage(
-            `Analyzing your profile...\n\n` +
-            `> PERSONALITY MATRIX: COMPLETE\n` +
-            `> CODENAME GENERATION: PROCESSING\n` +
-            `> CLEARANCE LEVEL: ASSIGNED`,
+            `Analyzing your Christmas spirit...\n\n` +
+            `> FESTIVE PERSONALITY: COMPLETE\n` +
+            `> ELF CODENAME GENERATION: PROCESSING\n` +
+            `> NICE LIST STATUS: APPROVED`,
             500
           );
           
@@ -380,10 +383,10 @@ const HQTerminal = ({ onComplete }) => {
             setAgentData(prev => ({ ...prev, codename: generatedCodename }));
             
             addHQMessage(
-              `\n\nYour operational codename is: **Agent ${generatedCodename}**\n\n` +
-              `This will be your identifier for the duration of Operation Santa's Manifest. ` +
-              `All field agents will know you by this designation.\n\n` +
-              `Do you accept this codename? (yes/no)`,
+              `\n\n✨ Your elf codename is: **${generatedCodename}**\n\n` +
+              `This will be your party identity for Operation Santa's Manifest. ` +
+              `All other elves will know you by this name!\n\n` +
+              `Do you like this codename? (yes/no)`,
               500
             );
             setConversationState('codename_confirm');
@@ -393,24 +396,24 @@ const HQTerminal = ({ onComplete }) => {
 
       case 'codename_confirm':
         const acceptance = input.toLowerCase();
-        if (acceptance.includes('yes') || acceptance.includes('accept') || acceptance.includes('sure')) {
+        if (acceptance.includes('yes') || acceptance.includes('accept') || acceptance.includes('sure') || acceptance.includes('like')) {
           addHQMessage(
-            `Outstanding. **Agent ${agentData.codename}** is now officially registered in our system.\n\n` +
-            `Now for the critical part: the mission briefing.\n\n` +
-            `📋 **OPERATION SANTA'S MANIFEST**\n` +
+            `Perfect! **${agentData.codename}** is now officially registered in Santa's database. 🎅\n\n` +
+            `Now for the important part: the party invitation!\n\n` +
+            `🎄 **OPERATION SANTA'S MANIFEST**\n` +
             `📅 Date: December 13, 2025 @ 1900 HRS\n` +
             `📍 Location: ${EVENT_CONFIG.location.name}\n` +
-            `🎁 Objective: Gift acquisition & exchange operation\n` +
+            `🎁 Objective: Gift exchange & holiday fun\n` +
             `💵 Budget: $${EVENT_CONFIG.giftBudget.min}-$${EVENT_CONFIG.giftBudget.max}\n\n` +
-            `Will you accept this mission? (yes/no/maybe)`,
+            `Will you attend our workshop party? (yes/no/maybe)`,
             500
           );
           setConversationState('rsvp');
         } else {
           // Regenerate AI codename
           addHQMessage(
-            `No problem. Regenerating...\n\n` +
-            `> CODENAME GENERATOR: REINITIALIZING`,
+            `No problem! Let me consult with the other elves...\n\n` +
+            `> ELF CODENAME GENERATOR: REINITIALIZING`,
             300
           );
           
@@ -419,8 +422,8 @@ const HQTerminal = ({ onComplete }) => {
             setAgentData(prev => ({ ...prev, codename: newCodename }));
             
             addHQMessage(
-              `\n\nHow about: **Agent ${newCodename}**?\n\n` +
-              `Accept this codename? (yes/no)`,
+              `\n\nHow about: **${newCodename}**?\n\n` +
+              `Do you like this one? (yes/no)`,
               300
             );
           }, 1500);
@@ -436,9 +439,9 @@ const HQTerminal = ({ onComplete }) => {
           setAgentData(prev => ({ ...prev, attendance_status: 'attending' }));
           
           addHQMessage(
-            `🎖️ **MISSION ACCEPTED**\n\n` +
-            `Excellent work, Agent ${agentData.codename}. Your attendance has been logged in the operational roster.\n\n` +
-            `Are you bringing any additional operatives (guests)? If so, how many? (Enter a number, or 0 for solo mission)`,
+            `� **PARTY RSVP: CONFIRMED**\n\n` +
+            `Fantastic, ${agentData.codename}! Your attendance has been logged on the party roster.\n\n` +
+            `Are you bringing any helper elves (guests)? If so, how many? (Enter a number, or 0 if coming solo)`,
             500
           );
           setConversationState('guests_count');
@@ -447,9 +450,9 @@ const HQTerminal = ({ onComplete }) => {
           setAgentData(prev => ({ ...prev, attendance_status: 'not_attending', rsvp_confirmed_at: new Date().toISOString() }));
           
           addHQMessage(
-            `Understood. Your declination has been noted.\n\n` +
-            `You'll be marked as unavailable for this operation. We'll catch you on the next mission, Agent ${agentData.codename}.\n\n` +
-            `Your agent credentials are being generated...`,
+            `Understood. Your response has been noted.\n\n` +
+            `You'll be marked as unable to attend this year's party. We'll catch you next year, ${agentData.codename}! 🎄\n\n` +
+            `Generating your elf profile...`,
             500
           );
           
@@ -463,9 +466,9 @@ const HQTerminal = ({ onComplete }) => {
           setAgentData(prev => ({ ...prev, attendance_status: 'uncertain' }));
           
           addHQMessage(
-            `Noted. You're marked as "Still Gathering Intel" - which is spy-speak for "I need more time to decide."\n\n` +
-            `No pressure, but HQ would love to have you on the mission. You can update your status later.\n\n` +
-            `Generating your agent profile...`,
+            `Noted! You're marked as "Checking the Nice List" - elf-speak for "I need more time to decide."\n\n` +
+            `No pressure, but the workshop would love to have you at the party. You can update your status later.\n\n` +
+            `Generating your elf profile...`,
             500
           );
           
@@ -481,7 +484,7 @@ const HQTerminal = ({ onComplete }) => {
         
         if (isNaN(guestCount) || guestCount < 0) {
           addHQMessage(
-            `I need a number, Agent. How many additional operatives? (Enter 0 for solo mission)`,
+            `I need a number, ${agentData.codename}. How many helper elves are joining you? (Enter 0 if coming solo)`,
             200
           );
           return;
@@ -491,14 +494,14 @@ const HQTerminal = ({ onComplete }) => {
         
         if (guestCount === 0) {
           addHQMessage(
-            `Solo mission confirmed. Sometimes the best ops are run alone.\n\n` +
-            `Would you like mission reminders sent to you? (yes/no)`,
+            `Flying solo! Perfect - sometimes the best parties are experienced on your own. 🎄\n\n` +
+            `Would you like party reminders sent to you? (yes/no)`,
             500
           );
           setConversationState('reminders_email');
         } else {
           addHQMessage(
-            `${guestCount} additional ${guestCount === 1 ? 'operative' : 'operatives'} noted.\n\n` +
+            `${guestCount} helper ${guestCount === 1 ? 'elf' : 'elves'} noted!\n\n` +
             `Please provide their names (comma-separated if multiple):`,
             500
           );
@@ -514,9 +517,9 @@ const HQTerminal = ({ onComplete }) => {
         }));
         
         addHQMessage(
-          `Perfect. Your team is registered:\n` +
+          `Perfect! Your workshop team is registered:\n` +
           names.map(name => `• ${name}`).join('\n') +
-          `\n\nWould you like mission reminders sent to you? (yes/no)`,
+          `\n\nWould you like party reminders sent to you? (yes/no)`,
           500
         );
         setConversationState('reminders_email');
@@ -528,13 +531,13 @@ const HQTerminal = ({ onComplete }) => {
         if (wantsReminders.includes('yes')) {
           setAgentData(prev => ({ ...prev, wants_reminders: true }));
           addHQMessage(
-            `Great! What's your email address for mission updates?`,
+            `Great! What's your email address for party updates?`,
             300
           );
           setConversationState('reminders_phone');
         } else {
           addHQMessage(
-            `No problem. Finalizing your mission dossier...`,
+            `No problem. Finalizing your elf profile...`,
             300
           );
           setTimeout(async () => {
@@ -615,14 +618,14 @@ const HQTerminal = ({ onComplete }) => {
       
       // Show completion message
       addHQMessage(
-        `✅ **CLEARANCE COMPLETE**\n\n` +
-        `Your agent profile has been created, Agent ${agentData.codename}.\n\n` +
-        `📋 **Mission Summary:**\n` +
+        `✅ **PROFILE COMPLETE**\n\n` +
+        `Your elf profile has been created, ${agentData.codename}! 🎄\n\n` +
+        `📋 **Party Summary:**\n` +
         `• Codename: ${agentData.codename}\n` +
-        `• Status: ${agentData.attendance_status === 'attending' ? 'CONFIRMED' : agentData.attendance_status === 'uncertain' ? 'PENDING' : 'DECLINED'}\n` +
+        `• Status: ${agentData.attendance_status === 'attending' ? 'CONFIRMED ✅' : agentData.attendance_status === 'uncertain' ? 'PENDING 🤔' : 'DECLINED ❌'}\n` +
         `• Team Size: ${agentData.guest_count + 1}\n\n` +
-        `Redirecting to your Agent Card in 3 seconds...\n\n` +
-        `For mission intel, visit the /roster to see other confirmed agents.`,
+        `Redirecting to your Elf Card in 3 seconds...\n\n` +
+        `Check out the /roster to see other confirmed elves!`,
         500
       );
       
@@ -638,8 +641,8 @@ const HQTerminal = ({ onComplete }) => {
       console.error('Failed to save agent:', error);
       addHQMessage(
         `⚠️ **TRANSMISSION ERROR**\n\n` +
-        `There was a problem saving your profile to our secure servers. ` +
-        `Don't worry - your data is cached locally. Please contact HQ for manual registration.`,
+        `There was a problem saving your profile to Santa's database. ` +
+        `Don't worry - your data is cached locally. Please contact North Pole Command for manual registration.`,
         200
       );
     }

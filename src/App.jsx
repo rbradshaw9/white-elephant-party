@@ -9,6 +9,7 @@ import AgentRoster from './pages/AgentRoster';
 import AccessGate from './pages/AccessGate';
 import Gallery from './pages/Gallery';
 import AgentCard from './pages/AgentCard';
+import HQ from './pages/HQ';
 import Snowfall from './components/Snowfall';
 import MusicToggle from './components/MusicToggle';
 import SleighAnimation from './components/SleighAnimation';
@@ -75,6 +76,7 @@ const AppContent = () => {
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/rules" element={<ProtectedRoute><Rules /></ProtectedRoute>} />
         <Route path="/rsvp" element={<ProtectedRoute><RSVP /></ProtectedRoute>} />
+        <Route path="/hq" element={<HQ />} />
         <Route path="/roster" element={<AgentRoster />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/agent/:codename" element={<AgentCard />} />
