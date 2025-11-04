@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import AgentRecruitment from './AgentRecruitment';
+import EVENT_CONFIG from '../config/config';
 
 /**
  * RSVP Page Component
@@ -20,10 +21,11 @@ const RSVP = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     guests: '1',
     dietaryRestrictions: '',
     attending: 'yes',
-    reminderPreference: 'week',
+    reminders: true,
   });
 
   const [errors, setErrors] = useState({});
@@ -33,12 +35,12 @@ const RSVP = () => {
   // Generate calendar file
   const generateCalendarFile = () => {
     const event = {
-      title: 'White Elephant Party 2025',
-      description: 'Annual White Elephant Gift Exchange - Bring a $20-40 gift!',
-      location: "Ryan's Place",
+      title: EVENT_CONFIG.name,
+      description: `Annual White Elephant Gift Exchange - Bring a $${EVENT_CONFIG.giftBudget.min}-$${EVENT_CONFIG.giftBudget.max} gift!`,
+      location: `${EVENT_CONFIG.location.name} - ${EVENT_CONFIG.location.address}`,
       start: '20251213T183000', // 6:30 PM AST
       end: '20251213T230000',   // 11:00 PM AST
-      timezone: 'America/Puerto_Rico',
+      timezone: EVENT_CONFIG.timezoneIANA,
     };
 
     const icsContent = [
@@ -161,12 +163,11 @@ const RSVP = () => {
                 animate={{ opacity: 1, y: 0 }}
               >
                 <p className="text-slate-300 mb-4">📧 Check {formData.email} for details</p>
-                <p className="text-sm text-slate-400 mb-4">
-                  {formData.reminderPreference === 'week' && "We'll remind you one week before the party!"}
-                  {formData.reminderPreference === 'day' && "We'll remind you one day before the party!"}
-                  {formData.reminderPreference === 'both' && "We'll send reminders one week and one day before!"}
-                  {formData.reminderPreference === 'none' && "No reminders - you're on your own! 🤞"}
-                </p>
+                {formData.reminders && (
+                  <p className="text-sm text-slate-400 mb-4">
+                    We'll send you reminders before the party! 🎄
+                  </p>
+                )}
                 <button
                   onClick={generateCalendarFile}
                   className="btn-festive-green text-base w-full"
@@ -183,7 +184,7 @@ const RSVP = () => {
               <button
                 onClick={() => {
                   setIsSubmitted(false);
-                  setFormData({ name: '', email: '', guests: '1', dietaryRestrictions: '', attending: 'yes', reminderPreference: 'week' });
+                  setFormData({ name: '', email: '', phone: '', guests: '1', dietaryRestrictions: '', attending: 'yes', reminders: true });
                 }}
                 className="btn-festive-green text-lg w-full sm:w-auto"
               >
@@ -285,6 +286,25 @@ const RSVP = () => {
             <AnimatePresence>
               {formData.attending === 'yes' && (
                 <motion.div className="space-y-6" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
+                  {/* Phone (Optional) */}
+                  <div>
+                    <label htmlFor="phone" className="block text-lg font-semibold text-white mb-2">
+                      Phone Number (optional)
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-xl bg-slate-800/50 text-white border-2 border-slate-700 focus:border-emerald-500 focus:outline-none transition-all"
+                      placeholder="+1 (555) 000-0000"
+                    />
+                    <p className="text-slate-400 text-xs mt-1">
+                      For text reminders (optional)
+                    </p>
+                  </div>
+
                   {/* Guests */}
                   <div>
                     <label htmlFor="guests" className="block text-lg font-semibold text-white mb-2">
@@ -321,26 +341,22 @@ const RSVP = () => {
                     />
                   </div>
 
-                  {/* Reminder Preference */}
-                  <div>
-                    <label htmlFor="reminderPreference" className="block text-lg font-semibold text-white mb-2">
-                      Send me a reminder
+                  {/* Reminder Checkbox */}
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      id="reminders"
+                      name="reminders"
+                      checked={formData.reminders}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, reminders: e.target.checked }))}
+                      className="w-5 h-5 mt-1 rounded bg-slate-800/50 border-2 border-slate-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 cursor-pointer"
+                    />
+                    <label htmlFor="reminders" className="text-slate-300 cursor-pointer">
+                      <div className="font-semibold text-white mb-1">Send me reminders</div>
+                      <div className="text-sm text-slate-400">
+                        We'll email you before the party to remind you to grab your gift! 🎁
+                      </div>
                     </label>
-                    <select
-                      id="reminderPreference"
-                      name="reminderPreference"
-                      value={formData.reminderPreference}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-xl bg-slate-800/50 text-white border-2 border-slate-700 focus:border-emerald-500 focus:outline-none transition-all"
-                    >
-                      <option value="week">One week before</option>
-                      <option value="day">One day before</option>
-                      <option value="both">Both (week + day)</option>
-                      <option value="none">No reminders needed</option>
-                    </select>
-                    <p className="text-slate-400 text-sm mt-2">
-                      We'll email you to remind you to grab your gift! 🎁
-                    </p>
                   </div>
                 </motion.div>
               )}

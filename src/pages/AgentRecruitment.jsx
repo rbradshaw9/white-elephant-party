@@ -282,14 +282,15 @@ const AgentRecruitment = () => {
               <button
                 onClick={() => {
                   setIsSubmitted(false);
-                  setAssignedCodename('');
                   setFormData({ 
                     name: '', 
-                    email: '', 
+                    codename: '',
+                    email: '',
+                    phone: '',
                     guests: '1', 
                     dietaryRestrictions: '', 
                     attending: 'yes', 
-                    reminderPreference: 'week' 
+                    reminders: true
                   });
                 }}
                 className="px-8 py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-lg font-semibold shadow-lg shadow-sky-500/20 hover:shadow-xl hover:shadow-sky-500/30 transition-all duration-300 w-full sm:w-auto"
@@ -403,6 +404,57 @@ const AgentRecruitment = () => {
               </AnimatePresence>
             </div>
 
+            {/* Agent Codename Generator */}
+            <div>
+              <label htmlFor="codename" className="block text-lg font-semibold text-white mb-2 font-display">
+                Agent Codename
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  id="codename"
+                  name="codename"
+                  value={formData.codename}
+                  onChange={handleChange}
+                  className={`flex-1 px-4 py-3 rounded-lg bg-slate-800/50 text-white border-2 font-mono ${
+                    errors.codename ? 'border-red-500' : 'border-slate-700'
+                  } focus:border-sky-500 focus:outline-none transition-all uppercase tracking-wider`}
+                  placeholder="Click to generate →"
+                  readOnly
+                />
+                <motion.button
+                  type="button"
+                  onClick={handleGenerateCodename}
+                  className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-semibold shadow-lg shadow-cyan-500/20 hover:shadow-xl hover:shadow-cyan-500/30 transition-all duration-300 whitespace-nowrap"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  🎲 Generate
+                </motion.button>
+              </div>
+              <AnimatePresence>
+                {showCodenameEffect && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="mt-2 text-cyan-400 text-sm font-mono"
+                  >
+                    ✓ Codename generated!
+                  </motion.div>
+                )}
+                {errors.codename && (
+                  <motion.p 
+                    className="text-red-400 text-sm mt-2 font-mono" 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }}
+                  >
+                    ⚠️ {errors.codename}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </div>
+
             {/* Secure Email */}
             <div>
               <label htmlFor="email" className="block text-lg font-semibold text-white mb-2 font-display">
@@ -441,6 +493,25 @@ const AgentRecruitment = () => {
                   animate={{ opacity: 1, height: 'auto' }} 
                   exit={{ opacity: 0, height: 0 }}
                 >
+                  {/* Phone Number (Optional) */}
+                  <div>
+                    <label htmlFor="phone" className="block text-lg font-semibold text-white mb-2 font-display">
+                      Secure Line (Optional)
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-lg bg-slate-800/50 text-white border-2 border-slate-700 focus:border-sky-500 focus:outline-none transition-all font-mono"
+                      placeholder="+1 (555) 000-0000"
+                    />
+                    <p className="text-slate-400 text-xs mt-1 font-mono">
+                      For mission-critical SMS updates (optional)
+                    </p>
+                  </div>
+
                   {/* Number of Agents */}
                   <div>
                     <label htmlFor="guests" className="block text-lg font-semibold text-white mb-2 font-display">
@@ -477,26 +548,22 @@ const AgentRecruitment = () => {
                     />
                   </div>
 
-                  {/* Intelligence Updates */}
-                  <div>
-                    <label htmlFor="reminderPreference" className="block text-lg font-semibold text-white mb-2 font-display">
-                      Intelligence Updates
+                  {/* Intelligence Updates Checkbox */}
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      id="reminders"
+                      name="reminders"
+                      checked={formData.reminders}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, reminders: e.target.checked }))}
+                      className="w-5 h-5 mt-1 rounded bg-slate-800/50 border-2 border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 cursor-pointer"
+                    />
+                    <label htmlFor="reminders" className="text-slate-300 font-mono text-sm cursor-pointer">
+                      <div className="font-semibold text-white mb-1">Send Intelligence Updates</div>
+                      <div className="text-slate-400">
+                        📡 Receive mission reminders before the operation (recommended)
+                      </div>
                     </label>
-                    <select
-                      id="reminderPreference"
-                      name="reminderPreference"
-                      value={formData.reminderPreference}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-lg bg-slate-800/50 text-white border-2 border-slate-700 focus:border-sky-500 focus:outline-none transition-all font-mono"
-                    >
-                      <option value="week">T-minus 7 days</option>
-                      <option value="day">T-minus 24 hours</option>
-                      <option value="both">Both updates</option>
-                      <option value="none">Operating dark (no updates)</option>
-                    </select>
-                    <p className="text-slate-400 text-sm mt-2 font-mono">
-                      📡 Mission reminders to acquire your decoy package
-                    </p>
                   </div>
                 </motion.div>
               )}
