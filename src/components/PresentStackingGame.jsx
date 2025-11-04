@@ -330,24 +330,8 @@ const PresentStackingGame = () => {
 
   // Render board with current piece
   const renderBoard = () => {
-    const displayBoard = board.map(row => [...row]);
-    
-    // Add current piece to display
-    if (currentPiece && gameState === 'playing') {
-      currentPiece.shape.forEach((row, y) => {
-        row.forEach((cell, x) => {
-          if (cell) {
-            const boardY = position.y + y;
-            const boardX = position.x + x;
-            if (boardY >= 0 && boardY < BOARD_HEIGHT && boardX >= 0 && boardX < BOARD_WIDTH) {
-              displayBoard[boardY][boardX] = currentPiece.color;
-            }
-          }
-        });
-      });
-    }
-    
-    return displayBoard;
+    // Only return the locked pieces, not the current falling piece
+    return board.map(row => [...row]);
   };
 
   return (
@@ -444,12 +428,13 @@ const PresentStackingGame = () => {
           <div className="relative bg-slate-900/50 rounded-2xl border-2 border-slate-700 p-2">
             {/* Board */}
             <div 
-              className="grid gap-[1px] bg-slate-800/50"
+              className="grid gap-[1px] bg-slate-800/50 relative"
               style={{
                 gridTemplateColumns: `repeat(${BOARD_WIDTH}, ${CELL_SIZE}px)`,
                 gridTemplateRows: `repeat(${BOARD_HEIGHT}, ${CELL_SIZE}px)`,
               }}
             >
+              {/* Locked pieces */}
               {renderBoard().map((row, y) =>
                 row.map((cell, x) => (
                   <div
@@ -464,6 +449,35 @@ const PresentStackingGame = () => {
                     {cell && <span className="text-[10px]">🎀</span>}
                   </div>
                 ))
+              )}
+              
+              {/* Current falling piece - rendered on top as absolute positioned */}
+              {currentPiece && gameState === 'playing' && (
+                <div className="absolute top-0 left-0 pointer-events-none">
+                  {currentPiece.shape.map((row, y) =>
+                    row.map((cell, x) => {
+                      if (!cell) return null;
+                      const boardY = position.y + y;
+                      const boardX = position.x + x;
+                      if (boardY < 0 || boardY >= BOARD_HEIGHT || boardX < 0 || boardX >= BOARD_WIDTH) return null;
+                      
+                      return (
+                        <div
+                          key={`current-${y}-${x}`}
+                          className={`absolute bg-gradient-to-br ${currentPiece.color} border border-white/20 rounded-sm flex items-center justify-center`}
+                          style={{
+                            width: CELL_SIZE,
+                            height: CELL_SIZE,
+                            left: boardX * (CELL_SIZE + 1),
+                            top: boardY * (CELL_SIZE + 1),
+                          }}
+                        >
+                          <span className="text-[10px]">🎀</span>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
               )}
             </div>
 
