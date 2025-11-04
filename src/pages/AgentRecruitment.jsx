@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import generateCodename from '../utils/agentCodename';
+import EVENT_CONFIG from '../config/config';
 
 /**
  * Agent Recruitment Component (Heist Theme)
  * Intelligence Division agent registration
  * Features:
  * - Mission acceptance workflow
- * - Codename assignment on confirmation
+ * - Codename generator in form
  * - Tactical styling with clearance levels
  * - Calendar export for mission briefing
  */
@@ -16,34 +18,37 @@ const AgentRecruitment = () => {
   const { theme } = useTheme();
   const [formData, setFormData] = useState({
     name: '',
+    codename: '',
     email: '',
+    phone: '',
     guests: '1',
     dietaryRestrictions: '',
     attending: 'yes',
-    reminderPreference: 'week',
+    reminders: true,
   });
 
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [assignedCodename, setAssignedCodename] = useState('');
+  const [showCodenameEffect, setShowCodenameEffect] = useState(false);
 
   // Generate agent codename
-  const generateCodename = () => {
-    const adjective = theme.codenames.adjectives[Math.floor(Math.random() * theme.codenames.adjectives.length)];
-    const noun = theme.codenames.nouns[Math.floor(Math.random() * theme.codenames.nouns.length)];
-    return `${adjective} ${noun}`;
+  const handleGenerateCodename = () => {
+    const newCodename = generateCodename();
+    setFormData((prev) => ({ ...prev, codename: newCodename }));
+    setShowCodenameEffect(true);
+    setTimeout(() => setShowCodenameEffect(false), 1500);
   };
 
   // Generate calendar file
   const generateCalendarFile = () => {
     const event = {
       title: 'OPERATION SANTA\'S MANIFEST',
-      description: 'CLASSIFIED: North Pole Intelligence Division - Gift Acquisition Mission ($20-40 decoy package required)',
-      location: 'Tactical HQ (Classified)',
+      description: `CLASSIFIED: North Pole Intelligence Division - Gift Acquisition Mission ($${EVENT_CONFIG.giftBudget.min}-$${EVENT_CONFIG.giftBudget.max} decoy package required)`,
+      location: `${EVENT_CONFIG.location.name} - ${EVENT_CONFIG.location.address}`,
       start: '20251213T190000', // 19:00 hours (7:00 PM AST)
       end: '20251213T230000',   // 23:00 hours (11:00 PM AST)
-      timezone: 'America/Puerto_Rico',
+      timezone: EVENT_CONFIG.timezoneIANA,
     };
 
     const icsContent = [
@@ -94,6 +99,10 @@ const AgentRecruitment = () => {
       newErrors.name = 'Agent identification required';
     }
 
+    if (!formData.codename.trim()) {
+      newErrors.codename = 'Generate your codename first, agent';
+    }
+
     if (!formData.email.trim()) {
       newErrors.email = 'Secure communication channel required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -125,8 +134,6 @@ const AgentRecruitment = () => {
         throw new Error(data.error || 'Mission acceptance failed');
       }
 
-      // Generate codename on successful submission
-      setAssignedCodename(generateCodename());
       setIsSubmitted(true);
     } catch (error) {
       console.error('Agent registration error:', error);
@@ -183,7 +190,7 @@ const AgentRecruitment = () => {
                 >
                   <div className="text-xs font-mono text-sky-400/60 mb-2 tracking-wider">ASSIGNED CODENAME</div>
                   <div className="text-4xl font-display font-bold text-sky-400 mb-2 tracking-wide">
-                    {assignedCodename}
+                    {formData.codename}
                   </div>
                   <div className="text-sm text-slate-400 font-mono">
                     This is your operational identifier for the mission
@@ -200,12 +207,11 @@ const AgentRecruitment = () => {
                   <p className="text-slate-300 mb-4 font-mono">
                     📡 Mission briefing sent to: <span className="text-sky-400">{formData.email}</span>
                   </p>
-                  <p className="text-sm text-slate-400 mb-4">
-                    {formData.reminderPreference === 'week' && "Intelligence update scheduled: T-minus 7 days"}
-                    {formData.reminderPreference === 'day' && "Intelligence update scheduled: T-minus 24 hours"}
-                    {formData.reminderPreference === 'both' && "Intelligence updates scheduled: T-7 days and T-24 hours"}
-                    {formData.reminderPreference === 'none' && "No reminders requested - you're operating dark"}
-                  </p>
+                  {formData.reminders && (
+                    <p className="text-sm text-slate-400 mb-4">
+                      Intelligence updates scheduled: Mission reminders will be transmitted before the operation
+                    </p>
+                  )}
                   <button
                     onClick={generateCalendarFile}
                     className="px-8 py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-lg font-semibold shadow-lg shadow-sky-500/20 hover:shadow-xl hover:shadow-sky-500/30 transition-all duration-300 w-full"
@@ -213,6 +219,37 @@ const AgentRecruitment = () => {
                     📅 Download Mission Schedule
                   </button>
                 </motion.div>
+
+                {/* WhatsApp Secret Channel */}
+                {EVENT_CONFIG.whatsapp.enabled && (
+                  <motion.div
+                    className="glass-card rounded-lg p-6 mb-6 border-2 border-emerald-500/30 bg-gradient-to-br from-emerald-500/5 to-green-500/5"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 }}
+                  >
+                    <h3 style={{ margin: '0 0 10px 0', color: '#10b981', fontSize: '20px' }} className="font-display">
+                      🔐 ENCRYPTED COMMS NETWORK
+                    </h3>
+                    <p className="text-slate-300 font-mono text-sm mb-4">
+                      Join the operational WhatsApp network for live updates, code drops, and mission chaos.
+                    </p>
+                    <a 
+                      href={EVENT_CONFIG.whatsapp.inviteLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block"
+                    >
+                      <motion.button
+                        className="w-full px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-semibold shadow-lg shadow-green-500/20 hover:shadow-xl hover:shadow-green-500/30 transition-all duration-300"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        📱 Join Secret Channel
+                      </motion.button>
+                    </a>
+                  </motion.div>
+                )}
 
                 {/* Mission Reminder */}
                 <motion.div

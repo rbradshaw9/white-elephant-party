@@ -187,18 +187,24 @@ export default {
     }
   },
 
-  // Codename generator
+    // Codename generator arrays - Elf-themed holiday names
   codenames: {
     adjectives: [
-      "Silent", "Shadow", "Ice", "Swift", "Phantom", "Midnight", "Silver", "Ghost",
-      "Frost", "Crimson", "Azure", "Electric", "Thunder", "Velvet", "Scarlet",
-      "Diamond", "Cobra", "Viper", "Raven", "Wolf", "Eagle", "Falcon", "Tiger"
+      'Jolly', 'Merry', 'Sparkle', 'Twinkle', 'Frosty',
+      'Snowy', 'Sugar', 'Candy', 'Ginger', 'Peppermint',
+      'Cinnamon', 'Cocoa', 'Jingle', 'Tinsel', 'Glitter',
+      'Mistletoe', 'Holly', 'Evergreen', 'Starlight', 'Moonbeam',
+      'Crystal', 'Shimmer', 'Cozy', 'Cheerful', 'Fuzzy',
+      'Snuggles', 'Buttons', 'Sprinkles', 'Nutmeg', 'Marshmallow'
     ],
     nouns: [
-      "Fox", "Hawk", "Storm", "Blade", "Arrow", "Spade", "Ace", "King",
-      "Queen", "Knight", "Rook", "Bishop", "Cipher", "Echo", "Delta",
-      "Alpha", "Omega", "Phoenix", "Dragon", "Panther", "Serpent", "Wraith"
-    ],
+      'Boots', 'Bells', 'Snowflake', 'Cookie', 'Mittens',
+      'Muffin', 'Cocoa', 'Pudding', 'Gumdrops', 'Stocking',
+      'Ornament', 'Ribbon', 'Wreath', 'Sleigh', 'Reindeer',
+      'Icicle', 'Pine', 'Star', 'Candle', 'Nog',
+      'Plum', 'Figgy', 'Chestnuts', 'Snowball', 'Scarf',
+      'Toes', 'Cheeks', 'Nose', 'Whiskers', 'Giggles'
+    ]
   },
 
   // Media assets
