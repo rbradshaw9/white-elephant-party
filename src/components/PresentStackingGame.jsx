@@ -318,7 +318,11 @@ const PresentStackingGame = () => {
   useEffect(() => {
     if (gameState !== 'playing') return;
     
-    const dropInterval = Math.max(50, 800 - (level - 1) * 80); // Faster speed increase
+    // Exponential difficulty curve - gets much harder each level
+    const baseSpeed = 800;
+    const speedReduction = Math.pow(0.75, level - 1); // 25% faster each level
+    const dropInterval = Math.max(50, baseSpeed * speedReduction);
+    
     const timer = setInterval(moveDown, dropInterval);
     
     return () => clearInterval(timer);
