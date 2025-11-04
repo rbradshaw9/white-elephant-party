@@ -457,8 +457,8 @@ const PresentStackingGame = () => {
                     className={`${
                       cell 
                         ? `bg-gradient-to-br ${cell} border border-white/20` 
-                        : 'bg-slate-900/30'
-                    } rounded-sm flex items-center justify-center transition-all`}
+                        : ''
+                    } rounded-sm flex items-center justify-center`}
                     style={{ width: CELL_SIZE, height: CELL_SIZE }}
                   >
                     {cell && <span className="text-[10px]">🎀</span>}
