@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS public.agents (
   codename TEXT UNIQUE NOT NULL,
   email TEXT,
   phone TEXT,
+  wants_reminders BOOLEAN DEFAULT false,
   attendance_status TEXT CHECK (attendance_status IN ('attending', 'not_attending', 'uncertain')),
   guest_count INTEGER DEFAULT 0,
   guest_names TEXT[], -- Array of guest names
@@ -161,6 +162,31 @@ WHERE schemaname = 'public'
 SELECT schemaname, tablename, policyname, permissive, roles, cmd, qual 
 FROM pg_policies 
 WHERE schemaname = 'public';
+
+-- ============================================
+-- MIGRATION: Add reminder fields (Run this if upgrading existing database)
+-- ============================================
+
+-- Add wants_reminders column if it doesn't exist
+DO $$ 
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'agents' 
+    AND column_name = 'wants_reminders'
+  ) THEN
+    ALTER TABLE public.agents ADD COLUMN wants_reminders BOOLEAN DEFAULT false;
+  END IF;
+END $$;
+
+-- Verify new column was added
+SELECT column_name, data_type, column_default
+FROM information_schema.columns
+WHERE table_schema = 'public' 
+  AND table_name = 'agents'
+  AND column_name IN ('email', 'phone', 'wants_reminders')
+ORDER BY column_name;
 
 -- ============================================
 -- NOTES FOR DEPLOYMENT
