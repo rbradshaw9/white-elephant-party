@@ -9,6 +9,7 @@ import { supabase } from './supabaseClient';
  */
 export async function saveAISession(agentId, messages, rating = null) {
   try {
+    // Note: schema defines `created_at`; do not insert unknown columns like `last_active_at`.
     const { data, error } = await supabase
       .from('ai_sessions')
       .insert([
@@ -16,7 +17,7 @@ export async function saveAISession(agentId, messages, rating = null) {
           agent_id: agentId,
           messages: messages,
           rating: rating,
-          last_active_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
         },
       ])
       .select()
@@ -46,8 +47,7 @@ export async function updateAISession(sessionId, messages) {
     const { data, error } = await supabase
       .from('ai_sessions')
       .update({
-        messages: messages,
-        last_active_at: new Date().toISOString(),
+          messages: messages,
       })
       .eq('id', sessionId)
       .select()
@@ -72,7 +72,8 @@ export async function getLatestAISession(agentId) {
       .from('ai_sessions')
       .select('*')
       .eq('agent_id', agentId)
-      .order('last_active_at', { ascending: false })
+      // Order by created_at (schema uses created_at)
+      .order('created_at', { ascending: false })
       .limit(1)
       .single();
 
@@ -101,7 +102,8 @@ export async function getTransmissions(activeOnly = true) {
     let query = supabase.from('transmissions').select('*');
 
     if (activeOnly) {
-      query = query.eq('active', true);
+      // Schema column is `is_active`
+      query = query.eq('is_active', true);
     }
 
     const { data, error } = await query.order('created_at', { ascending: false });
