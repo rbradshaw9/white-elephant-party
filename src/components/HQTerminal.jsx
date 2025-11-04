@@ -689,11 +689,50 @@ const HQTerminal = ({ onComplete }) => {
         break;
 
       case 'guests_count':
-        const guestCount = parseInt(input);
+        const lowerInput = input.toLowerCase().trim();
+        
+        // Natural language parsing for guest count
+        let guestCount;
+        
+        // Check for "just me", "solo", "alone", "none", "no one", etc.
+        if (lowerInput.includes('just me') || 
+            lowerInput.includes('solo') || 
+            lowerInput.includes('alone') || 
+            lowerInput === 'none' || 
+            lowerInput === 'no one' || 
+            lowerInput === 'nobody' ||
+            lowerInput === 'no') {
+          guestCount = 0;
+        }
+        // Check for "one", "1", etc.
+        else if (lowerInput.includes('one') && !lowerInput.includes('no one')) {
+          guestCount = 1;
+        }
+        // Check for "two", "2", etc.
+        else if (lowerInput.includes('two')) {
+          guestCount = 2;
+        }
+        // Check for "three", "3", etc.
+        else if (lowerInput.includes('three')) {
+          guestCount = 3;
+        }
+        // Check for "four", "4", etc.
+        else if (lowerInput.includes('four')) {
+          guestCount = 4;
+        }
+        // Check for "five", "5", etc.
+        else if (lowerInput.includes('five')) {
+          guestCount = 5;
+        }
+        // Try to parse as number
+        else {
+          guestCount = parseInt(input);
+        }
         
         if (isNaN(guestCount) || guestCount < 0) {
           addHQMessage(
-            `I need a number, ${agentData.codename}. How many helper elves are joining you? (Enter 0 if coming solo)`,
+            `I need a number, ${agentData.codename}. How many helper elves are joining you?\n\n` +
+            `Examples: "just me", "2", "three", or "0" if coming solo`,
             200
           );
           return;
