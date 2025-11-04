@@ -50,6 +50,10 @@ CREATE TABLE IF NOT EXISTS public.transmissions (
   message TEXT NOT NULL,
   priority TEXT CHECK (priority IN ('low', 'medium', 'high', 'urgent')) DEFAULT 'medium',
   is_active BOOLEAN DEFAULT true,
+  requires_response BOOLEAN DEFAULT false,
+  response_prompt TEXT, -- Optional prompt for user response (e.g., "Reply with your favorite gift idea")
+  response_type TEXT CHECK (response_type IN ('text', 'choice', 'none')) DEFAULT 'none',
+  response_options JSONB, -- For choice type: ["Option A", "Option B", "Option C"]
   created_by TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   expires_at TIMESTAMP WITH TIME ZONE
@@ -59,6 +63,22 @@ CREATE TABLE IF NOT EXISTS public.transmissions (
 CREATE INDEX IF NOT EXISTS idx_transmissions_active ON public.transmissions(is_active, created_at DESC);
 
 -- ============================================
+-- TABLE: transmission_responses
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.transmission_responses (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  transmission_id UUID REFERENCES public.transmissions(id) ON DELETE CASCADE,
+  agent_id UUID REFERENCES public.agents(id) ON DELETE CASCADE,
+  response TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(transmission_id, agent_id) -- One response per agent per transmission
+);
+
+-- Index for responses
+CREATE INDEX IF NOT EXISTS idx_responses_transmission ON public.transmission_responses(transmission_id);
+CREATE INDEX IF NOT EXISTS idx_responses_agent ON public.transmission_responses(agent_id);
+
+-- ============================================
 -- ROW LEVEL SECURITY (RLS)
 -- ============================================
 
@@ -66,6 +86,7 @@ CREATE INDEX IF NOT EXISTS idx_transmissions_active ON public.transmissions(is_a
 ALTER TABLE public.agents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.ai_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.transmissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.transmission_responses ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Anyone can read agents (for roster)
 CREATE POLICY "Anyone can view agents"
@@ -109,6 +130,18 @@ CREATE POLICY "Only authenticated users can create transmissions"
   FOR INSERT
   WITH CHECK (auth.role() = 'authenticated');
 
+-- Policy: Anyone can read transmission responses
+CREATE POLICY "Anyone can view transmission responses"
+  ON public.transmission_responses
+  FOR SELECT
+  USING (true);
+
+-- Policy: Anyone can create transmission responses
+CREATE POLICY "Anyone can create transmission responses"
+  ON public.transmission_responses
+  FOR INSERT
+  WITH CHECK (true);
+
 -- ============================================
 -- FUNCTIONS & TRIGGERS
 -- ============================================
@@ -138,6 +171,27 @@ INSERT INTO public.transmissions (message, priority, created_by)
 VALUES 
   ('🎯 OPERATION SANTA''S MANIFEST is now ACTIVE. All agents report to HQ for briefing.', 'high', 'HQ'),
   ('🎁 Reminder: Gift budget is $25-$50. No exceptions, agents!', 'medium', 'HQ')
+ON CONFLICT DO NOTHING;
+
+-- Insert a sample interactive transmission
+INSERT INTO public.transmissions (
+  message, 
+  priority, 
+  created_by, 
+  requires_response, 
+  response_prompt,
+  response_type,
+  response_options
+)
+VALUES (
+  '🎄 MISSION INTEL NEEDED: HQ is gathering gift ideas. What''s your best White Elephant gift suggestion?',
+  'medium',
+  'HQ',
+  true,
+  'Share your gift idea (budget: $25-50)',
+  'text',
+  NULL
+)
 ON CONFLICT DO NOTHING;
 
 -- ============================================
@@ -180,12 +234,109 @@ BEGIN
   END IF;
 END $$;
 
--- Verify new column was added
+-- Add interactive transmission columns if they don't exist
+DO $$ 
+BEGIN
+  -- requires_response
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'transmissions' 
+    AND column_name = 'requires_response'
+  ) THEN
+    ALTER TABLE public.transmissions ADD COLUMN requires_response BOOLEAN DEFAULT false;
+  END IF;
+  
+  -- response_prompt
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'transmissions' 
+    AND column_name = 'response_prompt'
+  ) THEN
+    ALTER TABLE public.transmissions ADD COLUMN response_prompt TEXT;
+  END IF;
+  
+  -- response_type
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'transmissions' 
+    AND column_name = 'response_type'
+  ) THEN
+    ALTER TABLE public.transmissions ADD COLUMN response_type TEXT DEFAULT 'none';
+    ALTER TABLE public.transmissions ADD CONSTRAINT transmissions_response_type_check 
+      CHECK (response_type IN ('text', 'choice', 'none'));
+  END IF;
+  
+  -- response_options
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'transmissions' 
+    AND column_name = 'response_options'
+  ) THEN
+    ALTER TABLE public.transmissions ADD COLUMN response_options JSONB;
+  END IF;
+END $$;
+
+-- Create transmission_responses table if it doesn't exist
+CREATE TABLE IF NOT EXISTS public.transmission_responses (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  transmission_id UUID REFERENCES public.transmissions(id) ON DELETE CASCADE,
+  agent_id UUID REFERENCES public.agents(id) ON DELETE CASCADE,
+  response TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(transmission_id, agent_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_responses_transmission ON public.transmission_responses(transmission_id);
+CREATE INDEX IF NOT EXISTS idx_responses_agent ON public.transmission_responses(agent_id);
+
+-- Enable RLS on transmission_responses if not already enabled
+ALTER TABLE public.transmission_responses ENABLE ROW LEVEL SECURITY;
+
+-- Add policies for transmission_responses if they don't exist
+DO $$ 
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE schemaname = 'public' 
+    AND tablename = 'transmission_responses' 
+    AND policyname = 'Anyone can view transmission responses'
+  ) THEN
+    CREATE POLICY "Anyone can view transmission responses"
+      ON public.transmission_responses
+      FOR SELECT
+      USING (true);
+  END IF;
+  
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE schemaname = 'public' 
+    AND tablename = 'transmission_responses' 
+    AND policyname = 'Anyone can create transmission responses'
+  ) THEN
+    CREATE POLICY "Anyone can create transmission responses"
+      ON public.transmission_responses
+      FOR INSERT
+      WITH CHECK (true);
+  END IF;
+END $$;
+
+-- Verify new columns were added
 SELECT column_name, data_type, column_default
 FROM information_schema.columns
 WHERE table_schema = 'public' 
   AND table_name = 'agents'
   AND column_name IN ('email', 'phone', 'wants_reminders')
+ORDER BY column_name;
+
+SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_schema = 'public' 
+  AND table_name = 'transmissions'
+  AND column_name IN ('requires_response', 'response_prompt', 'response_type', 'response_options')
 ORDER BY column_name;
 
 -- ============================================

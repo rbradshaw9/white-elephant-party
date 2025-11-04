@@ -34,28 +34,26 @@ export async function generateNextQuestion(conversationHistory, agentName, quest
 4. Build on their previous answer naturally, then ask something different
 5. Keep responses SHORT - max 2-3 sentences total
 
-📋 QUESTION PROGRESSION:
-Question 1: Ask about gift preferences or holiday personality
-Question 2: Ask about party behavior or White Elephant strategy
-Question 3: Ask about their heist role or Christmas traditions
+📋 QUESTION PROGRESSION (focus on personality/style for codename):
+Question 1: Ask about their personality style or vibe (cozy vs flashy, classic vs quirky, etc.)
+Question 2: Ask about their Christmas aesthetic or favorite holiday element (colors, traditions, symbols)
+Question 3: Ask about their party persona or energy (life of the party, mysterious, playful, etc.)
 
 ✅ GOOD PATTERN:
-"Nice! [1 sentence acknowledging their answer] So, [NEW question about different topic]?"
+"[1 sentence acknowledging their answer] Now, [NEW question about different aspect]?"
 
 ❌ BAD PATTERNS:
 - Asking the same question twice in different words
 - Following up with "what would you..." if you just asked that
 - Repeating topics already covered
 
-🎨 TOPIC VARIETY (choose ONE per question):
-- Gift wrapping style
-- Budget philosophy
-- Stealing strategy in White Elephant
-- Heist movie role
-- Christmas traditions
-- Holiday hosting style
-- Gift-giving approach
-- Party food preferences
+🎨 CODENAME-RELEVANT TOPICS (choose ONE per question):
+- Are you more cozy-sweater or sequin-dress vibes?
+- What's your Christmas color palette? (Classic red/green, icy blues, golds, etc.)
+- Favorite Christmas symbol or element (snowflakes, bells, lights, cocoa, etc.)
+- Party energy (life of the party, mysterious observer, playful prankster, warm host)
+- Holiday personality (jolly, mischievous, elegant, whimsical, etc.)
+- If you were a Christmas character, who? (Santa, elf, reindeer, snowman, etc.)
 
 Keep it fun, brief, and always move forward. Don't circle back to topics you've covered.`;
 

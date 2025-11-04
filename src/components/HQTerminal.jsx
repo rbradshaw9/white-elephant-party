@@ -522,7 +522,7 @@ const HQTerminal = ({ onComplete }) => {
           );
           setTimeout(async () => {
             await saveAgentToDatabase();
-            setConversationState('interactive_chat');
+            showInteractivePrompts();
           }, 1500);
         }
         break;
@@ -550,13 +550,13 @@ const HQTerminal = ({ onComplete }) => {
         
         setTimeout(async () => {
           await saveAgentToDatabase();
-          setConversationState('interactive_chat');
+          showInteractivePrompts();
         }, 1500);
         break;
 
       case 'interactive_chat':
-        // Show interactive prompt buttons
-        showInteractivePrompts();
+        // This shouldn't be called in handleUserInput
+        // Interactive prompts are already shown
         break;
 
       case 'complete':
