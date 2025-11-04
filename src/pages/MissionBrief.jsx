@@ -17,75 +17,75 @@ const MissionBrief = () => {
   const MISSION_PROTOCOLS = [
     {
       number: 1,
-      title: 'Acquisition Budget',
+      title: 'Gift Budget: $20-$40',
       description:
-        'Each operative must acquire a decoy package valued between $20-$40. This ensures operational consistency and prevents detection by civilian authorities. Note: Convenience store acquisitions are considered insufficient for this operation. 💼',
+        'Bring a wrapped gift worth $20-$40. Something fun people actually want to steal! (No gas station gifts please.) 💼',
       icon: '💰',
-      classification: 'FINANCIAL',
+      classification: 'BUDGET',
     },
     {
       number: 2,
-      title: 'Package Concealment',
+      title: 'Wrap Your Gift!',
       description:
-        'All decoy packages MUST be properly concealed in wrapping materials. Transparent bags, exposed retail packaging, or identifiable containers compromise operational security. If package contents are visible, mission integrity is compromised. 📦',
+        'All gifts must be wrapped - no bags, no Amazon boxes. Keep it mysterious! If we can guess what it is, you failed the mission. 📦',
       icon: '🔒',
-      classification: 'SECURITY',
+      classification: 'STEALTH',
     },
     {
       number: 3,
-      title: 'Agent Sequencing',
+      title: 'Draw Your Number',
       description:
-        'Each agent will draw a numerical identifier to establish operational order. First position appears disadvantageous but includes tactical compensation (see Protocol #7). Final position provides maximum intelligence on target preferences. 🎯',
+        'Everyone draws a number to decide turn order. Going first might seem bad, but you get revenge later (see Rule 7). Going last means you see everything first! 🎯',
       icon: '🎲',
-      classification: 'TACTICAL',
+      classification: 'ORDER',
     },
     {
       number: 4,
-      title: 'Acquisition Protocol',
+      title: 'Pick or Steal',
       description:
-        'During your designated turn: SELECT an unacquired package from the vault OR EXTRACT a previously acquired package from another agent. Strategic extraction is encouraged. Choose your targets wisely. 👁️',
+        'On your turn: Unwrap a new gift from the pile OR steal someone else\'s opened gift. Stealing is encouraged. Choose wisely. 👁️',
       icon: '⚡',
-      classification: 'OPERATIONAL',
+      classification: 'ACTION',
     },
     {
       number: 5,
-      title: 'Extraction Limits',
+      title: 'Each Gift = 3 Steals Max',
       description:
-        'Each package may be extracted a maximum of THREE times. After the third extraction, the package enters FROZEN status and becomes permanently secured to its current holder. Early-sequence packages face higher extraction probability. ❄️',
+        'A gift can only be stolen 3 times total. After the 3rd steal, it\'s "frozen" and can\'t be stolen anymore. That person keeps it forever. ❄️',
       icon: '🔐',
-      classification: 'PROTOCOL',
+      classification: 'LIMIT',
     },
     {
       number: 6,
-      title: 'Immediate Counter-Extraction Prohibited',
+      title: 'No Steal-Backs!',
       description:
-        'If your package is extracted, you are PROHIBITED from immediately counter-extracting the same package. This prevents operational deadlock. Instead, initiate a cascade event by extracting from a different agent. Maximum chaos recommended. 🚨',
+        'Someone just stole your gift? Tough luck - you can\'t immediately steal it back. Pick a different gift or steal from someone else. Start a chain reaction! 🚨',
       icon: '⛔',
-      classification: 'RESTRICTION',
+      classification: 'NO REVENGE',
     },
     {
       number: 7,
-      title: 'Alpha Agent Compensation',
+      title: 'Player 1 Gets Revenge',
       description:
-        'Agent #1 receives compensatory advantage: a FINAL extraction opportunity at mission conclusion. Any non-frozen package may be targeted. This balances the disadvantage of initial position. Revenge is a valid strategy. 👑',
+        'Player #1 gets screwed going first, so they get a FINAL turn at the very end to steal any unfrozen gift. It\'s your chance for payback! 👑',
       icon: '⭐',
-      classification: 'ADVANTAGE',
+      classification: 'BONUS',
     },
     {
       number: 8,
-      title: 'Partner Agent Protocols',
+      title: 'Couples: One Gift or Two?',
       description:
-        'Operatives arriving as a paired unit may: (A) Submit one package and operate as a single tactical unit, OR (B) Submit two packages and compete as individual agents. Option B provides enhanced entertainment value for observers. 🤝',
+        'Coming as a couple? You can bring one gift and play together, OR bring two gifts and compete against each other. Competing is way more fun for everyone watching. 🤝',
       icon: '👥',
-      classification: 'PARTNERSHIP',
+      classification: 'TEAMS',
     },
     {
       number: 9,
-      title: 'Mission Prime Directive',
+      title: 'Have Fun!',
       description:
-        'Remember: This is a sanctioned training exercise. A highly competitive, alliance-testing, potentially relationship-destabilizing training exercise. Ultimately, the objective is operational bonding and memory creation. And beverages. Primarily memory creation. 🎖️',
+        'It\'s a game! Yeah it gets competitive and friendships will be tested, but it\'s all about having fun together. And the drinks. Mostly the fun. 🎖️',
       icon: '⚠️',
-      classification: 'DIRECTIVE',
+      classification: 'ENJOY',
     },
   ];
 
@@ -214,13 +214,13 @@ const MissionBrief = () => {
           <div className="text-center">
             <div className="text-4xl mb-3">🎖️</div>
             <h3 className="text-2xl font-bold text-sky-400 mb-2 font-display">
-              DIRECTOR'S NOTE
+              AGENT REMINDER
             </h3>
             <p className="text-slate-300 leading-relaxed">
-              Intelligence suggests that while these protocols appear rigid, operational flexibility is expected.
-              Maintain professional composure... unless another agent extracts your target package.
-              In such events, immediate tactical retaliation against third-party agents is authorized.
-              Remember: we're documenting this operation for future training purposes. Make it memorable.
+              Look, we made this sound all official and spy-like, but here's the truth: 
+              Don't take it too seriously. Unless someone steals YOUR gift. 
+              Then you're legally allowed to hold that grudge until next year's party. 
+              We're all here for the chaos anyway. Make it memorable, Agent.
             </p>
           </div>
         </motion.div>
