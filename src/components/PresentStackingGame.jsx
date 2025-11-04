@@ -1,15 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * Present Stacking Game Component
- * Physics-based game where players stack falling presents as tall as possible
+ * Present Jenga Game Component
+ * Jenga/Bandu style game where players click blocks to remove them without toppling the tower
  * Features:
- * - Falling presents with physics
- * - Stack height tracking
- * - Game over detection
- * - Restart functionality
- * - Responsive design
+ * - Click to remove blocks
+ * - Physics simulation for stability
+ * - Score tracking (blocks removed)
+ * - Tower collapse detection
  */
 
 const PRESENT_COLORS = [
@@ -18,52 +17,56 @@ const PRESENT_COLORS = [
   'from-blue-500 to-blue-600',
   'from-amber-500 to-amber-600',
   'from-purple-500 to-purple-600',
+  'from-pink-500 to-pink-600',
 ];
 
 const PresentStackingGame = () => {
   const [gameState, setGameState] = useState('idle'); // idle, playing, gameOver
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
-  const [presents, setPresents] = useState([]);
-  const [currentPresent, setCurrentPresent] = useState(null);
-  const [position, setPosition] = useState(50); // Percentage from left
-  const gameAreaRef = useRef(null);
+  const [tower, setTower] = useState([]);
+  const [shakingBlock, setShakingBlock] = useState(null);
+  const [towerShake, setTowerShake] = useState(0);
 
-  // Start game
+  // Initialize tower
   const startGame = () => {
+    const initialTower = [];
+    const layers = 8; // Start with 8 layers
+    
+    for (let layer = 0; layer < layers; layer++) {
+      const blocksInLayer = 3;
+      const isHorizontal = layer % 2 === 0;
+      
+      for (let block = 0; block < blocksInLayer; block++) {
+        initialTower.push({
+          id: `${layer}-${block}`,
+          layer,
+          position: block,
+          isHorizontal,
+          removed: false,
+          color: PRESENT_COLORS[layer % PRESENT_COLORS.length],
+        });
+      }
+    }
+    
+    setTower(initialTower);
     setGameState('playing');
     setScore(0);
-    setPresents([]);
-    spawnNewPresent();
+    setTowerShake(0);
   };
 
-  // Spawn a new falling present
-  const spawnNewPresent = () => {
-    const size = 60 + Math.random() * 20; // Random width between 60-80px
-    setCurrentPresent({
-      id: Date.now(),
-      width: size,
-      color: PRESENT_COLORS[Math.floor(Math.random() * PRESENT_COLORS.length)],
-      x: 50, // Start in center
-    });
-    setPosition(50);
-  };
+  // Try to remove a block
+  const removeBlock = (blockId) => {
+    if (gameState !== 'playing') return;
+    
+    const block = tower.find(b => b.id === blockId);
+    if (!block || block.removed) return;
 
-  // Drop present
-  const dropPresent = () => {
-    if (!currentPresent || gameState !== 'playing') return;
-
-    const newPresent = {
-      ...currentPresent,
-      x: position,
-      y: presents.length, // Stack height
-    };
-
-    // Check if present is balanced (simple collision detection)
-    const isBalanced = checkBalance(newPresent, presents);
-
-    if (!isBalanced && presents.length > 0) {
-      // Game over
+    // Check if block can be removed (stability check)
+    const canRemove = checkIfRemovable(block);
+    
+    if (!canRemove) {
+      // Tower collapses!
       setGameState('gameOver');
       if (score > highScore) {
         setHighScore(score);
@@ -71,47 +74,57 @@ const PresentStackingGame = () => {
       return;
     }
 
-    // Add to stack
-    setPresents([...presents, newPresent]);
-    setScore(score + 1);
+    // Shake block before removing
+    setShakingBlock(blockId);
     
-    // Spawn next present
-    setTimeout(() => spawnNewPresent(), 300);
+    setTimeout(() => {
+      // Remove the block
+      setTower(prev => prev.map(b => 
+        b.id === blockId ? { ...b, removed: true } : b
+      ));
+      setScore(prev => prev + 1);
+      setShakingBlock(null);
+      
+      // Add tower shake for effect
+      setTowerShake(prev => prev + 1);
+      setTimeout(() => setTowerShake(0), 300);
+    }, 500);
   };
 
-  // Simple balance check - present must overlap with previous one
-  const checkBalance = (newPresent, stack) => {
-    if (stack.length === 0) return true; // First present always lands
+  // Check if block can be safely removed (simplified Jenga logic)
+  const checkIfRemovable = (block) => {
+    const { layer, position } = block;
     
-    const lastPresent = stack[stack.length - 1];
-    const lastLeft = lastPresent.x - lastPresent.width / 2;
-    const lastRight = lastPresent.x + lastPresent.width / 2;
-    const newLeft = newPresent.x - newPresent.width / 2;
-    const newRight = newPresent.x + newPresent.width / 2;
-
-    // Check if there's any overlap
-    const hasOverlap = !(newRight < lastLeft || newLeft > lastRight);
-    return hasOverlap;
+    // Can't remove from bottom layer
+    if (layer === 0) return false;
+    
+    // Check if there are blocks above
+    const blocksAbove = tower.filter(b => 
+      !b.removed && b.layer === layer + 1
+    );
+    
+    if (blocksAbove.length === 0) {
+      // Top layer - can remove any
+      return true;
+    }
+    
+    // Check current layer - need at least 2 blocks for support
+    const currentLayerBlocks = tower.filter(b => 
+      !b.removed && b.layer === layer
+    );
+    
+    if (currentLayerBlocks.length <= 2) {
+      // Risky! 50% chance of collapse
+      return Math.random() > 0.5;
+    }
+    
+    // Middle blocks are safer than edge blocks
+    if (position === 1) {
+      return Math.random() > 0.2; // 80% success
+    } else {
+      return Math.random() > 0.3; // 70% success
+    }
   };
-
-  // Move present left/right with arrow keys
-  useEffect(() => {
-    const handleKeyPress = (e) => {
-      if (gameState !== 'playing') return;
-
-      if (e.key === 'ArrowLeft') {
-        setPosition(prev => Math.max(10, prev - 5));
-      } else if (e.key === 'ArrowRight') {
-        setPosition(prev => Math.min(90, prev + 5));
-      } else if (e.key === ' ' || e.key === 'Enter') {
-        e.preventDefault();
-        dropPresent();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [gameState, position, currentPresent, presents, score]);
 
   return (
     <div className="w-full max-w-2xl mx-auto">
@@ -119,17 +132,17 @@ const PresentStackingGame = () => {
         {/* Header */}
         <div className="text-center mb-6">
           <h2 className="text-3xl md:text-4xl font-display font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-emerald-400">
-            🎁 Present Stacking
+            🎁 Present Jenga
           </h2>
           <p className="text-slate-300 text-sm">
-            Stack presents as high as you can! Use ← → arrows to move, Space/Enter to drop
+            Click blocks to remove them without toppling the tower!
           </p>
         </div>
 
         {/* Score Display */}
         <div className="flex justify-between items-center mb-4 px-4">
           <div className="text-center">
-            <div className="text-sm text-slate-400">Height</div>
+            <div className="text-sm text-slate-400">Blocks Removed</div>
             <div className="text-3xl font-bold text-emerald-400">{score}</div>
           </div>
           <div className="text-center">
@@ -140,9 +153,8 @@ const PresentStackingGame = () => {
 
         {/* Game Area */}
         <div 
-          ref={gameAreaRef}
-          className="relative bg-slate-900/50 rounded-2xl border-2 border-slate-700 overflow-hidden"
-          style={{ height: '400px' }}
+          className="relative bg-slate-900/50 rounded-2xl border-2 border-slate-700 overflow-hidden flex items-center justify-center"
+          style={{ height: '500px' }}
         >
           {gameState === 'idle' && (
             <motion.div 
@@ -154,7 +166,7 @@ const PresentStackingGame = () => {
                 onClick={startGame}
                 className="btn-festive text-xl px-8 py-4"
               >
-                Start Stacking!
+                Start Game!
               </button>
             </motion.div>
           )}
@@ -166,9 +178,18 @@ const PresentStackingGame = () => {
               animate={{ opacity: 1, scale: 1 }}
             >
               <div className="text-center">
-                <div className="text-6xl mb-4">😱</div>
+                <motion.div 
+                  className="text-6xl mb-4"
+                  animate={{ 
+                    rotate: [0, -10, 10, -10, 0],
+                    y: [0, -20, 0]
+                  }}
+                  transition={{ duration: 0.5 }}
+                >
+                  💥
+                </motion.div>
                 <h3 className="text-3xl font-bold text-red-400 mb-2">Tower Collapsed!</h3>
-                <p className="text-xl text-slate-300 mb-4">You stacked {score} presents</p>
+                <p className="text-xl text-slate-300 mb-4">You removed {score} blocks</p>
                 {score === highScore && score > 0 && (
                   <p className="text-emerald-400 font-semibold mb-4">🎉 New High Score!</p>
                 )}
@@ -182,91 +203,83 @@ const PresentStackingGame = () => {
             </motion.div>
           )}
 
-          {/* Current Falling Present */}
-          <AnimatePresence>
-            {gameState === 'playing' && currentPresent && (
-              <motion.div
-                initial={{ y: -80 }}
-                className="absolute top-4"
-                style={{
-                  left: `${position}%`,
-                  transform: 'translateX(-50%)',
-                  width: `${currentPresent.width}px`,
-                  height: '60px',
-                }}
-              >
-                <div className={`w-full h-full bg-gradient-to-br ${currentPresent.color} rounded-lg shadow-xl border-2 border-white/20 flex items-center justify-center`}>
-                  <div className="text-2xl">🎀</div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Tower */}
+          {gameState === 'playing' && (
+            <motion.div 
+              className="relative"
+              animate={{ 
+                x: towerShake !== 0 ? [0, -3, 3, -3, 3, 0] : 0,
+                y: towerShake !== 0 ? [0, -2, 2, -2, 2, 0] : 0
+              }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* Render tower from bottom to top */}
+              {Array.from({ length: 8 }).map((_, layerIndex) => {
+                const layerBlocks = tower.filter(b => b.layer === layerIndex);
+                const isHorizontal = layerIndex % 2 === 0;
+                
+                return (
+                  <div
+                    key={layerIndex}
+                    className="relative flex justify-center items-center"
+                    style={{
+                      height: '48px',
+                      marginBottom: '2px',
+                    }}
+                  >
+                    {layerBlocks.map(block => (
+                      <AnimatePresence key={block.id}>
+                        {!block.removed && (
+                          <motion.button
+                            onClick={() => removeBlock(block.id)}
+                            className={`absolute bg-gradient-to-br ${block.color} rounded border-2 border-white/20 shadow-lg hover:border-white/40 hover:shadow-xl transition-all cursor-pointer disabled:cursor-not-allowed`}
+                            style={{
+                              width: isHorizontal ? '80px' : '140px',
+                              height: '40px',
+                              left: isHorizontal 
+                                ? `${block.position * 48}px`
+                                : '50%',
+                              transform: isHorizontal 
+                                ? 'none'
+                                : `translateX(-50%) rotate(90deg) translateY(${(block.position - 1) * 48}px)`,
+                            }}
+                            animate={
+                              shakingBlock === block.id
+                                ? { x: [-2, 2, -2, 2, 0], y: [-1, 1, -1, 1, 0] }
+                                : {}
+                            }
+                            exit={{ 
+                              opacity: 0,
+                              scale: 0.5,
+                              transition: { duration: 0.3 }
+                            }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            <div className="text-xl">🎀</div>
+                          </motion.button>
+                        )}
+                      </AnimatePresence>
+                    ))}
+                  </div>
+                );
+              })}
+            </motion.div>
+          )}
 
-          {/* Stacked Presents */}
-          <div className="absolute bottom-0 left-0 right-0">
-            {presents.map((present, index) => (
-              <motion.div
-                key={present.id}
-                initial={{ y: -400, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                className="absolute"
-                style={{
-                  bottom: `${index * 60}px`,
-                  left: `${present.x}%`,
-                  transform: 'translateX(-50%)',
-                  width: `${present.width}px`,
-                  height: '60px',
-                }}
-              >
-                <div className={`w-full h-full bg-gradient-to-br ${present.color} rounded-lg shadow-lg border-2 border-white/20 flex items-center justify-center`}>
-                  <div className="text-2xl">🎀</div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Ground Line */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 via-emerald-500 to-amber-500"></div>
+          {/* Ground */}
+          <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-red-500 via-emerald-500 to-amber-500"></div>
         </div>
 
-        {/* Controls Hint */}
+        {/* Instructions */}
         {gameState === 'playing' && (
           <motion.div 
             className="mt-4 text-center text-slate-400 text-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <div className="flex justify-center gap-4 flex-wrap">
-              <span>← → Move</span>
-              <span>|</span>
-              <span>Space/Enter Drop</span>
-            </div>
+            <p>💡 Click blocks to remove them • Middle blocks are safer • Keep the tower standing!</p>
           </motion.div>
-        )}
-
-        {/* Mobile Controls */}
-        {gameState === 'playing' && (
-          <div className="mt-4 flex justify-center gap-3 md:hidden">
-            <button
-              onClick={() => setPosition(prev => Math.max(10, prev - 5))}
-              className="btn-festive px-6 py-3"
-            >
-              ←
-            </button>
-            <button
-              onClick={dropPresent}
-              className="btn-festive-green px-8 py-3"
-            >
-              Drop
-            </button>
-            <button
-              onClick={() => setPosition(prev => Math.min(90, prev + 5))}
-              className="btn-festive px-6 py-3"
-            >
-              →
-            </button>
-          </div>
         )}
       </div>
     </div>
