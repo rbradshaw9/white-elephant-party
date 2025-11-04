@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 
 /**
  * SurveillanceVideo Component
@@ -8,6 +7,15 @@ import PropTypes from 'prop-types';
  * - REC indicator
  * - Scan lines effect
  * - VHS/surveillance filters
+ * 
+ * @param {Object} props
+ * @param {string} props.src - Video source URL (required)
+ * @param {string} [props.camera="CAM-01"] - Camera ID label
+ * @param {string} [props.location=""] - Location label
+ * @param {string} [props.className=""] - Additional CSS classes
+ * @param {boolean} [props.showTimestamp=true] - Show live timestamp
+ * @param {boolean} [props.showRec=true] - Show REC indicator
+ * @param {Object} [props.style={}] - Inline styles
  */
 const SurveillanceVideo = ({ 
   src, 
@@ -100,16 +108,6 @@ const SurveillanceVideo = ({
       />
     </div>
   );
-};
-
-SurveillanceVideo.propTypes = {
-  src: PropTypes.string.isRequired,
-  camera: PropTypes.string,
-  location: PropTypes.string,
-  className: PropTypes.string,
-  showTimestamp: PropTypes.bool,
-  showRec: PropTypes.bool,
-  style: PropTypes.object
 };
 
 export default SurveillanceVideo;

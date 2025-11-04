@@ -1,5 +1,3 @@
-import PropTypes from 'prop-types';
-
 /**
  * ClassifiedPhoto Component
  * Renders photo with security camera/classified file styling
@@ -7,6 +5,16 @@ import PropTypes from 'prop-types';
  * - Classified watermark
  * - Grayscale with hover color
  * - Optional caption
+ * 
+ * @param {Object} props
+ * @param {string} props.src - Image source URL (required)
+ * @param {string} [props.camera="CAM-01"] - Camera ID label
+ * @param {string} [props.timestamp] - Timestamp string
+ * @param {string} [props.location=""] - Location label
+ * @param {string} [props.caption] - Photo caption
+ * @param {boolean} [props.classified=true] - Show classified watermark
+ * @param {string} [props.className=""] - Additional CSS classes
+ * @param {Function} [props.onError] - Error handler for image load failure
  */
 const ClassifiedPhoto = ({ 
   src, 
@@ -89,17 +97,6 @@ const ClassifiedPhoto = ({
       />
     </div>
   );
-};
-
-ClassifiedPhoto.propTypes = {
-  src: PropTypes.string.isRequired,
-  camera: PropTypes.string,
-  timestamp: PropTypes.string,
-  location: PropTypes.string,
-  caption: PropTypes.string,
-  classified: PropTypes.bool,
-  className: PropTypes.string,
-  onError: PropTypes.func
 };
 
 export default ClassifiedPhoto;
