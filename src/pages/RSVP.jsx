@@ -1,12 +1,22 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
+import AgentRecruitment from './AgentRecruitment';
 
 /**
  * RSVP Page Component
  * Modern design with smooth validation and animations
+ * Conditional rendering for heist theme (Agent Recruitment)
  */
 const RSVP = () => {
+  const { isHeistTheme } = useTheme();
+
+  // Render heist version if heist theme is active
+  if (isHeistTheme) {
+    return <AgentRecruitment />;
+  }
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',

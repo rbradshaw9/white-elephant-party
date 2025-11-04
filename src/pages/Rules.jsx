@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
+import MissionBrief from './MissionBrief';
 
 /**
  * White Elephant Rules Data
@@ -79,8 +81,16 @@ const RULES = [
  * - Animated rule cards
  * - Back to home button
  * - Festive styling consistent with brand
+ * - Conditional rendering for heist theme (Mission Brief)
  */
 const Rules = () => {
+  const { isHeistTheme } = useTheme();
+
+  // Render heist version if heist theme is active
+  if (isHeistTheme) {
+    return <MissionBrief />;
+  }
+
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center p-6 py-20 z-10">
       {/* Main content container */}
