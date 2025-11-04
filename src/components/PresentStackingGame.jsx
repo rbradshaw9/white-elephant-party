@@ -102,9 +102,20 @@ const PresentStackingGame = () => {
     );
   };
 
-  // Generate random piece
+  // Generate random piece (with slight bias toward I-piece)
   const randomPiece = () => {
-    const shapeKey = SHAPE_KEYS[Math.floor(Math.random() * SHAPE_KEYS.length)];
+    // 25% chance for I-piece, 12.5% each for others
+    const rand = Math.random();
+    let shapeKey;
+    
+    if (rand < 0.25) {
+      shapeKey = 'I'; // 25% chance
+    } else {
+      // Remaining 75% split among other 6 pieces
+      const otherShapes = SHAPE_KEYS.filter(k => k !== 'I');
+      shapeKey = otherShapes[Math.floor(Math.random() * otherShapes.length)];
+    }
+    
     return {
       shape: SHAPES[shapeKey].shape,
       color: SHAPES[shapeKey].color,
