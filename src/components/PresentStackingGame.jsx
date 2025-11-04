@@ -39,11 +39,12 @@ const PresentStackingGame = () => {
   const [level, setLevel] = useState(1);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [playerName, setPlayerName] = useState('');
-  const [leaderboard, setLeaderboard] = useState(() => {
-    // Load from localStorage
-    const saved = localStorage.getItem('presentTetrisLeaderboard');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [leaderboard, setLeaderboard] = useState([]);
+
+  // Clear old leaderboard on mount (one-time reset)
+  useEffect(() => {
+    localStorage.removeItem('presentTetrisLeaderboard');
+  }, []);
 
   // Sound effects using Web Audio API with Christmas-y tones
   const playSound = (type) => {
@@ -255,7 +256,7 @@ const PresentStackingGame = () => {
       setBoard(newBoard);
       setLines(prev => prev + linesCleared);
       setScore(prev => prev + linesCleared * 100 * level);
-      setLevel(Math.floor((lines + linesCleared) / 10) + 1);
+      setLevel(Math.floor((lines + linesCleared) / 5) + 1); // Speed up every 5 lines
       
       // Spawn new piece
       const nextPiece = randomPiece();
@@ -317,7 +318,7 @@ const PresentStackingGame = () => {
   useEffect(() => {
     if (gameState !== 'playing') return;
     
-    const dropInterval = Math.max(100, 1000 - (level - 1) * 100);
+    const dropInterval = Math.max(50, 800 - (level - 1) * 80); // Faster speed increase
     const timer = setInterval(moveDown, dropInterval);
     
     return () => clearInterval(timer);
@@ -584,7 +585,7 @@ const PresentStackingGame = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <p>💡 Clear lines to score points • Speed increases every 10 lines</p>
+            <p>💡 Clear lines to score points • Speed increases every 5 lines</p>
           </motion.div>
         )}
       </div>
