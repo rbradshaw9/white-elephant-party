@@ -175,16 +175,19 @@ const PresentStackingGame = () => {
       if (!currentPiece) return;
       
       if (e.key === 'ArrowLeft') {
+        e.preventDefault();
         const newPos = { ...position, x: position.x - 1 };
         if (!checkCollision(currentPiece, newPos)) {
           setPosition(newPos);
         }
       } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
         const newPos = { ...position, x: position.x + 1 };
         if (!checkCollision(currentPiece, newPos)) {
           setPosition(newPos);
         }
       } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
         moveDown();
       } else if (e.key === 'ArrowUp' || e.key === ' ') {
         e.preventDefault();
