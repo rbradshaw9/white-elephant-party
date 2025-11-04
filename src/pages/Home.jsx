@@ -119,7 +119,7 @@ const Home = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <Link to="/rsvp" className="w-full sm:w-auto">
+          <Link to="/hq" className="w-full sm:w-auto">
             <motion.button
               className={`text-lg w-full px-8 py-4 rounded-xl font-semibold transition-all shadow-lg ${
                 isHeistTheme
