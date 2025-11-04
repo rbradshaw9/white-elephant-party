@@ -19,9 +19,11 @@ const Home = () => {
         total: difference,
         days: Math.floor(difference / (1000 * 60 * 60 * 24)),
         hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / (1000 * 60)) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
       };
     }
-    return { total: 0, days: 0, hours: 0 };
+    return { total: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
   };
 
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
@@ -29,7 +31,7 @@ const Home = () => {
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
-    }, 60000);
+    }, 1000); // Update every second instead of every minute
     return () => clearInterval(timer);
   }, []);
 
@@ -64,18 +66,26 @@ const Home = () => {
           {/* Countdown */}
           {timeLeft.total > 0 && (
             <motion.div
-              className="flex justify-center gap-6 mt-8"
+              className="flex justify-center gap-3 md:gap-6 mt-8 flex-wrap"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              <div className="glass-card rounded-2xl px-6 py-4">
-                <div className="text-4xl font-bold text-white">{timeLeft.days}</div>
-                <div className="text-sm text-slate-400">Days</div>
+              <div className="glass-card rounded-2xl px-4 md:px-6 py-4">
+                <div className="text-3xl md:text-4xl font-bold text-white">{timeLeft.days}</div>
+                <div className="text-xs md:text-sm text-slate-400">Days</div>
               </div>
-              <div className="glass-card rounded-2xl px-6 py-4">
-                <div className="text-4xl font-bold text-white">{timeLeft.hours}</div>
-                <div className="text-sm text-slate-400">Hours</div>
+              <div className="glass-card rounded-2xl px-4 md:px-6 py-4">
+                <div className="text-3xl md:text-4xl font-bold text-white">{timeLeft.hours}</div>
+                <div className="text-xs md:text-sm text-slate-400">Hours</div>
+              </div>
+              <div className="glass-card rounded-2xl px-4 md:px-6 py-4">
+                <div className="text-3xl md:text-4xl font-bold text-white">{timeLeft.minutes}</div>
+                <div className="text-xs md:text-sm text-slate-400">Minutes</div>
+              </div>
+              <div className="glass-card rounded-2xl px-4 md:px-6 py-4">
+                <div className="text-3xl md:text-4xl font-bold text-white">{timeLeft.seconds}</div>
+                <div className="text-xs md:text-sm text-slate-400">Seconds</div>
               </div>
             </motion.div>
           )}
