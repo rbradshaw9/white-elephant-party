@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 /**
  * Christmas-themed emojis for the matching game
  */
-const EMOJIS = ['🎁', '🎄', '⛄', '🎅', '🔔', '⭐', '🕯️', '🦌'];
+const EMOJIS = ['🎁', '🎄', '⛄', '🎅', '🔔', '⭐'];
 
 /**
  * AI difficulty levels
@@ -16,21 +16,16 @@ const DIFFICULTY = {
 };
 
 /**
- * MatchingGame Component
- * A memory card matching game where you compete against an AI opponent
- * Features:
- * - Beautiful card flip animations
- * - Smart AI opponent with difficulty levels
- * - Score tracking
- * - Smooth transitions and micro-interactions
- * - Apple-level polish
+ * Compact Matching Game Component
+ * - Fixed header with scores (no scrolling issues)
+ * - Color-coded matches for each player
+ * - Smaller, tighter layout
  */
 const MatchingGame = () => {
   const [cards, setCards] = useState([]);
   const [flippedIndices, setFlippedIndices] = useState([]);
-  const [matchedPairs, setMatchedPairs] = useState([]);
-  const [playerScore, setPlayerScore] = useState(0);
-  const [aiScore, setAiScore] = useState(0);
+  const [playerMatches, setPlayerMatches] = useState([]);
+  const [aiMatches, setAiMatches] = useState([]);
   const [isPlayerTurn, setIsPlayerTurn] = useState(true);
   const [gameStarted, setGameStarted] = useState(false);
   const [difficulty, setDifficulty] = useState('medium');
@@ -38,25 +33,23 @@ const MatchingGame = () => {
   const [gameOver, setGameOver] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const allMatched = [...playerMatches, ...aiMatches];
+
   /**
    * Initialize the game board
    */
   const initializeGame = useCallback(() => {
-    // Create pairs of cards
     const cardPairs = [...EMOJIS, ...EMOJIS]
       .sort(() => Math.random() - 0.5)
       .map((emoji, index) => ({
         id: index,
         emoji,
-        isFlipped: false,
-        isMatched: false,
       }));
 
     setCards(cardPairs);
     setFlippedIndices([]);
-    setMatchedPairs([]);
-    setPlayerScore(0);
-    setAiScore(0);
+    setPlayerMatches([]);
+    setAiMatches([]);
     setIsPlayerTurn(true);
     setGameStarted(true);
     setAiMemory([]);
@@ -72,7 +65,7 @@ const MatchingGame = () => {
       !isPlayerTurn ||
       isProcessing ||
       flippedIndices.includes(index) ||
-      matchedPairs.includes(cards[index].emoji) ||
+      allMatched.includes(cards[index].emoji) ||
       flippedIndices.length >= 2
     ) {
       return;
@@ -92,23 +85,22 @@ const MatchingGame = () => {
       if (cards[first].emoji === cards[second].emoji) {
         // Player found a match!
         setTimeout(() => {
-          setMatchedPairs([...matchedPairs, cards[first].emoji]);
-          setPlayerScore(playerScore + 1);
+          setPlayerMatches([...playerMatches, cards[first].emoji]);
           setFlippedIndices([]);
           setIsProcessing(false);
 
           // Check if game is over
-          if (matchedPairs.length + 1 === EMOJIS.length) {
+          if (allMatched.length + 1 === EMOJIS.length) {
             setGameOver(true);
           }
-        }, 1000);
+        }, 800);
       } else {
         // No match - switch to AI's turn
         setTimeout(() => {
           setFlippedIndices([]);
           setIsPlayerTurn(false);
           setIsProcessing(false);
-        }, 1500);
+        }, 1200);
       }
     }
   };
@@ -122,14 +114,13 @@ const MatchingGame = () => {
       const difficultySettings = DIFFICULTY[difficulty];
 
       setTimeout(() => {
-        // AI tries to find a match based on memory and difficulty
         let firstCard = null;
         let secondCard = null;
 
         // Check if AI remembers any pairs
         const rememberedPairs = aiMemory.reduce((acc, card) => {
           const matchingCard = aiMemory.find(
-            (c) => c.emoji === card.emoji && c.index !== card.index && !matchedPairs.includes(c.emoji)
+            (c) => c.emoji === card.emoji && c.index !== card.index && !allMatched.includes(c.emoji)
           );
           if (matchingCard && Math.random() < difficultySettings.memoryAccuracy) {
             acc.push([card.index, matchingCard.index]);
@@ -138,15 +129,13 @@ const MatchingGame = () => {
         }, []);
 
         if (rememberedPairs.length > 0) {
-          // AI remembers a pair!
           const pair = rememberedPairs[0];
           firstCard = pair[0];
           secondCard = pair[1];
         } else {
-          // AI picks random unmatched cards
           const availableCards = cards
             .map((card, idx) => ({ ...card, index: idx }))
-            .filter((card) => !matchedPairs.includes(card.emoji));
+            .filter((card) => !allMatched.includes(card.emoji));
 
           if (availableCards.length >= 2) {
             const randomCards = availableCards.sort(() => 0.5 - Math.random()).slice(0, 2);
@@ -156,148 +145,155 @@ const MatchingGame = () => {
         }
 
         if (firstCard !== null && secondCard !== null) {
-          // Flip first card
           setFlippedIndices([firstCard]);
 
           setTimeout(() => {
-            // Flip second card
             setFlippedIndices([firstCard, secondCard]);
 
             setTimeout(() => {
               if (cards[firstCard].emoji === cards[secondCard].emoji) {
-                // AI found a match!
-                setMatchedPairs([...matchedPairs, cards[firstCard].emoji]);
-                setAiScore(aiScore + 1);
+                setAiMatches([...aiMatches, cards[firstCard].emoji]);
                 setFlippedIndices([]);
 
-                // Check if game is over
-                if (matchedPairs.length + 1 === EMOJIS.length) {
+                if (allMatched.length + 1 === EMOJIS.length) {
                   setGameOver(true);
                   setIsProcessing(false);
                 } else {
                   setIsProcessing(false);
-                  // AI gets another turn if it found a match
                 }
               } else {
-                // AI missed - player's turn
                 setFlippedIndices([]);
                 setIsPlayerTurn(true);
                 setIsProcessing(false);
               }
-            }, 1200);
-          }, 800);
+            }, 1000);
+          }, 600);
         } else {
           setIsPlayerTurn(true);
           setIsProcessing(false);
         }
       }, difficultySettings.thinkTime);
     }
-  }, [isPlayerTurn, gameOver, gameStarted, isProcessing, aiMemory, cards, matchedPairs, aiScore, difficulty]);
+  }, [isPlayerTurn, gameOver, gameStarted, isProcessing, aiMemory, cards, allMatched, aiMatches, difficulty, playerMatches]);
 
   if (!gameStarted) {
     return (
-      <div className="text-center">
-        <h2 className="text-4xl md:text-5xl mb-4 text-christmas-gold text-shadow-gold">
-          🎮 Memory Match Challenge
-        </h2>
-        <p className="text-lg mb-8 text-snow-white/90 max-w-2xl mx-auto">
-          Test your memory against our AI elf! Find matching pairs before the AI does.
-          Each match you find earns you a point. Most pairs wins! 🏆
-        </p>
+      <div className="text-center space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-3xl md:text-4xl font-display font-bold">
+            Warm Up Your Brain 🧠
+          </h2>
+          <p className="text-slate-400 text-sm max-w-2xl mx-auto">
+            Think you can beat our AI? Find matching pairs before the computer does. First to 4 matches wins!
+          </p>
+        </div>
 
-        {/* Difficulty Selection */}
-        <div className="mb-8">
-          <h3 className="text-2xl text-christmas-gold mb-4">Choose AI Difficulty:</h3>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-2xl mx-auto">
+        {/* Difficulty Selection - Compact */}
+        <div className="space-y-3">
+          <div className="text-sm text-slate-400">Choose difficulty:</div>
+          <div className="flex gap-3 justify-center">
             {Object.entries(DIFFICULTY).map(([key, { name }]) => (
-              <motion.button
+              <button
                 key={key}
                 onClick={() => setDifficulty(key)}
-                className={`flex-1 py-4 px-6 rounded-xl font-bold text-lg transition-all ${
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                   difficulty === key
-                    ? 'bg-christmas-green text-white shadow-lg scale-105'
-                    : 'bg-blue-800/50 text-snow-white/60 hover:bg-blue-800/70'
+                    ? 'bg-emerald-500 text-white'
+                    : 'bg-slate-800/50 text-slate-400 hover:bg-slate-700/50'
                 }`}
-                whileHover={{ scale: difficulty === key ? 1.05 : 1.02 }}
-                whileTap={{ scale: 0.98 }}
               >
                 {name}
-              </motion.button>
+              </button>
             ))}
           </div>
         </div>
 
         {/* Start Button */}
-        <motion.button
+        <button
           onClick={initializeGame}
-          className="btn-festive text-xl"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          className="btn-festive text-base px-8"
         >
-          🎮 Start Game
-        </motion.button>
+          Start Game
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="text-center">
-      {/* Game Header */}
-      <div className="mb-8">
-        <h2 className="text-4xl md:text-5xl mb-6 text-christmas-gold text-shadow-gold">
-          Memory Match Challenge
-        </h2>
-
-        {/* Score Display */}
-        <div className="flex justify-center gap-8 mb-4">
-          <motion.div
-            className={`bg-blue-800/50 px-6 py-3 rounded-xl border-2 ${
-              isPlayerTurn && !isProcessing ? 'border-christmas-green' : 'border-christmas-gold/30'
-            }`}
-            animate={{
-              scale: isPlayerTurn && !isProcessing ? 1.05 : 1,
-            }}
+    <div className="space-y-4">
+      {/* Fixed Header - Always visible */}
+      <div className="sticky top-0 bg-slate-900/95 backdrop-blur-sm -mx-6 -mt-6 px-6 pt-6 pb-4 rounded-t-3xl border-b border-slate-700/50 z-10">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-2xl md:text-3xl font-display font-bold">
+            Memory Match
+          </h2>
+          <button
+            onClick={initializeGame}
+            className="text-xs px-3 py-1.5 rounded-lg bg-slate-800/50 text-slate-400 hover:bg-slate-700/50 transition-all"
           >
-            <div className="text-sm text-snow-white/70">You</div>
-            <div className="text-3xl font-bold text-christmas-gold">{playerScore}</div>
-          </motion.div>
+            Reset
+          </button>
+        </div>
 
-          <motion.div
-            className={`bg-blue-800/50 px-6 py-3 rounded-xl border-2 ${
-              !isPlayerTurn && !isProcessing ? 'border-christmas-red' : 'border-christmas-gold/30'
+        {/* Score Display - Compact and Color-Coded */}
+        <div className="flex gap-3 items-center justify-center">
+          <div
+            className={`flex-1 max-w-[200px] px-4 py-2.5 rounded-xl transition-all ${
+              isPlayerTurn && !isProcessing
+                ? 'bg-emerald-500/20 border-2 border-emerald-500'
+                : 'bg-slate-800/50 border-2 border-transparent'
             }`}
-            animate={{
-              scale: !isPlayerTurn && !isProcessing ? 1.05 : 1,
-            }}
           >
-            <div className="text-sm text-snow-white/70">AI Elf</div>
-            <div className="text-3xl font-bold text-christmas-gold">{aiScore}</div>
-          </motion.div>
+            <div className="text-xs text-slate-400 mb-0.5">You</div>
+            <div className="flex items-center gap-2">
+              <div className="text-2xl font-bold text-emerald-400">{playerMatches.length}</div>
+              <div className="flex gap-0.5">
+                {playerMatches.map((emoji, i) => (
+                  <div key={i} className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="text-slate-600 font-bold">VS</div>
+
+          <div
+            className={`flex-1 max-w-[200px] px-4 py-2.5 rounded-xl transition-all ${
+              !isPlayerTurn && !isProcessing
+                ? 'bg-red-500/20 border-2 border-red-500'
+                : 'bg-slate-800/50 border-2 border-transparent'
+            }`}
+          >
+            <div className="text-xs text-slate-400 mb-0.5">AI</div>
+            <div className="flex items-center gap-2">
+              <div className="text-2xl font-bold text-red-400">{aiMatches.length}</div>
+              <div className="flex gap-0.5">
+                {aiMatches.map((emoji, i) => (
+                  <div key={i} className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Turn Indicator */}
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={isPlayerTurn ? 'player' : 'ai'}
-            className="text-xl font-bold"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-          >
+        <div className="text-center mt-3">
+          <div className="text-sm">
             {isPlayerTurn ? (
-              <span className="text-christmas-green">Your Turn! 🎯</span>
+              <span className="text-emerald-400 font-medium">Your turn</span>
             ) : (
-              <span className="text-christmas-red">AI is thinking... 🤔</span>
+              <span className="text-red-400 font-medium">AI is thinking...</span>
             )}
-          </motion.p>
-        </AnimatePresence>
+          </div>
+        </div>
       </div>
 
-      {/* Game Board */}
-      <div className="grid grid-cols-4 gap-3 sm:gap-4 max-w-2xl mx-auto mb-8">
+      {/* Game Board - Compact Grid */}
+      <div className="grid grid-cols-4 gap-2 sm:gap-3 max-w-md mx-auto pt-2">
         {cards.map((card, index) => {
-          const isFlipped = flippedIndices.includes(index) || matchedPairs.includes(card.emoji);
-          const isMatched = matchedPairs.includes(card.emoji);
+          const isFlipped = flippedIndices.includes(index) || allMatched.includes(card.emoji);
+          const isPlayerMatch = playerMatches.includes(card.emoji);
+          const isAiMatch = aiMatches.includes(card.emoji);
 
           return (
             <motion.div
@@ -310,28 +306,28 @@ const MatchingGame = () => {
               <motion.div
                 className="relative w-full h-full"
                 animate={{ rotateY: isFlipped ? 180 : 0 }}
-                transition={{ duration: 0.4 }}
+                transition={{ duration: 0.3 }}
                 style={{ transformStyle: 'preserve-3d' }}
               >
                 {/* Card Back */}
                 <div
-                  className={`absolute inset-0 rounded-xl shadow-lg flex items-center justify-center text-5xl ${
-                    isMatched ? 'opacity-0' : 'opacity-100'
-                  }`}
+                  className="absolute inset-0 rounded-xl shadow-lg flex items-center justify-center"
                   style={{
                     backfaceVisibility: 'hidden',
-                    background: 'linear-gradient(135deg, #FF3B3B 0%, #c92a2a 100%)',
+                    background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
                   }}
                 >
-                  <div className="text-christmas-gold">🎄</div>
+                  <div className="text-2xl opacity-30">?</div>
                 </div>
 
-                {/* Card Front */}
+                {/* Card Front - Color-coded by player */}
                 <div
-                  className={`absolute inset-0 rounded-xl shadow-lg flex items-center justify-center text-5xl ${
-                    isMatched
-                      ? 'bg-gradient-to-br from-christmas-green to-green-700'
-                      : 'bg-gradient-to-br from-blue-800 to-blue-900'
+                  className={`absolute inset-0 rounded-xl shadow-lg flex items-center justify-center text-3xl sm:text-4xl ${
+                    isPlayerMatch
+                      ? 'bg-gradient-to-br from-emerald-600 to-emerald-700 ring-2 ring-emerald-400'
+                      : isAiMatch
+                      ? 'bg-gradient-to-br from-red-600 to-red-700 ring-2 ring-red-400'
+                      : 'bg-gradient-to-br from-slate-700 to-slate-800'
                   }`}
                   style={{
                     backfaceVisibility: 'hidden',
@@ -354,52 +350,46 @@ const MatchingGame = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            onClick={() => setGameOver(false)}
           >
             <motion.div
-              className="candy-cane-border rounded-3xl max-w-md w-full"
+              className="glass-card rounded-2xl max-w-sm w-full p-8 text-center"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
             >
-              <div className="bg-blue-900/95 backdrop-blur-sm p-8 rounded-2xl text-center">
-                <div className="text-7xl mb-4">
-                  {playerScore > aiScore ? '🏆' : playerScore < aiScore ? '🎅' : '🤝'}
-                </div>
-                <h3 className="text-4xl font-bold mb-4 text-christmas-gold">
-                  {playerScore > aiScore
-                    ? 'You Win!'
-                    : playerScore < aiScore
-                    ? 'AI Wins!'
-                    : "It's a Tie!"}
-                </h3>
-                <p className="text-2xl mb-6 text-snow-white">
-                  You: {playerScore} | AI: {aiScore}
-                </p>
-                <motion.button
-                  onClick={initializeGame}
-                  className="btn-festive text-xl w-full"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  🔄 Play Again
-                </motion.button>
+              <div className="text-6xl mb-4">
+                {playerMatches.length > aiMatches.length ? '🏆' : playerMatches.length < aiMatches.length ? '🤖' : '🤝'}
               </div>
+              <h3 className="text-3xl font-bold mb-3">
+                {playerMatches.length > aiMatches.length
+                  ? 'You Win!'
+                  : playerMatches.length < aiMatches.length
+                  ? 'AI Wins!'
+                  : "It's a Tie!"}
+              </h3>
+              <div className="flex gap-4 justify-center mb-6 text-lg">
+                <div>
+                  <span className="text-emerald-400 font-bold">{playerMatches.length}</span>
+                  <span className="text-slate-400 text-sm ml-1">You</span>
+                </div>
+                <div className="text-slate-600">-</div>
+                <div>
+                  <span className="text-red-400 font-bold">{aiMatches.length}</span>
+                  <span className="text-slate-400 text-sm ml-1">AI</span>
+                </div>
+              </div>
+              <button
+                onClick={initializeGame}
+                className="btn-festive text-base w-full"
+              >
+                Play Again
+              </button>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Reset Button */}
-      {!gameOver && (
-        <motion.button
-          onClick={initializeGame}
-          className="btn-festive-green text-lg"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          🔄 Restart Game
-        </motion.button>
-      )}
     </div>
   );
 };

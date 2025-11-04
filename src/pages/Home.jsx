@@ -1,138 +1,279 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import MatchingGame from '../components/MatchingGame';
 
 /**
  * Home Page Component
- * Main landing page featuring:
- * - Refined animated title with festive styling
- * - Clean navigation with clear CTAs
- * - Interactive AI matching game
- * - Apple-level design polish with Elf-inspired whimsy
+ * Modern 2025 design with hilarious copy and engaging content
  */
 const Home = () => {
+  // Countdown timer to party date
+  const partyDate = new Date('2025-12-20T19:00:00');
+  const [timeLeft, setTimeLeft] = useState(getTimeRemaining());
+
+  function getTimeRemaining() {
+    const total = partyDate - new Date();
+    const days = Math.floor(total / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
+    return { total, days, hours };
+  }
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(getTimeRemaining());
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center p-6 z-10">
-      {/* Main content container with candy cane border */}
-      <div className="candy-cane-border rounded-3xl max-w-6xl w-full">
-        <div className="bg-blue-900/95 backdrop-blur-xl p-8 md:p-12 rounded-2xl shadow-2xl">
-          {/* Animated main title with improved typography */}
-          <motion.h1
-            className="text-6xl md:text-8xl text-center mb-4 text-shadow-gold text-christmas-gold leading-tight"
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{
-              type: 'spring',
-              stiffness: 260,
-              damping: 20,
-              duration: 1,
-            }}
+    <div className="relative min-h-screen p-6 py-12 z-10">
+      <div className="max-w-7xl mx-auto space-y-12">
+        
+        {/* Hero Section - Modern and Clean */}
+        <motion.div
+          className="text-center space-y-6"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <motion.div
+            className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-red-500/20 to-emerald-500/20 border border-red-500/30 mb-4"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: 'spring' }}
           >
-            White Elephant Party 2025
-          </motion.h1>
+            <span className="text-sm font-medium text-emerald-400">December 20, 2025 • 7:00 PM</span>
+          </motion.div>
 
-          {/* Subtitle with improved animation */}
-          <motion.p
-            className="text-2xl md:text-3xl text-center mb-8 text-snow-white font-medium"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-          >
-            The <span className="text-christmas-green font-bold">best</span> way
-            to celebrate the season
-          </motion.p>
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-emerald-400 leading-tight">
+            White Elephant 2025
+          </h1>
 
-          {/* Festive divider with staggered animation */}
-          <div className="flex justify-center gap-4 mb-8">
-            {['🎁', '❄️', '🎅', '❄️', '🎁'].map((emoji, index) => (
-              <motion.span
-                key={index}
-                className="text-4xl"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + index * 0.1 }}
-                style={{
-                  animation: 'float 3s ease-in-out infinite',
-                  animationDelay: `${index * 0.2}s`,
-                }}
-              >
-                {emoji}
-              </motion.span>
-            ))}
+          <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+            The annual gift exchange where your friends' questionable taste meets your competitive spirit
+          </p>
+
+          {/* Countdown */}
+          {timeLeft.total > 0 && (
+            <motion.div
+              className="flex justify-center gap-6 mt-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              <div className="glass-card rounded-2xl px-6 py-4">
+                <div className="text-4xl font-bold text-white">{timeLeft.days}</div>
+                <div className="text-sm text-slate-400">Days</div>
+              </div>
+              <div className="glass-card rounded-2xl px-6 py-4">
+                <div className="text-4xl font-bold text-white">{timeLeft.hours}</div>
+                <div className="text-sm text-slate-400">Hours</div>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+
+        {/* CTAs */}
+        <motion.div
+          className="flex flex-col sm:flex-row gap-4 justify-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <Link to="/rsvp" className="w-full sm:w-auto">
+            <motion.button
+              className="btn-festive text-lg w-full"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              Reserve Your Spot →
+            </motion.button>
+          </Link>
+
+          <Link to="/rules" className="w-full sm:w-auto">
+            <motion.button
+              className="btn-festive-green text-lg w-full"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              Read the Rules
+            </motion.button>
+          </Link>
+        </motion.div>
+
+        {/* What to Expect Section */}
+        <motion.div
+          className="glass-card rounded-3xl p-8 md:p-12"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+        >
+          <h2 className="text-3xl md:text-4xl font-display font-bold mb-6 text-center">
+            What Awaits You
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            <div className="space-y-3">
+              <div className="text-4xl">🎁</div>
+              <h3 className="text-xl font-semibold text-emerald-400">The Gifts</h3>
+              <p className="text-slate-300 text-sm leading-relaxed">
+                $15-25 budget. Expect everything from "actually useful kitchen gadgets" to "is this from a gas station?" 
+                Last year's highlights: a Nicolas Cage sequin pillow, pickle-scented candle, and something called a "desk vacuum."
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <div className="text-4xl">⚔️</div>
+              <h3 className="text-xl font-semibold text-amber-400">The Drama</h3>
+              <p className="text-slate-300 text-sm leading-relaxed">
+                Watch friendships tested as Sarah steals Mike's coveted gift for the third time. 
+                Witness the emotional rollercoaster when someone unwraps a Snuggie in 2025. 
+                It's not about winning—it's about making others lose.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <div className="text-4xl">🍕</div>
+              <h3 className="text-xl font-semibold text-red-400">The Food</h3>
+              <p className="text-slate-300 text-sm leading-relaxed">
+                Pizza, wings, and enough cookies to put you in a sugar coma. 
+                Someone always brings those fancy charcuterie items from Trader Joe's. 
+                We pretend it's classy while fighting over mozzarella sticks.
+              </p>
+            </div>
           </div>
 
-          {/* Welcome message with cleaner typography */}
-          <motion.div
-            className="text-center mb-12 max-w-3xl mx-auto"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 1 }}
-          >
-            <p className="text-xl mb-4 text-snow-white/95 leading-relaxed">
-              Welcome to the most{' '}
-              <span className="text-christmas-red font-semibold italic">
-                ridiculously fun
-              </span>{' '}
-              White Elephant exchange this side of the North Pole!
+          <div className="border-t border-slate-700 pt-6">
+            <h3 className="text-lg font-semibold mb-3 text-slate-200">Gift Ideas (if you're stuck):</h3>
+            <div className="grid sm:grid-cols-2 gap-3 text-sm text-slate-400">
+              <div className="flex items-start gap-2">
+                <span className="text-emerald-500 mt-1">✓</span>
+                <span>Funny socks (bonus points for pizza or taco patterns)</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-emerald-500 mt-1">✓</span>
+                <span>Weird coffee table books ("Cats Who Look Like Hitler" was a hit)</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-emerald-500 mt-1">✓</span>
+                <span>Kitchen gadgets that solve problems nobody has</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-emerald-500 mt-1">✓</span>
+                <span>Anything from the "As Seen on TV" aisle</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-emerald-500 mt-1">✓</span>
+                <span>Blankets with animal faces (everyone needs a shark blanket)</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-emerald-500 mt-1">✓</span>
+                <span>Board games for people who peaked in 2008</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Spotify Playlist */}
+        <motion.div
+          className="glass-card rounded-3xl p-8 md:p-12"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
+        >
+          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-emerald-400">
+            🎵 Party Vibes
+          </h2>
+          <p className="text-slate-300 text-center mb-8">
+            Get hyped with our official White Elephant playlist. From classics to chaos.
+          </p>
+          
+          <div className="rounded-xl overflow-hidden shadow-2xl">
+            <iframe
+              style={{ borderRadius: '12px' }}
+              src="https://open.spotify.com/embed/playlist/37i9dQZF1DX0Yxoavh5qJV?utm_source=generator&theme=0"
+              width="100%"
+              height="380"
+              frameBorder="0"
+              allowFullScreen=""
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              title="White Elephant Party Playlist"
+            ></iframe>
+          </div>
+          
+          <p className="text-slate-400 text-sm mt-4 text-center">
+            Don't have Spotify? We'll also have the vibes going at the party 🎶
+          </p>
+        </motion.div>
+
+        {/* Past Winners Hall of Fame */}
+        <motion.div
+          className="glass-card rounded-3xl p-8 md:p-12"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1 }}
+        >
+          <h2 className="text-3xl md:text-4xl font-display font-bold mb-6 text-center">
+            Hall of Fame (& Shame)
+          </h2>
+          
+          <div className="space-y-4">
+            <div className="flex items-start gap-4 p-4 rounded-xl bg-slate-800/50">
+              <div className="text-3xl">🏆</div>
+              <div>
+                <div className="font-semibold text-amber-400">2024 Most Fought Over</div>
+                <div className="text-slate-300 text-sm">Heated blanket that also massages. Got stolen 7 times. Yes, seven.</div>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 p-4 rounded-xl bg-slate-800/50">
+              <div className="text-3xl">😂</div>
+              <div>
+                <div className="font-semibold text-emerald-400">2024 Most Hilarious</div>
+                <div className="text-slate-300 text-sm">A "Live, Laugh, Love" wall decoration, but it was bacon-themed. Still hanging in someone's kitchen.</div>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 p-4 rounded-xl bg-slate-800/50">
+              <div className="text-3xl">💀</div>
+              <div>
+                <div className="font-semibold text-red-400">2024 Biggest Regret</div>
+                <div className="text-slate-300 text-sm">USB-powered desk Christmas tree. Played the same 5-second jingle on repeat. Battery mysteriously died that night.</div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Game Section - Compact */}
+        <motion.div
+          className="glass-card rounded-3xl p-6 md:p-8"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2 }}
+        >
+          <MatchingGame />
+        </motion.div>
+
+        {/* Party Details */}
+        <motion.div
+          className="glass-card rounded-3xl p-8 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.4 }}
+        >
+          <h3 className="text-2xl font-display font-bold mb-4">The Details</h3>
+          <div className="text-slate-300 space-y-2">
+            <p className="text-lg">📍 TBD (check your email after RSVP)</p>
+            <p className="text-lg">🕖 7:00 PM - Until someone cries or midnight, whichever comes first</p>
+            <p className="text-lg">🎁 Bring a wrapped gift ($15-25) and your competitive spirit</p>
+            <p className="text-sm text-slate-400 mt-4 italic">
+              "It's not about the destination, it's about the friends you betray along the way."
             </p>
-            <p className="text-lg text-snow-white/80 leading-relaxed">
-              Gift-stealing shenanigans, questionable presents, and memories
-              that'll last forever �
-            </p>
-          </motion.div>
+          </div>
+        </motion.div>
 
-          {/* Primary CTAs with improved hierarchy */}
-          <motion.div
-            className="flex flex-col sm:flex-row gap-6 justify-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.8 }}
-          >
-            <Link to="/rsvp" className="w-full sm:w-auto">
-              <motion.button
-                className="btn-festive text-xl w-full"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                ✉️ RSVP Now
-              </motion.button>
-            </Link>
-
-            <Link to="/rules" className="w-full sm:w-auto">
-              <motion.button
-                className="btn-festive-green text-xl w-full"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                � View the Rules
-              </motion.button>
-            </Link>
-          </motion.div>
-
-          {/* Matching Game Section with improved spacing */}
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.8 }}
-            className="pt-8 border-t-2 border-christmas-gold/20"
-          >
-            <MatchingGame />
-          </motion.div>
-
-          {/* Footer message with refined styling */}
-          <motion.div
-            className="text-center mt-16 pt-8 border-t-2 border-christmas-gold/20"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 1 }}
-          >
-            <p className="text-sm text-snow-white/60 italic leading-relaxed">
-              "The best way to spread Christmas cheer is singing loud for all to
-              hear... <br className="hidden sm:block" />
-              or winning at memory games!" 🎶
-            </p>
-          </motion.div>
-        </div>
       </div>
     </div>
   );

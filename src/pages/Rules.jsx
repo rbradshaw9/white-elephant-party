@@ -85,43 +85,41 @@ const Rules = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h1 className="text-5xl md:text-7xl mb-4 text-christmas-gold text-shadow-gold">
-            📜 The Official Rules 📜
+          <h1 className="text-5xl md:text-7xl mb-4 font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-emerald-400">
+            The Rules
           </h1>
-          <p className="text-xl text-snow-white/90">
-            Follow these sacred commandments of White Elephant chaos!
+          <p className="text-xl text-slate-300">
+            Follow these and we'll all have a good time
           </p>
         </motion.div>
 
         {/* Rules list */}
-        <div className="space-y-6 mb-12">
+        <div className="space-y-4 mb-12">
           {RULES.map((rule, index) => (
             <motion.div
               key={rule.number}
-              className="candy-cane-border rounded-2xl"
+              className="glass-card rounded-2xl p-6"
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
             >
-              <div className="bg-blue-900/95 backdrop-blur-sm p-6 rounded-xl">
-                <div className="flex items-start gap-4">
-                  {/* Rule number badge */}
-                  <div className="flex-shrink-0 w-12 h-12 bg-christmas-red rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                    {rule.number}
-                  </div>
+              <div className="flex items-start gap-4">
+                {/* Rule number badge */}
+                <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                  {rule.number}
+                </div>
 
-                  {/* Rule content */}
-                  <div className="flex-grow">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-3xl">{rule.icon}</span>
-                      <h3 className="text-2xl font-bold text-christmas-gold">
-                        {rule.title}
-                      </h3>
-                    </div>
-                    <p className="text-lg text-snow-white/90">
-                      {rule.description}
-                    </p>
+                {/* Rule content */}
+                <div className="flex-grow">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">{rule.icon}</span>
+                    <h3 className="text-xl font-semibold text-white">
+                      {rule.title}
+                    </h3>
                   </div>
+                  <p className="text-slate-300 leading-relaxed">
+                    {rule.description}
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -130,20 +128,19 @@ const Rules = () => {
 
         {/* Important reminder box */}
         <motion.div
-          className="bg-christmas-green/20 border-4 border-christmas-green rounded-2xl p-6 mb-8"
+          className="glass-card rounded-2xl p-6 mb-8 border border-emerald-500/30"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.8, duration: 0.5 }}
         >
           <div className="text-center">
             <div className="text-4xl mb-3">🎅</div>
-            <h3 className="text-2xl font-bold text-christmas-gold mb-2">
-              Remember, Friends!
+            <h3 className="text-2xl font-bold text-emerald-400 mb-2">
+              Remember
             </h3>
-            <p className="text-lg text-snow-white">
-              White Elephant is all about the journey, not the destination. May
-              the odds be ever in your favor, and may your gift not be the one
-              everyone avoids! 😂
+            <p className="text-slate-300">
+              It's all fun and games. Well, mostly games. Okay, it's competitive chaos.
+              But the point is: bring something good or prepare to go home empty-handed.
             </p>
           </div>
         </motion.div>
@@ -157,21 +154,21 @@ const Rules = () => {
         >
           <Link to="/">
             <motion.button
-              className="btn-festive text-xl w-full sm:w-auto"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="btn-festive text-lg w-full sm:w-auto"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
             >
-              🏠 Back to Home
+              ← Back to Home
             </motion.button>
           </Link>
 
           <Link to="/rsvp">
             <motion.button
-              className="btn-festive-green text-xl w-full sm:w-auto"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="btn-festive-green text-lg w-full sm:w-auto"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
             >
-              ✉️ RSVP Now
+              RSVP Now
             </motion.button>
           </Link>
         </motion.div>

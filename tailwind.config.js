@@ -14,7 +14,7 @@ export default {
         'snow-white': '#FFFFFF',
       },
       fontFamily: {
-        'christmas': ['"Mountains of Christmas"', 'cursive'],
+        'display': ['Playfair Display', 'serif'],
         'body': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       animation: {

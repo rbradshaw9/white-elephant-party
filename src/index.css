@@ -1,5 +1,5 @@
 /* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 /* Tailwind directives */
 @tailwind base;
@@ -9,12 +9,12 @@
 /* Custom base styles */
 @layer base {
   body {
-    @apply font-body bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900 text-snow-white min-h-screen antialiased;
+    @apply font-body bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-snow-white min-h-screen antialiased;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-christmas;
-    letter-spacing: -0.02em;
+    @apply font-display;
+    letter-spacing: -0.03em;
   }
   
   /* Smooth scrolling */
@@ -25,60 +25,75 @@
 
 /* Custom component styles */
 @layer components {
-  /* Candy cane border effect - more refined */
-  .candy-cane-border {
-    background: 
-      repeating-linear-gradient(
-        45deg,
-        #FF3B3B,
-        #FF3B3B 10px,
-        #FFFFFF 10px,
-        #FFFFFF 20px
-      );
-    padding: 6px;
+  /* Modern border effect - subtle and sleek */
+  .modern-border {
+    background: linear-gradient(135deg, rgba(255, 59, 59, 0.1), rgba(46, 204, 113, 0.1));
+    padding: 2px;
+    position: relative;
   }
   
-  /* Festive button style - enhanced with better shadows */
+  .modern-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(135deg, #FF3B3B, #2ECC71, #FFD700);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.6;
+  }
+  
+  /* Festive button style - modern and clean */
   .btn-festive {
-    @apply bg-christmas-red hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95;
-    box-shadow: 0 4px 14px 0 rgba(255, 59, 59, 0.39);
+    @apply bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-semibold py-3 px-8 rounded-2xl transform transition-all duration-200 hover:scale-105 active:scale-95;
+    box-shadow: 0 10px 30px -10px rgba(220, 38, 38, 0.5);
   }
   
   .btn-festive:hover {
-    box-shadow: 0 6px 20px rgba(255, 59, 59, 0.5);
+    box-shadow: 0 15px 40px -10px rgba(220, 38, 38, 0.6);
   }
   
   .btn-festive-green {
-    @apply bg-christmas-green hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95;
-    box-shadow: 0 4px 14px 0 rgba(46, 204, 113, 0.39);
+    @apply bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-semibold py-3 px-8 rounded-2xl transform transition-all duration-200 hover:scale-105 active:scale-95;
+    box-shadow: 0 10px 30px -10px rgba(5, 150, 105, 0.5);
   }
   
   .btn-festive-green:hover {
-    box-shadow: 0 6px 20px rgba(46, 204, 113, 0.5);
+    box-shadow: 0 15px 40px -10px rgba(5, 150, 105, 0.6);
   }
   
-  /* Gift box style */
-  .gift-box {
-    @apply cursor-pointer transform transition-all duration-300 hover:scale-110 hover:rotate-6;
-  }
-  
-  /* Glassmorphism effect */
-  .glass {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+  /* Glassmorphism card */
+  .glass-card {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+  
+  /* Accent gradient */
+  .accent-gradient {
+    background: linear-gradient(135deg, #FF3B3B 0%, #FFD700 50%, #2ECC71 100%);
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease infinite;
+  }
+  
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
   }
 }
 
 /* Custom utility classes */
 @layer utilities {
   .text-shadow {
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
   }
   
-  .text-shadow-gold {
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.4);
+  .text-shadow-glow {
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.4), 0 0 40px rgba(255, 215, 0, 0.2);
   }
   
   /* Perspective for 3D transforms */
@@ -88,6 +103,16 @@
   
   /* Better focus states for accessibility */
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-christmas-gold focus:ring-offset-2 focus:ring-offset-blue-900;
+    @apply focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900;
+  }
+  
+  /* Smooth fade in */
+  .fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 }

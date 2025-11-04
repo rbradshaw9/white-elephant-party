@@ -3,24 +3,18 @@ import { useMemo } from 'react';
 
 /**
  * Snowfall Component
- * Creates animated falling snowflakes using Framer Motion
- * Snowflakes have random sizes, positions, and fall speeds for natural effect
+ * Subtle, modern falling snowflakes
  */
 const Snowfall = () => {
-  // Generate 50 snowflakes with random properties
+  // Generate 30 snowflakes (reduced for cleaner look)
   const snowflakes = useMemo(() => {
-    return Array.from({ length: 50 }, (_, i) => ({
+    return Array.from({ length: 30 }, (_, i) => ({
       id: i,
-      // Random horizontal position (0-100% of screen width)
       left: Math.random() * 100,
-      // Random size between 2-8px
-      size: Math.random() * 6 + 2,
-      // Random fall duration between 5-15 seconds
-      duration: Math.random() * 10 + 5,
-      // Random delay to stagger animation starts
+      size: Math.random() * 4 + 2, // Smaller snowflakes
+      duration: Math.random() * 10 + 8,
       delay: Math.random() * 5,
-      // Random horizontal drift
-      drift: (Math.random() - 0.5) * 50,
+      drift: (Math.random() - 0.5) * 30,
     }));
   }, []);
 
@@ -29,7 +23,7 @@ const Snowfall = () => {
       {snowflakes.map((flake) => (
         <motion.div
           key={flake.id}
-          className="absolute bg-white rounded-full opacity-80"
+          className="absolute bg-white/40 rounded-full blur-[0.5px]"
           style={{
             left: `${flake.left}%`,
             width: `${flake.size}px`,
@@ -39,7 +33,7 @@ const Snowfall = () => {
           animate={{
             y: ['0vh', '100vh'],
             x: [0, flake.drift, 0],
-            opacity: [0.8, 0.4, 0],
+            opacity: [0.6, 0.3, 0],
           }}
           transition={{
             duration: flake.duration,
