@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Rules from './pages/Rules';
 import RSVP from './pages/RSVP';
+import AdminGuestList from './pages/AdminGuestList';
 import Snowfall from './components/Snowfall';
 import MusicToggle from './components/MusicToggle';
 import SleighAnimation from './components/SleighAnimation';
@@ -28,6 +29,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/rules" element={<Rules />} />
         <Route path="/rsvp" element={<RSVP />} />
+        <Route path="/admin/guest-list" element={<AdminGuestList />} />
       </Routes>
     </Router>
   );
