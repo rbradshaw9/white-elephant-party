@@ -9,7 +9,7 @@ import { supabase } from './supabaseClient';
  */
 export async function saveAISession(agentId, messages, rating = null) {
   try {
-    // Note: schema defines `created_at`; do not insert unknown columns like `last_active_at`.
+    // Note: Don't pass created_at explicitly - let DB default handle it
     const { data, error } = await supabase
       .from('ai_sessions')
       .insert([
@@ -17,7 +17,6 @@ export async function saveAISession(agentId, messages, rating = null) {
           agent_id: agentId,
           messages: messages,
           rating: rating,
-          created_at: new Date().toISOString(),
         },
       ])
       .select()

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Snowfall from '../components/Snowfall';
+import HQTransmissions from '../components/HQTransmissions';
 import { getAttendingAgents } from '../utils/saveAgentData';
 
 /**
@@ -169,6 +170,16 @@ const AgentRoster = () => {
               </div>
             </motion.div>
           )}
+
+          {/* HQ Transmissions */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="mt-8"
+          >
+            <HQTransmissions />
+          </motion.div>
 
           {/* Fun Footer */}
           <motion.div

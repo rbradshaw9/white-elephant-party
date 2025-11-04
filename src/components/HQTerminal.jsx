@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { saveAgent, updateConversationLog } from '../utils/saveAgentData';
 import { saveAISession } from '../utils/saveAISession';
 import { checkReturningAgent, storeAgentSession } from '../utils/returningAgent';
+import { generateNextQuestion, generateAICodename } from '../utils/aiConversation';
 import EVENT_CONFIG from '../config/config';
 
 /**
@@ -34,19 +35,20 @@ const HQTerminal = ({ onComplete }) => {
   });
   const [agentId, setAgentId] = useState(null);
   const [currentPersonalityQ, setCurrentPersonalityQ] = useState(0);
+  const [aiConversationHistory, setAiConversationHistory] = useState([]); // For OpenAI context
+  const [totalPersonalityQuestions] = useState(3); // Will ask 3-5 AI-generated questions
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
-
-  const personalityQuestions = [
-    "First, tell me: Are you more of a 'wrap it perfectly' or 'gift bag it and go' kind of person?",
-    "If you had to steal ONE gift from Santa's workshop, what would it be?",
-    "On a scale of 1-10, how likely are you to actually follow the gift budget rules? (Be honest, this is a no-judgment zone)",
-  ];
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Also scroll during typewriter animation
+  const handleCharacterAdded = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   // Focus input when ready
   useEffect(() => {
@@ -152,19 +154,6 @@ const HQTerminal = ({ onComplete }) => {
   };
 
   /**
-   * Generate codename using simple algorithm
-   */
-  const generateCodename = (personalityData) => {
-    const adjectives = ['Frosty', 'Jolly', 'Sparkle', 'Tinsel', 'Candy', 'Blizzard', 'Icicle', 'Peppermint'];
-    const nouns = ['Frost', 'Bells', 'Snow', 'Gift', 'Sleigh', 'Star', 'Cookie', 'Cane'];
-    
-    const randomAdj = adjectives[Math.floor(Math.random() * adjectives.length)];
-    const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
-    
-    return `${randomAdj} ${randomNoun}`;
-  };
-
-  /**
    * Handle user input submission
    */
   const handleSubmit = async (e) => {
@@ -185,44 +174,71 @@ const HQTerminal = ({ onComplete }) => {
   const processUserInput = async (input) => {
     switch (conversationState) {
       case 'name':
-        // Store name and move to personality questions
+        // Store name and start AI-driven personality conversation
         setAgentData(prev => ({ ...prev, real_name: input }));
+        
         addHQMessage(
           `Excellent. Welcome to the team, ${input}.\n\n` +
           `Before we assign your operational codename, I need to run a quick personality profile. ` +
           `Standard procedure - helps us match you with the right alias.\n\n` +
-          personalityQuestions[0],
+          `Generating first question...`,
           500
         );
-        setConversationState('personality');
+        
+        // Generate first AI question
+        setTimeout(async () => {
+          const firstQuestion = await generateNextQuestion([], input, 1);
+          addHQMessage(firstQuestion, 300);
+          setConversationState('personality');
+        }, 1500);
         break;
 
       case 'personality':
         // Store personality response
         const updatedResponses = [...agentData.personality_responses, input];
         setAgentData(prev => ({ ...prev, personality_responses: updatedResponses }));
+        
+        // Add to AI conversation history
+        const updatedHistory = [
+          ...aiConversationHistory,
+          { role: 'user', content: input }
+        ];
+        setAiConversationHistory(updatedHistory);
 
-        if (currentPersonalityQ < personalityQuestions.length - 1) {
-          // Ask next personality question
+        if (currentPersonalityQ < totalPersonalityQuestions - 1) {
+          // Generate next AI question
           setCurrentPersonalityQ(prev => prev + 1);
-          addHQMessage(personalityQuestions[currentPersonalityQ + 1], 500);
-        } else {
-          // Generate codename
-          const generatedCodename = generateCodename(updatedResponses);
-          setAgentData(prev => ({ ...prev, codename: generatedCodename }));
           
+          const nextQuestion = await generateNextQuestion(
+            updatedHistory, 
+            agentData.real_name, 
+            currentPersonalityQ + 2
+          );
+          
+          addHQMessage(nextQuestion, 500);
+        } else {
+          // Generate AI codename
           addHQMessage(
             `Analyzing your profile...\n\n` +
             `> PERSONALITY MATRIX: COMPLETE\n` +
             `> CODENAME GENERATION: PROCESSING\n` +
-            `> CLEARANCE LEVEL: ASSIGNED\n\n` +
-            `Your operational codename is: **Agent ${generatedCodename}**\n\n` +
-            `This will be your identifier for the duration of Operation Santa's Manifest. ` +
-            `All field agents will know you by this designation.\n\n` +
-            `Do you accept this codename? (yes/no)`,
-            1000
+            `> CLEARANCE LEVEL: ASSIGNED`,
+            500
           );
-          setConversationState('codename_confirm');
+          
+          setTimeout(async () => {
+            const generatedCodename = await generateAICodename(agentData.real_name, updatedResponses);
+            setAgentData(prev => ({ ...prev, codename: generatedCodename }));
+            
+            addHQMessage(
+              `\n\nYour operational codename is: **Agent ${generatedCodename}**\n\n` +
+              `This will be your identifier for the duration of Operation Santa's Manifest. ` +
+              `All field agents will know you by this designation.\n\n` +
+              `Do you accept this codename? (yes/no)`,
+              500
+            );
+            setConversationState('codename_confirm');
+          }, 2000);
         }
         break;
 
@@ -242,16 +258,23 @@ const HQTerminal = ({ onComplete }) => {
           );
           setConversationState('rsvp');
         } else {
-          // Regenerate codename
-          const newCodename = generateCodename(agentData.personality_responses);
-          setAgentData(prev => ({ ...prev, codename: newCodename }));
-          
+          // Regenerate AI codename
           addHQMessage(
             `No problem. Regenerating...\n\n` +
-            `How about: **Agent ${newCodename}**?\n\n` +
-            `Accept this codename? (yes/no)`,
-            500
+            `> CODENAME GENERATOR: REINITIALIZING`,
+            300
           );
+          
+          setTimeout(async () => {
+            const newCodename = await generateAICodename(agentData.real_name, agentData.personality_responses);
+            setAgentData(prev => ({ ...prev, codename: newCodename }));
+            
+            addHQMessage(
+              `\n\nHow about: **Agent ${newCodename}**?\n\n` +
+              `Accept this codename? (yes/no)`,
+              300
+            );
+          }, 1500);
         }
         break;
 
@@ -384,7 +407,7 @@ const HQTerminal = ({ onComplete }) => {
       const savedAgent = await saveAgent({
         ...agentData,
         conversation_log: messages,
-        created_at: new Date().toISOString(),
+        // Don't pass created_at - let DB default handle it
       });
       
       setAgentId(savedAgent.id);
@@ -486,7 +509,7 @@ const HQTerminal = ({ onComplete }) => {
                     </span>
                     <div className="flex-1 whitespace-pre-wrap break-words">
                       {msg.sender === 'HQ' ? (
-                        <TypewriterText text={msg.text} />
+                        <TypewriterText text={msg.text} onCharacterAdded={handleCharacterAdded} />
                       ) : (
                         msg.text
                       )}
@@ -562,7 +585,7 @@ const HQTerminal = ({ onComplete }) => {
  * Animates text character by character
  * Click to skip animation and show full text immediately
  */
-const TypewriterText = ({ text }) => {
+const TypewriterText = ({ text, onCharacterAdded }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
@@ -572,13 +595,15 @@ const TypewriterText = ({ text }) => {
       const timeout = setTimeout(() => {
         setDisplayedText(prev => prev + text[currentIndex]);
         setCurrentIndex(prev => prev + 1);
+        // Trigger scroll on every character added
+        if (onCharacterAdded) onCharacterAdded();
       }, 15); // 15ms per character
 
       return () => clearTimeout(timeout);
     } else if (currentIndex >= text.length) {
       setIsComplete(true);
     }
-  }, [currentIndex, text, isComplete]);
+  }, [currentIndex, text, isComplete, onCharacterAdded]);
 
   useEffect(() => {
     // Reset when text changes

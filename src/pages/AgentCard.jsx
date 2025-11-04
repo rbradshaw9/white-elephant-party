@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getAgentByCodename } from '../utils/saveAgentData';
 import Snowfall from '../components/Snowfall';
+import HQTransmissions from '../components/HQTransmissions';
 import EVENT_CONFIG from '../config/config';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -290,6 +291,16 @@ const AgentCard = () => {
                 ← Return to HQ
               </button>
             </Link>
+          </motion.div>
+
+          {/* HQ Transmissions */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mt-8"
+          >
+            <HQTransmissions />
           </motion.div>
 
           {/* Security Notice */}
