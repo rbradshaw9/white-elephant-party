@@ -1,6 +1,7 @@
 /**
  * The Great Gift Heist Theme
- * Cinematic heist movie meets Christmas - Ocean's 11 vibes
+ * Cinematic heist operation - Ocean's 11 meets Elf
+ * Mission-focused, immersive caper experience
  */
 export default {
   name: "The Great Gift Heist",
@@ -9,154 +10,195 @@ export default {
   // Color palette - deep navy, icy blues, crimson, gold sparkle
   palette: {
     primary: "#dc2626", // crimson red-600
-    secondary: "#3b82f6", // icy blue-500
+    secondary: "#0ea5e9", // sky blue-500
     accent: "#fbbf24", // gold amber-400
-    background: "#0a0e1a", // deep navy
-    surface: "rgba(59, 130, 246, 0.08)", // icy blue glass
+    background: "#020617", // deeper slate-950
+    surface: "rgba(14, 165, 233, 0.08)", // icy blue glass
     text: {
       primary: "#f8fafc", // slate-50
       secondary: "#cbd5e1", // slate-300
       muted: "#64748b", // slate-500
     },
     gradients: {
-      hero: "from-blue-400 via-cyan-300 to-blue-500",
-      button: "from-blue-600 via-blue-500 to-cyan-500",
+      hero: "from-sky-400 via-blue-500 to-cyan-500",
+      button: "from-sky-600 via-sky-500 to-cyan-500",
       buttonAlt: "from-red-600 to-red-700",
       spotlight: "radial-gradient(circle, rgba(251,191,36,0.3) 0%, transparent 70%)",
+      vault: "from-slate-950 via-blue-950 to-slate-900",
     }
   },
 
   // Typography
   fonts: {
-    display: "'Bebas Neue', sans-serif", // cinematic titles
+    display: "'Bebas Neue', sans-serif", // cinematic all-caps
     body: "'Inter', sans-serif",
+  },
+
+  // Story & Mission
+  story: {
+    classification: "TOP SECRET",
+    division: "North Pole Intelligence Division",
+    operation: "Operation Santa's Manifest",
+    brief: "Santa's sleigh manifest has been compromised. The Naughty Network intercepted the route data and scrambled every gift's destination. The elves can't fix it. The reindeer refuse to fly without union representation. So, Santa's activating a covert ground unit: The Gift Recovery Crew.",
+    mission: "Your mission is simple — steal back Christmas. Each operative must infiltrate HQ on December 13 at 1900 hours, armed with a wrapped 'decoy package' (value ≤ $25). Once the mission begins, chaos is inevitable. Alliances will form. Gifts will vanish. Only one rule stands: no gift leaves un-stolen.",
+    closing: "Report to Command for your assignment, Agent.",
   },
 
   // Hero section
   hero: {
+    classification: "⚠️ CLASSIFIED INTEL",
     title: "The Great Gift Heist",
-    subtitle: "Every December, the city's most daring holiday caper returns. One night. Dozens of gifts. Infinite chaos.",
-    tagline: "Mission Date: December 13, 2025 • 18:30 Hours",
+    subtitle: "This December, the gifts are up for grabs. Santa's manifest is compromised. The crew is assembling. Your mission starts now.",
+    tagline: "MISSION START: DECEMBER 13, 2025 • 19:00 HOURS",
+    additionalCopy: "You've heard of White Elephant… but have you been part of the Heist?",
     cta: {
-      primary: "Join the Heist",
-      secondary: "Mission Brief"
+      primary: "Accept Mission",
+      secondary: "View Mission Brief"
     },
     backgroundVideo: "/media/heist/hero-bg.mp4",
     backgroundImage: "/media/heist/vault-bg.jpg",
-    additionalCopy: "You've heard of White Elephant… but have you been part of the Heist?",
   },
 
   // Navigation
   nav: {
     links: [
-      { label: "Home", path: "/" },
+      { label: "Command Center", path: "/" },
       { label: "Mission Brief", path: "/rules" },
-      { label: "Join the Crew", path: "/rsvp" },
+      { label: "Agent Recruitment", path: "/rsvp" },
     ]
   },
 
   // Sections copy
   sections: {
     // Home page sections
-    details: {
-      title: "The Mission Parameters",
+    intel: {
+      title: "Mission Parameters",
+      classification: "INTEL BRIEF #2025-12",
       items: [
         {
-          icon: "💎",
-          title: "The Score",
-          description: "Each operative brings one wrapped package valued at $20-40. Contents classified. Could be premium spirits, contraband electronics, or a cardboard cutout of a B-list celebrity. Intel suggests previous heists yielded everything from landscape lighting to heated bidets.",
-        },
-        {
-          icon: "🍸",
-          title: "Safe House Provisions",
-          description: "Base of operations will be stocked with chili. Operatives encouraged to bring additional supplies — beverages, tactical snacks, or covert desserts. This is a team effort.",
-        },
-        {
           icon: "🎯",
+          title: "The Objective",
+          description: "Each operative brings one wrapped decoy package valued at $20-40. Contents classified. Previous operations have yielded everything from premium spirits to tactical landscape lighting. One agent once brought a heated bidet seat. Another deployed a life-size cardboard cutout of Danny DeVito. Expect the unexpected.",
+        },
+        {
+          icon: "📍",
+          title: "HQ Location",
+          description: "Safe house coordinates will be transmitted upon mission acceptance. Base of operations will be stocked with tactical refreshments (chili). Additional provisions welcome. This is a team effort — covert ops run on good food and better company.",
+        },
+        {
+          icon: "⚡",
           title: "The Protocol",
-          description: "Classic infiltration rules apply. Draw your entry code. Acquire or liberate packages. Strategic theft is not only permitted — it's encouraged. Trust no one.",
+          description: "Classic infiltration rules apply. Draw your entry code. Acquire or liberate packages. Strategic theft is not only permitted — it's required. Trust no one. Alliances are temporary. Only the mission matters.",
         },
       ]
     },
 
-    music: {
-      title: "Soundtrack for the Caper",
-      description: "The Official Heist Playlist — for planning your strategy",
+    vault: {
+      title: "The Vault",
+      subtitle: "Surveillance Footage from Last Year's Operation",
+      description: "Security stills from Operation Santa's Manifest 2024 — laughs, chaos, and criminally bad wrapping paper.",
     },
 
-    game: {
-      title: "Train for the Mission",
-      description: "Test your reflexes with Present Tetris. Every great heist needs preparation.",
+    countdown: {
+      title: "Mission Countdown",
+      description: "Time until infiltration begins",
     },
 
     // Rules page (Mission Brief)
     rules: {
       title: "Mission Brief",
-      subtitle: "Your objective: arrive on time, bring a wrapped gift, and prepare for laughter and larceny.",
+      subtitle: "⚠️ CLASSIFIED – FOR AGENT EYES ONLY",
+      classification: "DOCUMENT #WE-2025-MB",
+      briefing: "Your objective: infiltrate HQ on time, bring a wrapped decoy package, and prepare for tactical chaos. Gifts will be acquired. Alliances will be tested. Laughter is mandatory.",
       items: [
         {
           number: 1,
-          title: "Acquire a package",
-          description: "Target value: $20-40. Conceal in festive wrapping. Make it memorable. Operatives may work in pairs (one package) or go rogue (two packages).",
+          title: "Acquire Your Decoy Package",
+          description: "Target value: $20-40. Conceal in festive wrapping. Make it memorable. Make it absurd. Make it legendary. Operatives may work in pairs (one package) or go solo (two packages). Choose wisely.",
         },
         {
           number: 2,
-          title: "Draw your entry code",
-          description: "Each operative receives a number. This determines infiltration order. Operative #1 enters first and receives a bonus extraction at mission's end.",
+          title: "Draw Your Entry Code",
+          description: "Each operative receives a randomly assigned number. This determines infiltration order. Operative #1 enters first and receives a bonus extraction opportunity at mission's end.",
         },
         {
           number: 3,
-          title: "Secure or liberate",
-          description: "On your turn: claim an unopened package OR liberate an already-revealed item from another operative. Choose your target wisely.",
+          title: "Secure or Liberate",
+          description: "On your turn: claim an unopened package from The Vault OR execute a tactical acquisition from another operative's possession. Choose your target wisely. Some gifts are worth fighting for. Others… less so.",
         },
         {
           number: 4,
-          title: "Three-theft maximum",
-          description: "Each package can be stolen three times. After the third theft, it's locked down. The final thief claims permanent possession.",
+          title: "Three-Acquisition Maximum",
+          description: "Each package can be stolen a maximum of three times. After the third acquisition, it's permanently locked to that operative. The final thief claims permanent possession. Plan accordingly.",
         },
         {
           number: 5,
-          title: "No immediate counter-theft",
-          description: "If you're robbed, you cannot immediately retaliate against the same operative. That's bad form. Redirect your vengeance elsewhere.",
+          title: "No Immediate Counter-Acquisition",
+          description: "If you're robbed, you cannot immediately retaliate against the same operative. That's bad form. Redirect your vengeance elsewhere. Revenge is a dish best served to someone else's gift pile.",
         },
         {
           number: 6,
-          title: "Theft chains authorized",
-          description: "Stolen from? Steal from someone else. The chaos is part of the operation. Alliances will be broken. Laughs will be had.",
+          title: "Acquisition Chains Authorized",
+          description: "Stolen from? Steal from someone else. The chaos is part of the operation. Alliances will form. Trust will be broken. Laughs will be had. It's all part of the mission.",
         },
         {
           number: 7,
-          title: "Final operative advantage",
-          description: "Highest number goes last. They can claim the final package or execute one strategic theft from the board.",
+          title: "Final Operative Advantage",
+          description: "Highest entry code goes last. They can claim the final unopened package or execute one strategic acquisition from the board. Knowledge is power. Use it.",
         },
         {
           number: 8,
-          title: "Operative #1 extraction",
-          description: "After all operatives have acted, #1 gets one final swap. Patience is a virtue. Revenge is sweeter.",
+          title: "Operative #1 Extraction Protocol",
+          description: "After all operatives have completed their turns, Operative #1 gets one final swap opportunity. Patience is a virtue. Revenge is sweeter. Make it count.",
         },
         {
           number: 9,
-          title: "Mission complete",
-          description: "When all packages are claimed and final swaps executed, the heist concludes. Everyone leaves with something. Hopefully something good. No guarantees.",
+          title: "Mission Complete",
+          description: "When all packages are claimed and final acquisitions executed, the operation concludes. Everyone extracts with something. Hopefully something good. No guarantees. Mission success is defined by laughter, not loot.",
         },
       ]
     },
 
-    // RSVP page (Join the Crew)
+    // RSVP page (Agent Recruitment)
     rsvp: {
-      title: "Join the Crew",
-      subtitle: "Every heist needs a solid team. Are you in?",
+      title: "Agent Recruitment",
+      subtitle: "⚠️ CLASSIFIED OPERATION – ACCEPTANCE REQUIRED",
+      classification: "RECRUITMENT FORM #2025",
+      briefing: "Every heist needs a solid crew. Are you in?",
       attending: {
-        yes: "I'm in",
-        no: "I'm out"
+        yes: "Accept Mission",
+        no: "Decline Mission"
       },
       success: {
-        attending: "Welcome to the Crew!",
-        notAttending: "Mission aborted",
-        message: "Good to have you aboard, {name}.",
-        checkEmail: "Mission briefing sent to {email}",
+        attending: "Mission Accepted",
+        notAttending: "Mission Declined",
+        message: "Welcome to the crew, Agent {name}.",
+        messageDenied: "Your declination has been noted, Agent {name}. You'll be missed in the field.",
+        checkEmail: "Mission briefing transmitted to {email}",
+        accessGranted: "🔓 ACCESS GRANTED",
+      },
+      fields: {
+        name: "Agent Name",
+        email: "Secure Communication Channel",
+        guests: "Additional Operatives",
+        dietary: "Tactical Dietary Requirements",
+        reminder: "Mission Reminder Protocol",
       }
     }
+  },
+
+  // Codename generator
+  codenames: {
+    adjectives: [
+      "Silent", "Shadow", "Ice", "Swift", "Phantom", "Midnight", "Silver", "Ghost",
+      "Frost", "Crimson", "Azure", "Electric", "Thunder", "Velvet", "Scarlet",
+      "Diamond", "Cobra", "Viper", "Raven", "Wolf", "Eagle", "Falcon", "Tiger"
+    ],
+    nouns: [
+      "Fox", "Hawk", "Storm", "Blade", "Arrow", "Spade", "Ace", "King",
+      "Queen", "Knight", "Rook", "Bishop", "Cipher", "Echo", "Delta",
+      "Alpha", "Omega", "Phoenix", "Dragon", "Panther", "Serpent", "Wraith"
+    ],
   },
 
   // Media assets
@@ -172,18 +214,21 @@ export default {
 
   // Animations & effects
   effects: {
-    snowfall: true, // keep snow but subtle
-    sleighAnimation: false, // no sleigh for heist theme
-    particleColor: "#3b82f6", // icy blue particles
+    snowfall: true, // subtle icy particles
+    sleighAnimation: false, // no sleigh for heist
+    particleColor: "#0ea5e9", // icy blue particles
     glowColor: "#fbbf24", // gold spotlight glow
     spotlight: true,
     vaultTransition: true,
     motionBlur: true,
+    lightLeaks: true,
+    dossierSlide: true,
   },
 
   // Footer
   footer: {
     tagline: "The Great Gift Heist — Because stealing gifts is way more fun than buying them.",
-    copyright: "Operation White Elephant • Est. 2025",
+    copyright: "Operation Santa's Manifest • North Pole Intelligence Division • Est. 2025",
+    classification: "DOCUMENT DESTRUCTION DATE: DEC 14, 2025"
   }
 };

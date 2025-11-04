@@ -3,14 +3,21 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import PresentStackingGame from '../components/PresentStackingGame';
+import HeistHome from './HeistHome';
 
 /**
  * Home Page Component
- * Dual-theme design with hilarious copy and engaging content
+ * Dual-theme design: White Elephant Party or The Great Gift Heist
  */
 const Home = () => {
   const { theme, isHeistTheme } = useTheme();
   
+  // If heist theme, render completely different experience
+  if (isHeistTheme) {
+    return <HeistHome />;
+  }
+  
+  // White Elephant Party version below
   // Countdown timer logic
   const calculateTimeLeft = () => {
     // Party date in Puerto Rico time (Atlantic Standard Time, UTC-4)
