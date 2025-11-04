@@ -16,7 +16,7 @@ import { useTheme } from '../context/ThemeContext';
  */
 const AccessGate = () => {
   const navigate = useNavigate();
-  const { validateCode, hasAccess } = useAccess();
+  const { validateCode, hasAccess, isLoading } = useAccess();
   const { setTheme } = useTheme();
   const [inputCode, setInputCode] = useState('');
   const [showInput, setShowInput] = useState(false);
@@ -40,8 +40,18 @@ const AccessGate = () => {
     'Enter your Agent Access Code to proceed...',
   ];
 
-  // Run boot sequence on mount
+  // Redirect immediately if already authenticated (before boot sequence)
   useEffect(() => {
+    if (!isLoading && hasAccess) {
+      navigate('/', { replace: true });
+    }
+  }, [hasAccess, isLoading, navigate]);
+
+  // Run boot sequence on mount (only if not already authenticated)
+  useEffect(() => {
+    // Don't run boot sequence if already has access
+    if (hasAccess) return;
+
     // Force heist theme for access gate
     setTheme('heist');
 
@@ -58,7 +68,7 @@ const AccessGate = () => {
     }, 300);
 
     return () => clearInterval(interval);
-  }, [setTheme]);
+  }, [setTheme, hasAccess]);
 
   // Focus input when shown
   useEffect(() => {
@@ -66,13 +76,6 @@ const AccessGate = () => {
       inputRef.current.focus();
     }
   }, [showInput]);
-
-  // Redirect if already has access (but not during initial load)
-  useEffect(() => {
-    if (hasAccess && bootComplete) {
-      navigate('/');
-    }
-  }, [hasAccess, bootComplete, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -111,6 +114,17 @@ const AccessGate = () => {
       setInputCode(e.target.value.toUpperCase());
     }
   };
+
+  // Show loading or nothing if already authenticated
+  if (isLoading || hasAccess) {
+    return (
+      <div className="relative min-h-screen bg-black overflow-hidden flex items-center justify-center">
+        {isLoading && (
+          <div className="text-green-400 font-mono">Loading...</div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden flex items-center justify-center">
