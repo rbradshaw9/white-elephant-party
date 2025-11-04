@@ -63,9 +63,9 @@ const AccessGate = () => {
       } else {
         clearInterval(interval);
         setBootComplete(true);
-        setTimeout(() => setShowInput(true), 500);
+        setTimeout(() => setShowInput(true), 1000);
       }
-    }, 300);
+    }, 600); // Slowed from 300ms to 600ms per line
 
     return () => clearInterval(interval);
   }, [setTheme, hasAccess]);
@@ -84,7 +84,7 @@ const AccessGate = () => {
 
     setValidationState('validating');
     
-    // Simulate validation delay for drama
+    // Simulate validation delay for drama (slowed for better effect)
     setTimeout(() => {
       const result = validateCode(inputCode);
       
@@ -93,7 +93,7 @@ const AccessGate = () => {
         // Play unlock animation, then redirect
         setTimeout(() => {
           navigate('/');
-        }, 2500);
+        }, 3500); // Slowed from 2500ms to 3500ms
       } else {
         setValidationState('denied');
         setAttempts((prev) => prev + 1);
@@ -103,9 +103,9 @@ const AccessGate = () => {
         setTimeout(() => {
           setValidationState(null);
           if (inputRef.current) inputRef.current.focus();
-        }, 2000);
+        }, 3000); // Slowed from 2000ms to 3000ms
       }
-    }, 1500);
+    }, 2000); // Slowed from 1500ms to 2000ms
   };
 
   const handleInputChange = (e) => {

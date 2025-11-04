@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { AccessProvider, useAccess } from './context/AccessContext';
 import Home from './pages/Home';
@@ -38,20 +38,22 @@ const ProtectedRoute = ({ children }) => {
  */
 const AppContent = () => {
   const { theme, isElephantTheme } = useTheme();
+  const location = useLocation();
+  const isAccessGate = location.pathname === '/access';
 
   return (
     <>
-      {/* Snowfall animation - visible on all pages, color changes per theme */}
-      <Snowfall color={theme.effects.particleColor} />
+      {/* Snowfall animation - visible on all pages except access gate */}
+      {!isAccessGate && <Snowfall color={theme.effects.particleColor} />}
       
       {/* Sleigh animation - only for White Elephant theme */}
-      {isElephantTheme && <SleighAnimation />}
+      {isElephantTheme && !isAccessGate && <SleighAnimation />}
       
-      {/* Theme switcher - fixed position top left */}
-      <ThemeSwitcher />
+      {/* Theme switcher - fixed position top left (not on access gate) */}
+      {!isAccessGate && <ThemeSwitcher />}
       
-      {/* Background music toggle - fixed position top right */}
-      <MusicToggle />
+      {/* Background music toggle - fixed position top right (not on access gate) */}
+      {!isAccessGate && <MusicToggle />}
       
       {/* Dev tool: Reset access (development only) */}
       <AccessReset />

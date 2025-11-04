@@ -20,8 +20,15 @@ export const AccessProvider = ({ children }) => {
   // Check for existing access on mount
   useEffect(() => {
     const checkAccess = () => {
+      console.log('🔒 ACCESS CHECK:', {
+        enabled: EVENT_CONFIG.accessGate.enabled,
+        requireCode: EVENT_CONFIG.accessGate.requireCode,
+        sessionKey: EVENT_CONFIG.accessGate.sessionKey
+      });
+
       // If access gate is disabled, grant access immediately
       if (!EVENT_CONFIG.accessGate.enabled || !EVENT_CONFIG.accessGate.requireCode) {
+        console.log('⚠️ Access gate disabled - granting access');
         setHasAccess(true);
         setIsLoading(false);
         return;
@@ -32,10 +39,19 @@ export const AccessProvider = ({ children }) => {
       const vipStatus = sessionStorage.getItem('heist_vip_status');
       const storedName = sessionStorage.getItem('heist_agent_name');
 
+      console.log('🔍 Session Storage:', {
+        accessGranted,
+        vipStatus,
+        storedName
+      });
+
       if (accessGranted === 'true') {
+        console.log('✅ Found existing access in session');
         setHasAccess(true);
         setIsVIP(vipStatus === 'true');
         setAgentName(storedName || '');
+      } else {
+        console.log('❌ No access found - user needs to authenticate');
       }
       
       setIsLoading(false);
