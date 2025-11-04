@@ -39,15 +39,14 @@ const MusicToggle = () => {
   return (
     <>
       {/* 
-        Audio element - Using a free Christmas music sample
-        You can replace with your own audio file in /public/audio/
+        Audio element - The Great Gift Heist theme song
       */}
       <audio 
         ref={audioRef} 
         loop
         preload="auto"
       >
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+        <source src="/media/The Great Gift Heist.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
 
