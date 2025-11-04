@@ -1,13 +1,16 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import PresentStackingGame from '../components/PresentStackingGame';
 
 /**
  * Home Page Component
- * Modern 2025 design with hilarious copy and engaging content
+ * Dual-theme design with hilarious copy and engaging content
  */
 const Home = () => {
+  const { theme, isHeistTheme } = useTheme();
+  
   // Countdown timer logic
   const calculateTimeLeft = () => {
     // Party date in Puerto Rico time (Atlantic Standard Time, UTC-4)
@@ -38,10 +41,10 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen p-6 py-12 z-10">
+    <div className="relative min-h-screen p-6 py-12 z-10" style={{ backgroundColor: theme.palette.background }}>
       <div className="max-w-7xl mx-auto space-y-12">
         
-        {/* Hero Section - Modern and Clean */}
+        {/* Hero Section - Theme-Aware */}
         <motion.div
           className="text-center space-y-6"
           initial={{ opacity: 0, y: 30 }}
@@ -49,20 +52,29 @@ const Home = () => {
           transition={{ duration: 0.8 }}
         >
           <motion.div
-            className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-red-500/20 to-emerald-500/20 border border-red-500/30 mb-4"
+            className={`inline-block px-4 py-2 rounded-full border mb-4 ${
+              isHeistTheme 
+                ? 'bg-gradient-to-r from-blue-600/20 to-cyan-500/20 border-blue-500/30'
+                : 'bg-gradient-to-r from-red-500/20 to-emerald-500/20 border-red-500/30'
+            }`}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: 'spring' }}
           >
-            <span className="text-sm font-medium text-emerald-400">Saturday, December 13, 2025 • 6:30 PM</span>
+            <span className={`text-sm font-medium ${isHeistTheme ? 'text-cyan-300' : 'text-emerald-400'}`}>
+              {isHeistTheme ? theme.hero.tagline : 'Saturday, December 13, 2025 • 6:30 PM'}
+            </span>
           </motion.div>
 
-          <h1 className="text-6xl md:text-8xl lg:text-9xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-emerald-400 leading-tight">
-            White Elephant 2025
+          <h1 
+            className={`text-6xl md:text-8xl lg:text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${theme.palette.gradients.hero} leading-tight`}
+            style={{ fontFamily: theme.fonts.display }}
+          >
+            {theme.hero.title}
           </h1>
 
-          <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            The annual gift exchange where your friends' questionable taste meets your competitive spirit
+          <p className="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed" style={{ color: theme.palette.text.secondary }}>
+            {theme.hero.subtitle}
           </p>
 
           {/* Countdown */}
@@ -102,21 +114,29 @@ const Home = () => {
         >
           <Link to="/rsvp" className="w-full sm:w-auto">
             <motion.button
-              className="btn-festive text-lg w-full"
+              className={`text-lg w-full px-8 py-4 rounded-xl font-semibold transition-all shadow-lg ${
+                isHeistTheme
+                  ? 'bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 hover:shadow-blue-500/50 text-white'
+                  : 'bg-gradient-to-r from-red-500 to-red-600 hover:shadow-red-500/50 text-white'
+              }`}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
             >
-              Reserve Your Spot →
+              {theme.hero.cta.primary}
             </motion.button>
           </Link>
 
           <Link to="/rules" className="w-full sm:w-auto">
             <motion.button
-              className="btn-festive-green text-lg w-full"
+              className={`text-lg w-full px-8 py-4 rounded-xl font-semibold transition-all shadow-lg ${
+                isHeistTheme
+                  ? 'bg-gradient-to-r from-red-600 to-red-700 hover:shadow-red-600/50 text-white'
+                  : 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:shadow-emerald-500/50 text-white'
+              }`}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
             >
-              Read the Rules
+              {theme.hero.cta.secondary}
             </motion.button>
           </Link>
         </motion.div>
