@@ -311,6 +311,10 @@ const HQTerminal = ({ onComplete }) => {
         // Generate first AI question
         setTimeout(async () => {
           const firstQuestion = await generateNextQuestion([], input, 1);
+          
+          // Add AI question to conversation history
+          setAiConversationHistory([{ role: 'assistant', content: firstQuestion }]);
+          
           addHQMessage(firstQuestion, 300);
           setConversationState('personality');
         }, 1500);
@@ -321,12 +325,11 @@ const HQTerminal = ({ onComplete }) => {
         const updatedResponses = [...agentData.personality_responses, input];
         setAgentData(prev => ({ ...prev, personality_responses: updatedResponses }));
         
-        // Add to AI conversation history
+        // Add user response to AI conversation history
         const updatedHistory = [
           ...aiConversationHistory,
           { role: 'user', content: input }
         ];
-        setAiConversationHistory(updatedHistory);
 
         if (currentPersonalityQ < totalPersonalityQuestions - 1) {
           // Generate next AI question
@@ -337,6 +340,12 @@ const HQTerminal = ({ onComplete }) => {
             agentData.real_name, 
             currentPersonalityQ + 2
           );
+          
+          // Add AI question to conversation history
+          setAiConversationHistory([
+            ...updatedHistory,
+            { role: 'assistant', content: nextQuestion }
+          ]);
           
           addHQMessage(nextQuestion, 500);
         } else {

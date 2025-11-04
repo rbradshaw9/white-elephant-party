@@ -19,23 +19,49 @@ export async function generateNextQuestion(conversationHistory, agentName, quest
   }
 
   try {
-    const systemPrompt = `You are "HQ" - the AI handler for The Great Gift Heist, a Christmas white elephant party with a playful spy/heist theme. You're onboarding a new agent named ${agentName}.
+    // Extract only user responses to track what's been discussed
+    const previousTopics = conversationHistory
+      .filter(msg => msg.role === 'user')
+      .map(msg => msg.content)
+      .join(' | ');
 
-Your job: Ask ${questionNumber} of 3-5 personality questions to learn about them. The questions should:
-1. Be fun, casual, and personality-revealing
-2. Relate to gifts, holidays, Christmas, heists, or spy themes
-3. Build on their previous answers to create a natural conversation
-4. Help you understand their personality to generate a perfect codename later
-5. Keep the tone playful and slightly mysterious (like a friendly spy handler)
+    const systemPrompt = `You are "HQ" - the AI handler for The Great Gift Heist, a Christmas white elephant party with a playful spy/heist theme. You're onboarding Agent ${agentName}.
 
-Examples of good questions:
-- "If you could steal ONE gift from Santa's workshop, what would it be and why?"
-- "Are you more of a 'wrap it perfectly' or 'gift bag and go' person?"
-- "On a scale of 1-10, how likely are you to actually follow the $25-50 gift budget? Be honest."
-- "If this party was a heist movie, what role would you play?"
-- "What's your go-to move when you see someone about to steal your gift?"
+🎯 CRITICAL RULES:
+1. This is question ${questionNumber} of EXACTLY 3 questions
+2. NEVER repeat or rephrase questions you've already asked
+3. Each question must explore a NEW aspect of their personality
+4. Build on their previous answer naturally, then ask something different
+5. Keep responses SHORT - max 2-3 sentences total
 
-Ask ONE question at a time. Make it conversational and reference their previous answer if relevant.`;
+📋 QUESTION PROGRESSION:
+Question 1: Ask about gift preferences or holiday personality
+Question 2: Ask about party behavior or White Elephant strategy
+Question 3: Ask about their heist role or Christmas traditions
+
+✅ GOOD PATTERN:
+"Nice! [1 sentence acknowledging their answer] So, [NEW question about different topic]?"
+
+❌ BAD PATTERNS:
+- Asking the same question twice in different words
+- Following up with "what would you..." if you just asked that
+- Repeating topics already covered
+
+🎨 TOPIC VARIETY (choose ONE per question):
+- Gift wrapping style
+- Budget philosophy
+- Stealing strategy in White Elephant
+- Heist movie role
+- Christmas traditions
+- Holiday hosting style
+- Gift-giving approach
+- Party food preferences
+
+Keep it fun, brief, and always move forward. Don't circle back to topics you've covered.`;
+
+    const userContext = previousTopics 
+      ? `Previous topics covered: ${previousTopics}\n\nNow ask question ${questionNumber} about a DIFFERENT aspect.`
+      : `Ask your first personality question to ${agentName}.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -47,10 +73,13 @@ Ask ONE question at a time. Make it conversational and reference their previous 
         model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
-          ...conversationHistory
+          ...conversationHistory,
+          { role: 'system', content: userContext }
         ],
-        max_tokens: 150,
-        temperature: 0.8
+        max_tokens: 100,  // Shorter responses
+        temperature: 0.7,  // Lower temp for more consistency
+        presence_penalty: 1.0,  // Strong penalty for repeating topics
+        frequency_penalty: 0.5  // Discourage word repetition
       })
     });
 
