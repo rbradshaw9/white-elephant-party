@@ -55,6 +55,21 @@ const HQTerminal = ({ onComplete }) => {
     }
   }, [isTyping]);
 
+  // ESC key to exit (before completion)
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && conversationState !== 'complete') {
+        const confirmed = window.confirm('Are you sure you want to exit? Your progress will be lost.');
+        if (confirmed) {
+          navigate('/');
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [conversationState, navigate]);
+
   // Initial greeting
   useEffect(() => {
     // Check for returning agent first
@@ -374,9 +389,17 @@ const HQTerminal = ({ onComplete }) => {
       
       setAgentId(savedAgent.id);
       
-      // Save AI session
-      await saveAISession(savedAgent.id, messages);
-      
+      // Save AI session (best-effort). If it fails, log but continue — agent record exists.
+      try {
+        await saveAISession(savedAgent.id, messages);
+      } catch (aiErr) {
+        console.error('AI session save error (non-blocking):', aiErr);
+        addHQMessage(
+          `⚠️ Note: We couldn't save the AI chat log to HQ servers right now. Your profile was created and is safe.`,
+          200
+        );
+      }
+
       // Store in localStorage for returning agents
       storeAgentSession(savedAgent);
       
@@ -428,8 +451,20 @@ const HQTerminal = ({ onComplete }) => {
               NORTH_POLE_INTELLIGENCE_TERMINAL
             </span>
           </div>
-          <div className="text-green-400/60 font-mono text-xs">
-            SECURE_CHANNEL_ACTIVE
+          <div className="flex items-center gap-4">
+            <div className="text-green-400/60 font-mono text-xs">
+              SECURE_CHANNEL_ACTIVE
+            </div>
+            {/* Exit button - only show before completion */}
+            {conversationState !== 'complete' && (
+              <button
+                onClick={() => navigate('/')}
+                className="text-red-400 hover:text-red-300 text-xs font-mono transition-colors"
+                title="Exit terminal (ESC)"
+              >
+                [X] EXIT
+              </button>
+            )}
           </div>
         </div>
 
@@ -525,29 +560,48 @@ const HQTerminal = ({ onComplete }) => {
 /**
  * Typewriter Text Component
  * Animates text character by character
+ * Click to skip animation and show full text immediately
  */
 const TypewriterText = ({ text }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
 
   useEffect(() => {
-    if (currentIndex < text.length) {
+    if (currentIndex < text.length && !isComplete) {
       const timeout = setTimeout(() => {
         setDisplayedText(prev => prev + text[currentIndex]);
         setCurrentIndex(prev => prev + 1);
       }, 15); // 15ms per character
 
       return () => clearTimeout(timeout);
+    } else if (currentIndex >= text.length) {
+      setIsComplete(true);
     }
-  }, [currentIndex, text]);
+  }, [currentIndex, text, isComplete]);
 
   useEffect(() => {
     // Reset when text changes
     setDisplayedText('');
     setCurrentIndex(0);
+    setIsComplete(false);
   }, [text]);
 
-  return <>{displayedText}</>;
+  const handleSkip = () => {
+    setDisplayedText(text);
+    setCurrentIndex(text.length);
+    setIsComplete(true);
+  };
+
+  return (
+    <span 
+      onClick={handleSkip}
+      className={!isComplete ? 'cursor-pointer hover:opacity-80' : ''}
+      title={!isComplete ? 'Click to skip animation' : ''}
+    >
+      {displayedText}
+    </span>
+  );
 };
 
 export default HQTerminal;
