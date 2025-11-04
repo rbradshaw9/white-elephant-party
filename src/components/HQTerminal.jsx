@@ -825,27 +825,6 @@ const HQTerminal = ({ onComplete }) => {
       // Store in localStorage for returning agents
       storeAgentSession(savedAgent);
       
-      // Show completion message
-      addHQMessage(
-        `✅ **PROFILE COMPLETE**\n\n` +
-        `Your elf profile has been created, ${agentData.codename}! 🎄\n\n` +
-        `📋 **Party Summary:**\n` +
-        `• Codename: ${agentData.codename}\n` +
-        `• Status: ${agentData.attendance_status === 'attending' ? 'CONFIRMED ✅' : agentData.attendance_status === 'uncertain' ? 'PENDING 🤔' : 'DECLINED ❌'}\n` +
-        `• Team Size: ${agentData.guest_count + 1}\n\n` +
-        `Redirecting to your Elf Card in 3 seconds...\n\n` +
-        `Check out the /roster to see other confirmed elves!`,
-        500
-      );
-      
-      // Redirect to agent card
-      setTimeout(() => {
-        if (onComplete) {
-          onComplete(savedAgent);
-        }
-        navigate(`/agent/${agentData.codename}`);
-      }, 5000);
-      
     } catch (error) {
       console.error('Failed to save agent:', error);
       addHQMessage(

@@ -3,16 +3,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Snowfall from '../components/Snowfall';
 import ClassifiedPhoto from '../components/ClassifiedPhoto';
 import { Link } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 
 /**
  * Gallery Component
  * Showcase of last year's White Elephant Party
  * Features:
- * - Surveillance-style photo/video grid
+ * - Surveillance-style photo/video grid (Heist theme)
+ * - Festive workshop memories (Elf theme)
  * - Lightbox modal for full-size viewing
- * - Classified file aesthetic
  */
 const Gallery = () => {
+  const { isHeistTheme } = useTheme();
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [filter, setFilter] = useState('all'); // 'all', 'photos', 'videos'
 
@@ -170,19 +172,37 @@ const Gallery = () => {
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="inline-flex items-center gap-3 mb-4 bg-black/80 px-6 py-3 rounded-full border border-red-500/50">
-              <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-              <span className="text-red-500 font-mono text-xs font-bold tracking-wider">CLASSIFIED ARCHIVE</span>
+            <div className={`inline-flex items-center gap-3 mb-4 px-6 py-3 rounded-full border ${
+              isHeistTheme 
+                ? 'bg-black/80 border-red-500/50' 
+                : 'bg-green-900/80 border-amber-400/50'
+            }`}>
+              <span className={`w-2 h-2 rounded-full animate-pulse ${
+                isHeistTheme ? 'bg-red-500' : 'bg-amber-400'
+              }`}></span>
+              <span className={`font-mono text-xs font-bold tracking-wider ${
+                isHeistTheme ? 'text-red-500' : 'text-amber-300'
+              }`}>
+                {isHeistTheme ? 'CLASSIFIED ARCHIVE' : '🎄 WORKSHOP MEMORIES 🎄'}
+              </span>
             </div>
             
             <h1 className="text-5xl md:text-7xl mb-4 font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-emerald-400">
-              � Surveillance Footage
+              {isHeistTheme ? '🎥 Surveillance Footage' : '📸 Party Memories'}
             </h1>
             <p className="text-xl text-slate-300 mb-2">
-              Operation Santa's Manifest - December 13, 2024
+              {isHeistTheme 
+                ? 'Operation Santa\'s Manifest - December 13, 2024'
+                : 'White Elephant Workshop - December 13, 2024'
+              }
             </p>
-            <p className="text-sm text-slate-500 font-mono">
-              [SECURITY CLEARANCE: LEVEL 3 - PARTY PARTICIPANTS ONLY]
+            <p className={`text-sm font-mono ${
+              isHeistTheme ? 'text-slate-500' : 'text-green-300/70'
+            }`}>
+              {isHeistTheme 
+                ? '[SECURITY CLEARANCE: LEVEL 3 - PARTY PARTICIPANTS ONLY]'
+                : '✨ Captured by Santa\'s Official Photographer ✨'
+              }
             </p>
             
             {/* Filter Buttons */}
@@ -193,11 +213,18 @@ const Gallery = () => {
                   onClick={() => setFilter(f)}
                   className={`px-6 py-2 rounded-full font-mono text-sm transition-all ${
                     filter === f
-                      ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/30 border border-cyan-400'
-                      : 'bg-slate-800/50 text-slate-400 hover:bg-slate-700/50 border border-slate-700'
+                      ? isHeistTheme
+                        ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/30 border border-cyan-400'
+                        : 'bg-amber-400 text-green-900 shadow-lg shadow-amber-400/30 border border-amber-300'
+                      : isHeistTheme
+                        ? 'bg-slate-800/50 text-slate-400 hover:bg-slate-700/50 border border-slate-700'
+                        : 'bg-green-900/50 text-green-300 hover:bg-green-800/50 border border-green-700'
                   }`}
                 >
-                  {f === 'all' ? '[ALL CAMERAS]' : f === 'photos' ? '[STILLS]' : '[VIDEO]'}
+                  {isHeistTheme
+                    ? (f === 'all' ? '[ALL CAMERAS]' : f === 'photos' ? '[STILLS]' : '[VIDEO]')
+                    : (f === 'all' ? '🎅 ALL' : f === 'photos' ? '📸 PHOTOS' : '🎬 VIDEOS')
+                  }
                 </button>
               ))}
             </div>
