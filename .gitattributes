@@ -1,0 +1,31 @@
+# Git Attributes for White Elephant Party
+
+# Handle line endings automatically
+* text=auto
+
+# Media files - binary, no diff
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.mp4 binary
+*.mov binary
+*.m4v binary
+*.webm binary
+*.mp3 binary
+*.wav binary
+
+# Prevent Git from treating media as text
+public/gallery/** binary
+public/media/** binary
+
+# Source files
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+*.svg text eol=lf
