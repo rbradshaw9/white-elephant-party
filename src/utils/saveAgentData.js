@@ -55,6 +55,27 @@ export async function getAgentByCodename(codename) {
 }
 
 /**
+ * Check if codename is already taken
+ * @param {string} codename - Codename to check
+ * @returns {boolean} True if codename is available
+ */
+export async function isCodenameAvailable(codename) {
+  try {
+    const { data, error } = await supabase
+      .from('agents')
+      .select('codename')
+      .eq('codename', codename)
+      .maybeSingle();
+
+    if (error) throw error;
+    return data === null; // Available if no match found
+  } catch (error) {
+    console.error('Failed to check codename:', error);
+    return false;
+  }
+}
+
+/**
  * Get agent by ID
  * @param {string} agentId - Agent's UUID
  * @returns {Object} Agent record or null

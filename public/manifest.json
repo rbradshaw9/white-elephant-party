@@ -1,0 +1,49 @@
+{
+  "name": "The Great Gift Heist 2025",
+  "short_name": "Gift Heist",
+  "description": "Secret agent communication for White Elephant Party 2025",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#1e3a8a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["entertainment", "social"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "HQ Terminal",
+      "short_name": "Terminal",
+      "description": "Access the secret agent terminal",
+      "url": "/access",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Agent Roster",
+      "short_name": "Roster",
+      "description": "View all recruited agents",
+      "url": "/roster",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Transmissions",
+      "short_name": "Messages",
+      "description": "Check HQ transmissions",
+      "url": "/",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

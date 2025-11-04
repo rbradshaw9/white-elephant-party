@@ -14,6 +14,8 @@ import MusicToggle from './components/MusicToggle';
 import SleighAnimation from './components/SleighAnimation';
 import ThemeSwitcher from './components/ThemeSwitcher';
 import AccessReset from './components/AccessReset';
+import BottomNav from './components/BottomNav';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 import EVENT_CONFIG from './config/config';
 
 /**
@@ -57,6 +59,12 @@ const AppContent = () => {
       
       {/* Background music toggle - fixed position top right (not on access gate) */}
       {!isAccessGate && <MusicToggle />}
+      
+      {/* Bottom navigation bar */}
+      <BottomNav />
+      
+      {/* PWA install prompt */}
+      <PWAInstallPrompt />
       
       {/* Dev tool: Reset access (development only) */}
       <AccessReset />

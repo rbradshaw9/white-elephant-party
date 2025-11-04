@@ -115,4 +115,14 @@
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
+  
+  /* Bottom navigation padding - add to page containers */
+  .pb-nav {
+    padding-bottom: 5rem; /* 80px for nav + safe area */
+  }
+  
+  /* Safe area for bottom nav on iOS */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }

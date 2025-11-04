@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { saveAgent, updateConversationLog } from '../utils/saveAgentData';
+import { saveAgent, updateConversationLog, isCodenameAvailable } from '../utils/saveAgentData';
 import { saveAISession } from '../utils/saveAISession';
 import { checkReturningAgent, storeAgentSession } from '../utils/returningAgent';
 import { generateNextQuestion, generateAICodename } from '../utils/aiConversation';
@@ -359,7 +359,24 @@ const HQTerminal = ({ onComplete }) => {
           );
           
           setTimeout(async () => {
-            const generatedCodename = await generateAICodename(agentData.real_name, updatedResponses);
+            let generatedCodename = await generateAICodename(agentData.real_name, updatedResponses);
+            
+            // Check if codename is unique, regenerate if needed
+            let isUnique = await isCodenameAvailable(generatedCodename);
+            let attempts = 0;
+            
+            while (!isUnique && attempts < 5) {
+              console.log(`Codename "${generatedCodename}" taken, regenerating...`);
+              generatedCodename = await generateAICodename(agentData.real_name, updatedResponses);
+              isUnique = await isCodenameAvailable(generatedCodename);
+              attempts++;
+            }
+            
+            if (!isUnique) {
+              // Fallback: append random number
+              generatedCodename = `${generatedCodename}-${Math.floor(Math.random() * 999)}`;
+            }
+            
             setAgentData(prev => ({ ...prev, codename: generatedCodename }));
             
             addHQMessage(
