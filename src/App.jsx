@@ -10,6 +10,7 @@ import Snowfall from './components/Snowfall';
 import MusicToggle from './components/MusicToggle';
 import SleighAnimation from './components/SleighAnimation';
 import ThemeSwitcher from './components/ThemeSwitcher';
+import AccessReset from './components/AccessReset';
 import EVENT_CONFIG from './config/config';
 
 /**
@@ -51,6 +52,9 @@ const AppContent = () => {
       
       {/* Background music toggle - fixed position top right */}
       <MusicToggle />
+      
+      {/* Dev tool: Reset access (development only) */}
+      <AccessReset />
       
       {/* Main content routes */}
       <Routes>
