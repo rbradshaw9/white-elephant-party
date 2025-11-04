@@ -3,9 +3,9 @@ import { useMemo } from 'react';
 
 /**
  * Snowfall Component
- * Subtle, modern falling snowflakes
+ * Subtle, modern falling snowflakes (or icy particles for heist theme)
  */
-const Snowfall = () => {
+const Snowfall = ({ color = '#ffffff' }) => {
   // Generate 30 snowflakes (reduced for cleaner look)
   const snowflakes = useMemo(() => {
     return Array.from({ length: 30 }, (_, i) => ({
@@ -23,12 +23,13 @@ const Snowfall = () => {
       {snowflakes.map((flake) => (
         <motion.div
           key={flake.id}
-          className="absolute bg-white/40 rounded-full blur-[0.5px]"
+          className="absolute rounded-full blur-[0.5px]"
           style={{
             left: `${flake.left}%`,
             width: `${flake.size}px`,
             height: `${flake.size}px`,
             top: '-10px',
+            backgroundColor: `${color}40`, // 40 is hex for 25% opacity
           }}
           animate={{
             y: ['0vh', '100vh'],
