@@ -127,7 +127,7 @@ const AccessGate = () => {
 
     // Simulate validation delay
     setTimeout(async () => {
-      const result = validateCode(inputCode);
+      const result = validateCode(inputCode, false); // Pass false to skip grantAccess
       
       if (result.valid) {
         setValidationState('success');
@@ -146,11 +146,12 @@ const AccessGate = () => {
         }, 3000);
       }
     }, 2000);
-  };  const handleCodenameComplete = (agentData) => {
-    // HQTerminal handles its own navigation to /agent/:codename
-    // Don't call grantAccess here - it will redirect to home
-    // Just close the quiz overlay and let HQTerminal navigate
-    console.log('Agent onboarding complete:', agentData);
+  };
+
+  const handleCodenameComplete = (agentData) => {
+    // NOW grant access after quiz completes
+    // HQTerminal will handle navigation to /agent/:codename
+    grantAccess(false, agentData.real_name, agentData.codename);
   };
 
   const handleInputChange = (e) => {

@@ -64,18 +64,22 @@ export const AccessProvider = ({ children }) => {
     checkAccess();
   }, []);
 
-  const validateCode = (code) => {
+  const validateCode = (code, shouldGrantAccess = true) => {
     const upperCode = code.toUpperCase().trim();
 
     // Check universal code
     if (upperCode === EVENT_CONFIG.accessGate.universalCode) {
-      grantAccess(false, 'Agent');
+      if (shouldGrantAccess) {
+        grantAccess(false, 'Agent');
+      }
       return { valid: true, vip: false, name: 'Agent' };
     }
 
     // Check VIP codes
     if (EVENT_CONFIG.accessGate.vipCodes.includes(upperCode)) {
-      grantAccess(true, 'VIP Agent');
+      if (shouldGrantAccess) {
+        grantAccess(true, 'VIP Agent');
+      }
       return { valid: true, vip: true, name: 'VIP Agent' };
     }
 
@@ -87,7 +91,9 @@ export const AccessProvider = ({ children }) => {
     if (agentCode) {
       // Mark code as used (in a real app, this would update the database)
       agentCode.used = true;
-      grantAccess(false, agentCode.name);
+      if (shouldGrantAccess) {
+        grantAccess(false, agentCode.name);
+      }
       return { valid: true, vip: false, name: agentCode.name };
     }
 
