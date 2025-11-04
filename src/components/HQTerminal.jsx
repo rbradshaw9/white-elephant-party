@@ -185,7 +185,8 @@ const HQTerminal = ({ onComplete }) => {
   const handleInteractiveQuestion = async (input) => {
     const lowerInput = input.toLowerCase();
 
-    if (lowerInput.includes('exit') || lowerInput.includes('leave')) {
+    // Exit/Leave terminal
+    if (lowerInput.includes('exit') || lowerInput.includes('leave') || lowerInput.includes('quit') || lowerInput.includes('close')) {
       addHQMessage(
         `Understood, Elf Agent ${agentData.codename}! Closing workshop terminal...\n\n` +
         `Redirecting to your agent card. See you at the party! 🎄`,
@@ -197,36 +198,113 @@ const HQTerminal = ({ onComplete }) => {
       return;
     }
 
+    // View agent card/profile
     if (lowerInput.includes('card') || lowerInput.includes('profile')) {
       navigate(`/agent/${agentData.codename}`);
       return;
     }
 
-    if (lowerInput.includes('gift')) {
+    // View roster
+    if (lowerInput.includes('roster') || lowerInput.includes('list') || lowerInput.includes('who') || lowerInput.includes('attending')) {
+      navigate('/roster');
+      return;
+    }
+
+    // Update RSVP
+    if (lowerInput.includes('update') || lowerInput.includes('change') || lowerInput.includes('edit')) {
       addHQMessage(
-        `🎁 **GIFT IDEAS FOR $25-$50**\n\n` +
-        `Based on workshop intel, here are some crowd-pleasers:\n\n` +
-        `**Cozy & Practical:**\n` +
-        `• Fleece blanket or heated throw\n` +
-        `• Quality coffee beans + fun mug\n` +
-        `• Fuzzy socks or slippers\n\n` +
-        `**Fun & Games:**\n` +
-        `• Card game (Exploding Kittens, Cards Against Humanity)\n` +
-        `• Puzzle or board game\n` +
-        `• Cocktail kit or fancy hot chocolate set\n\n` +
-        `**Wildcard Winners:**\n` +
-        `• Nice bottle of wine or craft spirits\n` +
-        `• Bluetooth speaker\n` +
-        `• Plant or succulent with cute pot\n` +
-        `• Gourmet snack basket\n\n` +
-        `Remember: The most stolen gifts are usually cozy, boozy, or hilariously unexpected!\n\n` +
-        `Need more ideas? Just ask!`,
+        `🔄 **RSVP UPDATE REQUEST**\n\n` +
+        `To update your RSVP details:\n\n` +
+        `1. Contact North Pole Command (the hosts) directly\n` +
+        `2. Or respond to the confirmation email\n` +
+        `3. Or message in the WhatsApp channel\n\n` +
+        `Need to change your codename, attendance, or guest count? Just let the hosts know!`,
         500
       );
       return;
     }
 
-    if (lowerInput.includes('food') || lowerInput.includes('menu')) {
+    // Codename change request
+    if (lowerInput.includes('codename') || lowerInput.includes('name') || lowerInput.includes('rename')) {
+      addHQMessage(
+        `🏷️ **CODENAME MODIFICATION**\n\n` +
+        `Your current codename: **${agentData.codename}**\n\n` +
+        `Want to change it? Contact the hosts directly!\n` +
+        `They can update your elf credentials in the workshop database.\n\n` +
+        `Pro tip: Your codename will be on your gift tag, so choose wisely! 🎁`,
+        500
+      );
+      return;
+    }
+
+    // Gift ideas - FLEXIBLE matching for any gift-related questions
+    if (
+      lowerInput.includes('gift') || 
+      lowerInput.includes('present') || 
+      lowerInput.includes('bring') ||
+      lowerInput.includes('what should i') ||
+      lowerInput.includes('buy') ||
+      lowerInput.includes('idea') ||
+      lowerInput.includes('suggestion') ||
+      lowerInput.includes('funny') ||
+      lowerInput.includes('weird') ||
+      lowerInput.includes('creative')
+    ) {
+      // Check if they want funny/weird/unusual gifts specifically
+      const wantsFunny = lowerInput.includes('funny') || lowerInput.includes('weird') || lowerInput.includes('unusual') || lowerInput.includes('hilarious') || lowerInput.includes('gag');
+      
+      if (wantsFunny) {
+        addHQMessage(
+          `😂 **HILARIOUS GIFT IDEAS FOR $25-$50**\n\n` +
+          `Based on elf workshop intel, these are guaranteed laughs:\n\n` +
+          `**Ridiculous But Functional:**\n` +
+          `• Giant wine glass (holds a whole bottle)\n` +
+          `• Bigfoot air freshener for the car\n` +
+          `• Toilet bowl night light (7 colors!)\n` +
+          `• Desktop punching bag (for stressful Zoom calls)\n` +
+          `• Emergency underpants vending machine\n\n` +
+          `**Gag Gifts That Win:**\n` +
+          `• "Accoutrements Horse Head Squirrel Feeder"\n` +
+          `• Nicolas Cage sequin pillow (his face changes!)\n` +
+          `• Yodeling pickle (yes, really)\n` +
+          `• Inflatable toast or pizza pool float\n` +
+          `• "Poo-Pourri" toilet spray gift set\n\n` +
+          `**Useful + Weird Combo:**\n` +
+          `• Cat butt tissue holder\n` +
+          `• Bob Ross Chia Pet\n` +
+          `• Bacon-scented candle\n` +
+          `• Screaming goat (the toy that screams when squeezed)\n\n` +
+          `Remember: The goal is to make people laugh AND fight over it!\n\n` +
+          `Want more "normal" gift ideas? Just ask!`,
+          500
+        );
+      } else {
+        addHQMessage(
+          `🎁 **GIFT IDEAS FOR $25-$50**\n\n` +
+          `Based on workshop intel, here are some crowd-pleasers:\n\n` +
+          `**Cozy & Practical:**\n` +
+          `• Fleece blanket or heated throw\n` +
+          `• Quality coffee beans + fun mug\n` +
+          `• Fuzzy socks or slippers\n\n` +
+          `**Fun & Games:**\n` +
+          `• Card game (Exploding Kittens, Cards Against Humanity)\n` +
+          `• Puzzle or board game\n` +
+          `• Cocktail kit or fancy hot chocolate set\n\n` +
+          `**Wildcard Winners:**\n` +
+          `• Nice bottle of wine or craft spirits\n` +
+          `• Bluetooth speaker\n` +
+          `• Plant or succulent with cute pot\n` +
+          `• Gourmet snack basket\n\n` +
+          `Remember: The most stolen gifts are usually cozy, boozy, or hilariously unexpected!\n\n` +
+          `Want **funny** or **weird** gift ideas? Just ask!`,
+          500
+        );
+      }
+      return;
+    }
+
+    // Food/menu questions
+    if (lowerInput.includes('food') || lowerInput.includes('menu') || lowerInput.includes('eat') || lowerInput.includes('drink') || lowerInput.includes('snack')) {
       addHQMessage(
         `🍽️ **PARTY MENU INTEL**\n\n` +
         `The hosts will provide the main dishes, but contributions are welcome!\n\n` +
@@ -242,7 +320,8 @@ const HQTerminal = ({ onComplete }) => {
       return;
     }
 
-    if (lowerInput.includes('rule') || lowerInput.includes('how')) {
+    // Rules/how to play
+    if (lowerInput.includes('rule') || lowerInput.includes('how') || lowerInput.includes('play') || lowerInput.includes('work') || lowerInput.includes('game')) {
       addHQMessage(
         `📋 **WHITE ELEPHANT RULES**\n\n` +
         `**Setup:**\n` +
@@ -266,15 +345,34 @@ const HQTerminal = ({ onComplete }) => {
       return;
     }
 
-    // Default AI response for other questions
+    // Time/when/where questions
+    if (lowerInput.includes('when') || lowerInput.includes('time') || lowerInput.includes('where') || lowerInput.includes('location') || lowerInput.includes('address')) {
+      addHQMessage(
+        `📅 **PARTY DETAILS**\n\n` +
+        `**When:** ${EVENT_CONFIG.date}\n` +
+        `**Time:** ${EVENT_CONFIG.time}\n` +
+        `**Location:** ${EVENT_CONFIG.location}\n\n` +
+        `Check your confirmation email for the full address and parking details!\n\n` +
+        `Need directions? Message in the WhatsApp channel.`,
+        500
+      );
+      return;
+    }
+
+    // Catch-all for unrecognized questions - be helpful, not rigid
     addHQMessage(
-      `I can help with:\n` +
-      `• "gift ideas" - Perfect gifts for $25-$50\n` +
-      `• "food" - Menu and what to bring\n` +
-      `• "rules" - How White Elephant works\n` +
-      `• "card" - View your agent profile\n` +
-      `• "exit" - Leave terminal\n\n` +
-      `Or ask me anything specific about the mission!`,
+      `🎄 **ELF WORKSHOP ASSISTANT**\n\n` +
+      `I can help with:\n\n` +
+      `**Party Info:**\n` +
+      `• Gift ideas (normal or funny!)\n` +
+      `• Food and menu details\n` +
+      `• White Elephant rules\n` +
+      `• Party time, date, location\n\n` +
+      `**Your Profile:**\n` +
+      `• View your agent card\n` +
+      `• See the roster of confirmed elves\n` +
+      `• Update your RSVP (contact hosts)\n\n` +
+      `Just ask me anything in your own words - I understand natural questions! 🎅`,
       300
     );
   };
@@ -653,20 +751,24 @@ const HQTerminal = ({ onComplete }) => {
       {/* Terminal Container */}
       <div className="w-full max-w-4xl h-[90vh] flex flex-col">
         {/* Terminal Header */}
-        <div className="bg-slate-800 px-6 py-3 rounded-t-lg border-b-2 border-green-500/30 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-red-900 to-green-900 px-6 py-3 rounded-t-lg border-b-2 border-green-500/50 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500"></div>
-              <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-              <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+              <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
+              <div className="w-3 h-3 rounded-full bg-yellow-300 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+              <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" style={{ animationDelay: '1s' }}></div>
             </div>
-            <span className="text-green-400 font-mono text-sm tracking-wider">
-              NORTH_POLE_INTELLIGENCE_TERMINAL
+            <span className="text-green-300 font-mono text-sm tracking-wider flex items-center gap-2">
+              <span className="text-xl">🎄</span>
+              ELF_WORKSHOP_CHAT_TERMINAL
+              <span className="text-xl">🎅</span>
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <div className="text-green-400/60 font-mono text-xs">
-              SECURE_CHANNEL_ACTIVE
+            <div className="text-green-300/70 font-mono text-xs flex items-center gap-1">
+              <span className="text-yellow-300">✨</span>
+              SANTA'S_NETWORK_CONNECTED
+              <span className="text-yellow-300">✨</span>
             </div>
             {/* Exit button - only show before completion */}
             {conversationState !== 'complete' && (

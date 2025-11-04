@@ -17,6 +17,8 @@ const Gallery = () => {
   const [filter, setFilter] = useState('all'); // 'all', 'photos', 'videos'
 
   // Surveillance-themed media with camera IDs and timestamps
+  // Note: Files can be in /gallery/ or /media/heist/ or /media/elephant/
+  // The Gallery component will display all party media
   const media = [
     {
       id: 1,
@@ -79,6 +81,9 @@ const Gallery = () => {
       caption: 'Subjects Departing - Operation Complete',
     },
   ];
+
+  // NOTE: When you add your actual media files, update this array to match
+  // the number of files you have. The import-media.sh script will help with this!
 
   const filteredMedia = filter === 'all' 
     ? media 
