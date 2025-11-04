@@ -15,6 +15,7 @@ export const AccessProvider = ({ children }) => {
   const [hasAccess, setHasAccess] = useState(false);
   const [isVIP, setIsVIP] = useState(false);
   const [agentName, setAgentName] = useState('');
+  const [codename, setCodename] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   // Check for existing access on mount
@@ -38,11 +39,13 @@ export const AccessProvider = ({ children }) => {
       const accessGranted = sessionStorage.getItem(EVENT_CONFIG.accessGate.sessionKey);
       const vipStatus = sessionStorage.getItem('heist_vip_status');
       const storedName = sessionStorage.getItem('heist_agent_name');
+      const storedCodename = sessionStorage.getItem('heist_codename');
 
       console.log('🔍 Session Storage:', {
         accessGranted,
         vipStatus,
-        storedName
+        storedName,
+        storedCodename
       });
 
       if (accessGranted === 'true') {
@@ -50,6 +53,7 @@ export const AccessProvider = ({ children }) => {
         setHasAccess(true);
         setIsVIP(vipStatus === 'true');
         setAgentName(storedName || '');
+        setCodename(storedCodename || '');
       } else {
         console.log('❌ No access found - user needs to authenticate');
       }
@@ -91,30 +95,35 @@ export const AccessProvider = ({ children }) => {
     return { valid: false, vip: false, name: '' };
   };
 
-  const grantAccess = (vip = false, name = '') => {
+  const grantAccess = (vip = false, name = '', agentCodename = '') => {
     setHasAccess(true);
     setIsVIP(vip);
     setAgentName(name);
+    setCodename(agentCodename);
     
     // Store in session storage
     sessionStorage.setItem(EVENT_CONFIG.accessGate.sessionKey, 'true');
     sessionStorage.setItem('heist_vip_status', vip ? 'true' : 'false');
     sessionStorage.setItem('heist_agent_name', name);
+    sessionStorage.setItem('heist_codename', agentCodename);
   };
 
   const revokeAccess = () => {
     setHasAccess(false);
     setIsVIP(false);
     setAgentName('');
+    setCodename('');
     sessionStorage.removeItem(EVENT_CONFIG.accessGate.sessionKey);
     sessionStorage.removeItem('heist_vip_status');
     sessionStorage.removeItem('heist_agent_name');
+    sessionStorage.removeItem('heist_codename');
   };
 
   const value = {
     hasAccess,
     isVIP,
     agentName,
+    codename,
     isLoading,
     validateCode,
     grantAccess,

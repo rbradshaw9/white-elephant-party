@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import { useAccess } from '../context/AccessContext';
 import generateCodename from '../utils/agentCodename';
 import EVENT_CONFIG from '../config/config';
 
@@ -10,12 +11,13 @@ import EVENT_CONFIG from '../config/config';
  * Intelligence Division agent registration
  * Features:
  * - Mission acceptance workflow
- * - Codename generator in form
+ * - Codename generator in form (auto-filled from quiz)
  * - Tactical styling with clearance levels
  * - Calendar export for mission briefing
  */
 const AgentRecruitment = () => {
   const { theme } = useTheme();
+  const { codename: quizCodename } = useAccess();
   const [formData, setFormData] = useState({
     name: '',
     codename: '',
@@ -26,6 +28,13 @@ const AgentRecruitment = () => {
     attending: 'yes',
     reminders: true,
   });
+
+  // Auto-fill codename from quiz on mount
+  useEffect(() => {
+    if (quizCodename && !formData.codename) {
+      setFormData((prev) => ({ ...prev, codename: quizCodename }));
+    }
+  }, [quizCodename]);
 
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -419,8 +428,7 @@ const AgentRecruitment = () => {
                   className={`flex-1 px-4 py-3 rounded-lg bg-slate-800/50 text-white border-2 font-mono ${
                     errors.codename ? 'border-red-500' : 'border-slate-700'
                   } focus:border-sky-500 focus:outline-none transition-all uppercase tracking-wider`}
-                  placeholder="Click to generate →"
-                  readOnly
+                  placeholder="Type or generate →"
                 />
                 <motion.button
                   type="button"
@@ -432,6 +440,11 @@ const AgentRecruitment = () => {
                   🎲 Generate
                 </motion.button>
               </div>
+              {quizCodename && formData.codename === quizCodename && (
+                <div className="mt-2 text-cyan-400 text-sm font-mono">
+                  ✓ Auto-filled from your quiz results
+                </div>
+              )}
               <AnimatePresence>
                 {showCodenameEffect && (
                   <motion.div

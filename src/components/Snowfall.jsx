@@ -3,15 +3,15 @@ import { useMemo } from 'react';
 
 /**
  * Snowfall Component
- * Subtle, modern falling snowflakes (or icy particles for heist theme)
+ * Bright, visible falling snowflakes for all themes
  */
 const Snowfall = ({ color = '#ffffff' }) => {
-  // Generate 30 snowflakes (reduced for cleaner look)
+  // Generate 40 snowflakes (increased for better coverage)
   const snowflakes = useMemo(() => {
-    return Array.from({ length: 30 }, (_, i) => ({
+    return Array.from({ length: 40 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
-      size: Math.random() * 4 + 2, // Smaller snowflakes
+      size: Math.random() * 5 + 3, // Larger snowflakes (3-8px)
       duration: Math.random() * 10 + 8,
       delay: Math.random() * 5,
       drift: (Math.random() - 0.5) * 30,
@@ -23,18 +23,19 @@ const Snowfall = ({ color = '#ffffff' }) => {
       {snowflakes.map((flake) => (
         <motion.div
           key={flake.id}
-          className="absolute rounded-full blur-[0.5px]"
+          className="absolute rounded-full"
           style={{
             left: `${flake.left}%`,
             width: `${flake.size}px`,
             height: `${flake.size}px`,
             top: '-10px',
-            backgroundColor: `${color}40`, // 40 is hex for 25% opacity
+            backgroundColor: color,
+            boxShadow: `0 0 ${flake.size}px ${color}`,
           }}
           animate={{
             y: ['0vh', '100vh'],
             x: [0, flake.drift, 0],
-            opacity: [0.6, 0.3, 0],
+            opacity: [0.9, 0.7, 0.3],
           }}
           transition={{
             duration: flake.duration,

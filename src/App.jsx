@@ -7,6 +7,7 @@ import RSVP from './pages/RSVP';
 import AdminGuestList from './pages/AdminGuestList';
 import AgentRoster from './pages/AgentRoster';
 import AccessGate from './pages/AccessGate';
+import Gallery from './pages/Gallery';
 import Snowfall from './components/Snowfall';
 import MusicToggle from './components/MusicToggle';
 import SleighAnimation from './components/SleighAnimation';
@@ -44,8 +45,8 @@ const AppContent = () => {
 
   return (
     <>
-      {/* Snowfall animation - visible on all pages except access gate */}
-      {!isAccessGate && <Snowfall color={theme.effects.particleColor} />}
+      {/* Snowfall animation - visible on ALL pages including access gate */}
+      <Snowfall color={isAccessGate ? '#4ade80' : theme.effects.particleColor} />
       
       {/* Sleigh animation - only for White Elephant theme */}
       {isElephantTheme && !isAccessGate && <SleighAnimation />}
@@ -65,8 +66,9 @@ const AppContent = () => {
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/rules" element={<ProtectedRoute><Rules /></ProtectedRoute>} />
         <Route path="/rsvp" element={<ProtectedRoute><RSVP /></ProtectedRoute>} />
-        <Route path="/roster" element={<ProtectedRoute><AgentRoster /></ProtectedRoute>} />
-        <Route path="/admin/guest-list" element={<ProtectedRoute><AdminGuestList /></ProtectedRoute>} />
+        <Route path="/roster" element={<AgentRoster />} />
+        <Route path="/gallery" element={<Gallery />} />
+        <Route path="/admin/guest-list" element={<AdminGuestList />} />
       </Routes>
     </>
   );

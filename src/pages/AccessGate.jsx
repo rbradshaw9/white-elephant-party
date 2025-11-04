@@ -127,9 +127,9 @@ const AccessGate = () => {
 
     // Simulate validation delay
     setTimeout(async () => {
-      const isValid = await validateCode(inputCode);
+      const result = validateCode(inputCode);
       
-      if (isValid) {
+      if (result.valid) {
         setValidationState('success');
         // After success animation, show quiz
         setTimeout(() => {
@@ -149,7 +149,7 @@ const AccessGate = () => {
   };  const handleCodenameComplete = (codename) => {
     setAssignedCodename(codename);
     // Store codename in access context
-    grantAccess(false, codename);
+    grantAccess(false, 'Agent', codename);
     // Redirect to main site
     setTimeout(() => {
       navigate('/');
@@ -276,10 +276,10 @@ const AccessGate = () => {
                 animate={{ opacity: 1 }}
                 className="mt-6"
               >
-                <form onSubmit={handleSubmit} className="flex items-center gap-2">
-                  <span className="text-cyan-400 font-bold">ENTER ACCESS CODE:</span>
+                <form onSubmit={handleSubmit} className="space-y-2">
+                  <div className="text-cyan-400 font-bold mb-2">ENTER ACCESS CODE:</div>
                   {showInput && (
-                    <div className="relative flex-1">
+                    <div className="relative flex items-center">
                       <input
                         ref={inputRef}
                         type="text"
@@ -298,7 +298,7 @@ const AccessGate = () => {
                       <motion.span
                         animate={{ opacity: [0, 1, 0] }}
                         transition={{ duration: 1, repeat: Infinity }}
-                        className="text-green-400 ml-1"
+                        className="text-green-400"
                       >
                         █
                       </motion.span>
