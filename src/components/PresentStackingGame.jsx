@@ -17,7 +17,7 @@ const CELL_SIZE = 24;
 
 // Tetromino shapes (present clusters)
 const SHAPES = {
-  I: { shape: [[1, 1, 1, 1]], color: 'from-red-500 to-red-600' },
+  I: { shape: [[1], [1], [1], [1]], color: 'from-red-500 to-red-600' },
   O: { shape: [[1, 1], [1, 1]], color: 'from-emerald-500 to-emerald-600' },
   T: { shape: [[0, 1, 0], [1, 1, 1]], color: 'from-blue-500 to-blue-600' },
   S: { shape: [[0, 1, 1], [1, 1, 0]], color: 'from-amber-500 to-amber-600' },
@@ -37,6 +37,63 @@ const PresentStackingGame = () => {
   const [highScore, setHighScore] = useState(0);
   const [lines, setLines] = useState(0);
   const [level, setLevel] = useState(1);
+
+  // Sound effects using Web Audio API
+  const playSound = (type) => {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    // Different sounds for different actions
+    switch(type) {
+      case 'move':
+        oscillator.frequency.value = 200;
+        gainNode.gain.value = 0.1;
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.05);
+        break;
+      case 'rotate':
+        oscillator.frequency.value = 400;
+        gainNode.gain.value = 0.15;
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.08);
+        break;
+      case 'land':
+        oscillator.frequency.value = 150;
+        gainNode.gain.value = 0.2;
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.1);
+        break;
+      case 'line':
+        // Happy sound for clearing lines
+        oscillator.frequency.value = 600;
+        gainNode.gain.value = 0.2;
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.15);
+        setTimeout(() => {
+          const osc2 = audioContext.createOscillator();
+          const gain2 = audioContext.createGain();
+          osc2.connect(gain2);
+          gain2.connect(audioContext.destination);
+          osc2.frequency.value = 800;
+          gain2.gain.value = 0.2;
+          osc2.start();
+          osc2.stop(audioContext.currentTime + 0.15);
+        }, 100);
+        break;
+      case 'gameover':
+        oscillator.frequency.value = 100;
+        gainNode.gain.value = 0.3;
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.3);
+        break;
+      default:
+        break;
+    }
+  };
 
   // Initialize empty board
   const createEmptyBoard = () => {
@@ -142,8 +199,13 @@ const PresentStackingGame = () => {
       setPosition(newPos);
     } else {
       // Piece has landed
+      playSound('land');
       const mergedBoard = mergePieceToBoard();
       const { newBoard, linesCleared } = clearLines(mergedBoard);
+      
+      if (linesCleared > 0) {
+        playSound('line');
+      }
       
       setBoard(newBoard);
       setLines(prev => prev + linesCleared);
@@ -156,6 +218,7 @@ const PresentStackingGame = () => {
       
       if (checkCollision(nextPiece, nextPos, newBoard)) {
         // Game over
+        playSound('gameover');
         setGameState('gameOver');
         if (score > highScore) {
           setHighScore(score);
@@ -179,12 +242,14 @@ const PresentStackingGame = () => {
         const newPos = { ...position, x: position.x - 1 };
         if (!checkCollision(currentPiece, newPos)) {
           setPosition(newPos);
+          playSound('move');
         }
       } else if (e.key === 'ArrowRight') {
         e.preventDefault();
         const newPos = { ...position, x: position.x + 1 };
         if (!checkCollision(currentPiece, newPos)) {
           setPosition(newPos);
+          playSound('move');
         }
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -194,6 +259,7 @@ const PresentStackingGame = () => {
         const rotated = rotatePiece(currentPiece);
         if (!checkCollision(rotated, position)) {
           setCurrentPiece(rotated);
+          playSound('rotate');
         }
       }
     };
