@@ -67,12 +67,12 @@ const AccessGate = () => {
     }
   }, [showInput]);
 
-  // Redirect if already has access
+  // Redirect if already has access (but not during initial load)
   useEffect(() => {
-    if (hasAccess) {
+    if (hasAccess && bootComplete) {
       navigate('/');
     }
-  }, [hasAccess, navigate]);
+  }, [hasAccess, bootComplete, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
