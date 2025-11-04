@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Snowfall from '../components/Snowfall';
 import api from '../utils/api';
 
 /**
@@ -46,44 +47,49 @@ const AdminGuestList = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="relative min-h-screen flex flex-col items-center justify-center p-6 z-10">
-        <motion.div
-          className="max-w-md w-full glass-card rounded-3xl p-8"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <h1 className="text-4xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-emerald-400 mb-6 text-center">
-            🔒 Classified Access
-          </h1>
-          <p className="text-slate-300 mb-6 text-center">Enter admin password to view agent roster</p>
-          
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-            className="w-full px-4 py-3 rounded-xl bg-slate-800/50 text-white border-2 border-slate-700 focus:border-emerald-500 focus:outline-none transition-all mb-4"
-            placeholder="Admin password"
-          />
-          
-          <button
-            onClick={handleLogin}
-            disabled={loading}
-            className="w-full btn-festive text-lg py-3"
+      <div className="relative min-h-screen">
+        <Snowfall />
+        <div className="relative min-h-screen flex flex-col items-center justify-center p-6 z-10">
+          <motion.div
+            className="max-w-md w-full glass-card rounded-3xl p-8"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
           >
-            {loading ? '🔓 Authenticating...' : '🔐 Access Agent Roster'}
-          </button>
+            <h1 className="text-4xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-emerald-400 mb-6 text-center">
+              🔒 Classified Access
+            </h1>
+            <p className="text-slate-300 mb-6 text-center">Enter admin password to view agent roster</p>
+            
+            <div className="space-y-4">
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+                className="w-full px-4 py-3 rounded-xl bg-slate-800/50 text-white border-2 border-slate-700 focus:border-emerald-500 focus:outline-none transition-all"
+                placeholder="Admin password"
+              />
+              
+              <button
+                onClick={handleLogin}
+                disabled={loading}
+                className="w-full btn-festive text-lg py-3"
+              >
+                {loading ? '🔓 Authenticating...' : '🔐 Access Agent Roster'}
+              </button>
+            </div>
 
-          {error && (
-            <motion.p
-              className="text-red-400 text-center mt-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              {error}
-            </motion.p>
-          )}
-        </motion.div>
+            {error && (
+              <motion.p
+                className="text-red-400 text-center mt-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                {error}
+              </motion.p>
+            )}
+          </motion.div>
+        </div>
       </div>
     );
   }
@@ -91,7 +97,9 @@ const AdminGuestList = () => {
   const { rsvps, stats } = guestList;
 
   return (
-    <div className="relative min-h-screen p-6 py-20 z-10">
+    <div className="relative min-h-screen">
+      <Snowfall />
+      <div className="relative min-h-screen p-6 py-20 z-10">
       <div className="max-w-6xl mx-auto">
         <motion.div
           className="text-center mb-8"
@@ -266,6 +274,7 @@ const AdminGuestList = () => {
           </motion.div>
         )}
       </div>
+    </div>
     </div>
   );
 };

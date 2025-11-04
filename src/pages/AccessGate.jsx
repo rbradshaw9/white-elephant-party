@@ -118,38 +118,35 @@ const AccessGate = () => {
     }
   }, [showInput]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!inputCode.trim()) return;
 
     setValidationState('validating');
-    
-    // Simulate validation delay for drama (slowed for better effect)
-    setTimeout(() => {
-      const result = validateCode(inputCode);
+
+    // Simulate validation delay
+    setTimeout(async () => {
+      const isValid = await validateCode(inputCode);
       
-      if (result.valid) {
+      if (isValid) {
         setValidationState('success');
-        // Show unlock animation, then launch quiz
+        // After success animation, show quiz
         setTimeout(() => {
           setValidationState('quiz');
-        }, 3500); // Show success animation for 3.5s before quiz
+        }, 3500);
       } else {
         setValidationState('denied');
-        setAttempts((prev) => prev + 1);
-        setInputCode('');
-        
+        setAttempts(prev => prev + 1);
         // Reset after showing error
         setTimeout(() => {
           setValidationState(null);
-          if (inputRef.current) inputRef.current.focus();
-        }, 3000); // Slowed from 2000ms to 3000ms
+          setInputCode('');
+          inputRef.current?.focus();
+        }, 3000);
       }
-    }, 2000); // Slowed from 1500ms to 2000ms
-  };
-
-  const handleCodenameComplete = (codename) => {
+    }, 2000);
+  };  const handleCodenameComplete = (codename) => {
     setAssignedCodename(codename);
     // Store codename in access context
     grantAccess(false, codename);
@@ -467,6 +464,23 @@ const AccessGate = () => {
           90% { transform: translate(10%, 5%); }
         }
       `}</style>
+
+      {/* Codename Quiz Overlay */}
+      <AnimatePresence>
+        {validationState === 'quiz' && (
+          <motion.div
+            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <CodenameQuiz 
+              onComplete={handleCodenameComplete}
+              isHeistTheme={isHeistTheme}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

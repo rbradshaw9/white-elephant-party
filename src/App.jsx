@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Rules from './pages/Rules';
 import RSVP from './pages/RSVP';
 import AdminGuestList from './pages/AdminGuestList';
+import AgentRoster from './pages/AgentRoster';
 import AccessGate from './pages/AccessGate';
 import Snowfall from './components/Snowfall';
 import MusicToggle from './components/MusicToggle';
@@ -64,6 +65,7 @@ const AppContent = () => {
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/rules" element={<ProtectedRoute><Rules /></ProtectedRoute>} />
         <Route path="/rsvp" element={<ProtectedRoute><RSVP /></ProtectedRoute>} />
+        <Route path="/roster" element={<ProtectedRoute><AgentRoster /></ProtectedRoute>} />
         <Route path="/admin/guest-list" element={<ProtectedRoute><AdminGuestList /></ProtectedRoute>} />
       </Routes>
     </>

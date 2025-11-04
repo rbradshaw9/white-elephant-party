@@ -144,6 +144,39 @@ app.post('/api/rsvp', (req, res) => {
 });
 
 /**
+ * Get public roster (attending guests only, no contact info)
+ * GET /api/public-roster
+ */
+app.get('/api/public-roster', (req, res) => {
+  try {
+    const allRsvps = rsvpQueries.getAll();
+    const attendingOnly = allRsvps.filter(r => r.attending === 'yes');
+    const stats = rsvpQueries.getStats();
+
+    // Format for public view - only show name, codename, and guest count
+    const publicRsvps = attendingOnly.map(rsvp => ({
+      name: rsvp.name,
+      codename: rsvp.codename,
+      guests: rsvp.guests,
+      attending: 'yes'
+    }));
+
+    res.json({
+      rsvps: publicRsvps,
+      stats: {
+        total: stats.total,
+        attending: stats.attending,
+        notAttending: stats.not_attending,
+        totalGuests: stats.total_guests
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching public roster:', error);
+    res.status(500).json({ error: 'Failed to fetch public roster' });
+  }
+});
+
+/**
  * Get guest list (admin only)
  * GET /api/guest-list
  * Requires Authorization header with admin password

@@ -72,6 +72,13 @@ class ApiClient {
   }
 
   /**
+   * Get public roster (no auth required)
+   */
+  async getPublicRoster() {
+    return this.fetch('/api/public-roster');
+  }
+
+  /**
    * Get guest list (admin only)
    */
   async getGuestList(adminPassword) {
