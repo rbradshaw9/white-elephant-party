@@ -20,18 +20,12 @@ echo ""
 PROJECT_DIR="/Users/ryanbradshaw/Git Projects/white-elephant-party"
 GALLERY_DIR="$PROJECT_DIR/public/gallery"
 THUMBS_DIR="$GALLERY_DIR/thumbs"
-MEDIA_DIR="$PROJECT_DIR/public/media"
 
 # Create directories if they don't exist
 mkdir -p "$GALLERY_DIR"
 mkdir -p "$THUMBS_DIR"
-mkdir -p "$MEDIA_DIR/heist"
-mkdir -p "$MEDIA_DIR/elephant"
 
-echo -e "${GREEN}✓${NC} Media directories ready"
-echo "  • Gallery: $GALLERY_DIR"
-echo "  • Heist theme: $MEDIA_DIR/heist"
-echo "  • Elephant theme: $MEDIA_DIR/elephant"
+echo -e "${GREEN}✓${NC} Gallery directory ready: $GALLERY_DIR"
 echo ""
 
 # Function to check if ImageMagick is installed
@@ -176,15 +170,6 @@ echo ""
 echo -e "${GREEN}✓${NC} Files copied successfully!"
 echo ""
 
-# Copy first photo to media directories for hero backgrounds
-if [ -f "$GALLERY_DIR/2024-cam1.jpg" ]; then
-  echo -e "${BLUE}Setting up hero backgrounds...${NC}"
-  cp "$GALLERY_DIR/2024-cam1.jpg" "$MEDIA_DIR/heist/vault-bg.jpg"
-  cp "$GALLERY_DIR/2024-cam1.jpg" "$MEDIA_DIR/elephant/presents.jpg"
-  echo -e "  ${GREEN}✓${NC} Hero background images created"
-  echo ""
-fi
-
 # Summary
 TOTAL_FILES=$((counter - 1))
 echo -e "${BLUE}Summary:${NC}"
@@ -209,9 +194,11 @@ echo "2. Test locally:"
 echo "   npm run dev"
 echo "   Visit: http://localhost:5173/gallery"
 echo ""
-echo "3. Commit and push:"
+echo "3. Commit and deploy (media files upload like any other file!):"
 echo "   git add public/gallery/"
-echo "   git commit -m \"Add $TOTAL_FILES party media files from Dec 2024\""
+echo "   git commit -m \"Add $TOTAL_FILES party media files\""
 echo "   git push origin main"
+echo ""
+echo "   ✨ Vercel/Netlify will automatically deploy your media!"
 echo ""
 echo -e "${GREEN}Done! 🎉${NC}"

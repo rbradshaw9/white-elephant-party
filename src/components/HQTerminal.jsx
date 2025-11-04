@@ -40,6 +40,7 @@ const HQTerminal = ({ onComplete }) => {
   const [currentPersonalityQ, setCurrentPersonalityQ] = useState(0);
   const [aiConversationHistory, setAiConversationHistory] = useState([]); // For OpenAI context
   const [totalPersonalityQuestions] = useState(3); // Will ask 3-5 AI-generated questions
+  const [askedForFunnyGifts, setAskedForFunnyGifts] = useState(false); // Track if user already saw funny gifts
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -250,10 +251,69 @@ const HQTerminal = ({ onComplete }) => {
       lowerInput.includes('weird') ||
       lowerInput.includes('creative')
     ) {
+      // Check if they're asking for MORE ideas (after already seeing the list)
+      const wantsMore = lowerInput.includes('more') || lowerInput.includes('other') || lowerInput.includes('else') || lowerInput.includes('different') || lowerInput.includes('additional');
+      
       // Check if they want funny/weird/unusual gifts specifically
       const wantsFunny = lowerInput.includes('funny') || lowerInput.includes('weird') || lowerInput.includes('unusual') || lowerInput.includes('hilarious') || lowerInput.includes('gag');
       
-      if (wantsFunny) {
+      // If they want MORE ideas and already saw the funny list, use AI
+      if (wantsMore && askedForFunnyGifts) {
+        addHQMessage(
+          `🤖 **AI GIFT RESEARCH MODE ACTIVATED**\n\n` +
+          `Let me search the North Pole archives for fresh gift ideas...\n\n` +
+          `(Powered by AI - this may take a moment)`,
+          300
+        );
+        
+        // Use AI to generate more creative ideas
+        setTimeout(async () => {
+          try {
+            const aiResponse = await fetch('/api/chat', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                messages: [
+                  {
+                    role: 'system',
+                    content: 'You are a helpful elf assistant at the North Pole helping people find creative White Elephant gift ideas in the $25-50 range. Be fun, festive, and specific with real product suggestions.'
+                  },
+                  {
+                    role: 'user',
+                    content: `The user has already seen our standard funny gift list. They want MORE unique, hilarious, or creative gift ideas for a White Elephant party ($25-50 budget). Give them 8-10 NEW ideas they haven\'t seen yet. Be specific and fun!`
+                  }
+                ]
+              })
+            });
+            
+            if (!aiResponse.ok) throw new Error('AI service unavailable');
+            
+            const data = await aiResponse.json();
+            addHQMessage(
+              `✨ **AI-POWERED GIFT IDEAS**\n\n${data.reply}\n\n` +
+              `Want even more? Just ask! 🎅`,
+              500
+            );
+          } catch (error) {
+            console.error('AI gift search failed:', error);
+            addHQMessage(
+              `⚠️ **AI TEMPORARILY OFFLINE**\n\n` +
+              `The North Pole AI servers are busy! Try these instead:\n\n` +
+              `• Check out /r/WhiteElephant on Reddit\n` +
+              `• Browse "funny gifts under $50" on Amazon\n` +
+              `• Ask ChatGPT for personalized suggestions\n` +
+              `• Search "unique white elephant gifts 2024"\n\n` +
+              `Or type any other question about the party!`,
+              300
+            );
+          }
+        }, 1500);
+        return;
+      }
+      
+      // First time or asking for funny - show pre-scripted list
+      if (wantsFunny && !askedForFunnyGifts) {
+        setAskedForFunnyGifts(true); // Track that they've seen the list
         addHQMessage(
           `😂 **HILARIOUS GIFT IDEAS FOR $25-$50**\n\n` +
           `Based on elf workshop intel, these are guaranteed laughs:\n\n` +
@@ -275,10 +335,61 @@ const HQTerminal = ({ onComplete }) => {
           `• Bacon-scented candle\n` +
           `• Screaming goat (the toy that screams when squeezed)\n\n` +
           `Remember: The goal is to make people laugh AND fight over it!\n\n` +
-          `Want more "normal" gift ideas? Just ask!`,
+          `Want **more** funny ideas? Ask for "more"! Or try "normal" gift ideas.`,
           500
         );
+      } else if (wantsFunny && askedForFunnyGifts) {
+        // Already saw funny, asking again - trigger AI
+        addHQMessage(
+          `🤖 **AI GIFT RESEARCH MODE ACTIVATED**\n\n` +
+          `Searching the workshop archives for MORE hilarious ideas...\n\n` +
+          `(Powered by AI - this may take a moment)`,
+          300
+        );
+        
+        setTimeout(async () => {
+          try {
+            const aiResponse = await fetch('/api/chat', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                messages: [
+                  {
+                    role: 'system',
+                    content: 'You are a helpful elf assistant at the North Pole helping people find creative White Elephant gift ideas in the $25-50 range. Be fun, festive, and specific with real product suggestions.'
+                  },
+                  {
+                    role: 'user',
+                    content: `Give me 8-10 MORE funny/hilarious White Elephant gift ideas ($25-50). The user has already seen: giant wine glass, Bigfoot air freshener, toilet night light, desktop punching bag, Nicolas Cage pillow, yodeling pickle, Bob Ross Chia Pet, etc. Give them NEW ideas!`
+                  }
+                ]
+              })
+            });
+            
+            if (!aiResponse.ok) throw new Error('AI service unavailable');
+            
+            const data = await aiResponse.json();
+            addHQMessage(
+              `😂 **MORE HILARIOUS IDEAS (AI-POWERED)**\n\n${data.reply}\n\n` +
+              `Need EVEN MORE? Keep asking! The AI never runs out! 🎅`,
+              500
+            );
+          } catch (error) {
+            console.error('AI gift search failed:', error);
+            addHQMessage(
+              `⚠️ **AI TEMPORARILY OFFLINE**\n\n` +
+              `The North Pole AI is on a cookie break! Try:\n\n` +
+              `• Amazon: "funny white elephant gifts"\n` +
+              `• Reddit: r/WhiteElephant\n` +
+              `• TikTok: #whiteelephantgifts\n` +
+              `• Google: "weird gifts under $50"\n\n` +
+              `Or ask me about party details, food, or rules!`,
+              300
+            );
+          }
+        }, 1500);
       } else {
+        // Normal gift ideas (not funny)
         addHQMessage(
           `🎁 **GIFT IDEAS FOR $25-$50**\n\n` +
           `Based on workshop intel, here are some crowd-pleasers:\n\n` +
