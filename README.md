@@ -53,10 +53,13 @@ A beautifully crafted White Elephant Party website with Apple-level design polis
 
 ## 🎁 Features
 
-- **Stunning Landing Page** - Refined design with animated snowfall, candy-cane borders, and elegant typography
+- **Terminal Access Gate** - Retro CRT-style authentication with boot sequence, animated progress bar, and typing effects
+- **AI-Powered Codenames** - Personalized elf-themed agent codenames generated via OpenAI based on a fun personality quiz
+- **Codename Uniqueness** - Registry system ensures no duplicate codenames across all users
+- **Dual Themes** - Toggle between "Heist Mode" (spy aesthetics) and "Party Mode" (cheerful vibes)
 - **RSVP System** - Beautiful form with validation, smooth animations, and success states
 - **AI Memory Match Game** - Play against an intelligent AI opponent with adjustable difficulty levels
-- **Rules Page** - Clear, beautifully formatted White Elephant game rules
+- **Mission Brief** - Clear, beautifully formatted White Elephant game rules
 - **Background Music** - Toggle-able sleigh bells audio for extra holiday cheer
 - **Fully Responsive** - Pixel-perfect on desktop, tablet, and mobile
 - **Smooth Animations** - Apple-quality micro-interactions powered by Framer Motion
@@ -75,6 +78,7 @@ A beautifully crafted White Elephant Party website with Apple-level design polis
 
 - Node.js (v16 or higher)
 - npm or yarn
+- OpenAI API key (for AI-powered codename generation)
 
 ### Installation
 
@@ -89,12 +93,31 @@ cd white-elephant-party
 npm install
 ```
 
-3. Start the development server:
+3. **Configure OpenAI API Key:**
+
+   Create a `.env` file in the root directory:
+   ```bash
+   VITE_OPENAI_API_KEY=your-openai-api-key-here
+   ```
+
+   Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
+
+   **Important:** Never commit your `.env` file to Git. It's already in `.gitignore`.
+
+4. Start the development server:
 ```bash
 npm run dev
 ```
 
-4. Open your browser to the URL shown in the terminal (usually `http://localhost:5173`)
+5. Open your browser to the URL shown in the terminal (usually `http://localhost:5173`)
+
+### Universal Access Code
+
+The site uses a terminal-style access gate. The universal access code is:
+
+**RED-SLEIGH-2025**
+
+(This can be changed in `src/pages/AccessGate.jsx`)
 
 ### Building for Production
 
@@ -113,14 +136,23 @@ white-elephant-party/
 │   ├── components/
 │   │   ├── Snowfall.jsx    # Animated snowfall effect
 │   │   ├── MusicToggle.jsx # Background music control
-│   │   └── MatchingGame.jsx # AI-powered memory game
+│   │   ├── MatchingGame.jsx # AI-powered memory game
+│   │   └── CodenameQuiz.jsx # Personality quiz for AI codenames
 │   ├── pages/
 │   │   ├── Home.jsx        # Landing page
-│   │   ├── Rules.jsx       # Game rules page
-│   │   └── RSVP.jsx        # RSVP form page
+│   │   ├── AccessGate.jsx  # Terminal-style access gate
+│   │   ├── MissionBrief.jsx # Game rules (heist theme)
+│   │   ├── Rules.jsx       # Game rules (party theme)
+│   │   └── AgentRecruitment.jsx # RSVP form
+│   ├── utils/
+│   │   ├── aiCodenameGenerator.js # OpenAI-powered codename generation
+│   │   └── codenameRegistry.js    # Uniqueness tracking system
+│   ├── context/
+│   │   └── AccessContext.jsx # Global access state management
 │   ├── App.jsx             # Main app with routing
 │   ├── main.jsx            # App entry point
 │   └── index.css           # Global styles with Tailwind
+├── .env                    # OpenAI API key (DO NOT COMMIT)
 ├── index.html              # HTML template with meta tags
 ├── package.json
 ├── vite.config.js

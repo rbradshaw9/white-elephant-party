@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAccess } from '../context/AccessContext';
 import { useTheme } from '../context/ThemeContext';
+import CodenameQuiz from '../components/CodenameQuiz';
 
 /**
  * Access Gate Component
@@ -11,20 +12,21 @@ import { useTheme } from '../context/ThemeContext';
  * - Retro CRT terminal aesthetics
  * - Typewriter boot sequence
  * - Code validation with animations
+ * - AI-powered codename quiz
  * - Vault unlock effect
- * - Sound effects (optional)
  */
 const AccessGate = () => {
   const navigate = useNavigate();
-  const { validateCode, hasAccess, isLoading } = useAccess();
-  const { setTheme } = useTheme();
+  const { validateCode, hasAccess, isLoading, grantAccess } = useAccess();
+  const { setTheme, isHeistTheme } = useTheme();
   const [inputCode, setInputCode] = useState('');
   const [showInput, setShowInput] = useState(false);
   const [bootComplete, setBootComplete] = useState(false);
-  const [validationState, setValidationState] = useState(null); // 'validating', 'success', 'denied'
+  const [validationState, setValidationState] = useState(null); // 'validating', 'success', 'denied', 'quiz'
   const [attempts, setAttempts] = useState(0);
   const [bootText, setBootText] = useState([]);
   const [progressPercent, setProgressPercent] = useState(0);
+  const [assignedCodename, setAssignedCodename] = useState('');
   const inputRef = useRef(null);
 
   // Boot sequence messages
@@ -129,10 +131,10 @@ const AccessGate = () => {
       
       if (result.valid) {
         setValidationState('success');
-        // Play unlock animation, then redirect
+        // Show unlock animation, then launch quiz
         setTimeout(() => {
-          navigate('/');
-        }, 3500); // Slowed from 2500ms to 3500ms
+          setValidationState('quiz');
+        }, 3500); // Show success animation for 3.5s before quiz
       } else {
         setValidationState('denied');
         setAttempts((prev) => prev + 1);
@@ -145,6 +147,16 @@ const AccessGate = () => {
         }, 3000); // Slowed from 2000ms to 3000ms
       }
     }, 2000); // Slowed from 1500ms to 2000ms
+  };
+
+  const handleCodenameComplete = (codename) => {
+    setAssignedCodename(codename);
+    // Store codename in access context
+    grantAccess(false, codename);
+    // Redirect to main site
+    setTimeout(() => {
+      navigate('/');
+    }, 500);
   };
 
   const handleInputChange = (e) => {

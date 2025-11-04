@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import api from '../utils/api';
 
 /**
  * Admin Guest List Viewer
- * Protected page to view all RSVPs
+ * Protected page to view all RSVPs from backend
  */
 const AdminGuestList = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -23,26 +24,13 @@ const AdminGuestList = () => {
     setError('');
 
     try {
-      const response = await fetch('/api/guest-list', {
-        headers: {
-          'Authorization': `Bearer ${token || localStorage.getItem('adminToken')}`,
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          setIsAuthenticated(false);
-          localStorage.removeItem('adminToken');
-          throw new Error('Invalid password');
-        }
-        throw new Error('Failed to fetch guest list');
-      }
-
-      const data = await response.json();
+      const data = await api.getGuestList(token || localStorage.getItem('adminToken'));
       setGuestList(data);
       setIsAuthenticated(true);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Failed to fetch guest list');
+      setIsAuthenticated(false);
+      localStorage.removeItem('adminToken');
     } finally {
       setLoading(false);
     }
@@ -65,9 +53,9 @@ const AdminGuestList = () => {
           animate={{ opacity: 1, y: 0 }}
         >
           <h1 className="text-4xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-emerald-400 mb-6 text-center">
-            🔒 Admin Access
+            🔒 Classified Access
           </h1>
-          <p className="text-slate-300 mb-6 text-center">Enter admin password to view guest list</p>
+          <p className="text-slate-300 mb-6 text-center">Enter admin password to view agent roster</p>
           
           <input
             type="password"
@@ -83,7 +71,7 @@ const AdminGuestList = () => {
             disabled={loading}
             className="w-full btn-festive text-lg py-3"
           >
-            {loading ? 'Checking...' : 'View Guest List'}
+            {loading ? '🔓 Authenticating...' : '🔐 Access Agent Roster'}
           </button>
 
           {error && (
@@ -111,13 +99,14 @@ const AdminGuestList = () => {
           animate={{ opacity: 1, y: 0 }}
         >
           <h1 className="text-5xl md:text-7xl mb-4 font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-emerald-400">
-            Guest List
+            📋 Agent Roster
           </h1>
+          <p className="text-slate-400 mb-4">Classified Agent Registry - Eyes Only</p>
           <button
             onClick={() => fetchGuestList()}
-            className="text-slate-400 hover:text-slate-300 transition-colors"
+            className="text-emerald-400 hover:text-emerald-300 transition-colors font-mono text-sm"
           >
-            🔄 Refresh
+            🔄 REFRESH DATABASE
           </button>
         </motion.div>
 
@@ -130,7 +119,7 @@ const AdminGuestList = () => {
             transition={{ delay: 0.1 }}
           >
             <div className="text-3xl font-bold text-emerald-400">{stats.attending || 0}</div>
-            <div className="text-slate-400 text-sm mt-1">Attending</div>
+            <div className="text-slate-400 text-sm mt-1">Active Agents</div>
           </motion.div>
 
           <motion.div
@@ -140,7 +129,7 @@ const AdminGuestList = () => {
             transition={{ delay: 0.2 }}
           >
             <div className="text-3xl font-bold text-red-400">{stats.notAttending || 0}</div>
-            <div className="text-slate-400 text-sm mt-1">Not Attending</div>
+            <div className="text-slate-400 text-sm mt-1">Declined</div>
           </motion.div>
 
           <motion.div
@@ -150,7 +139,7 @@ const AdminGuestList = () => {
             transition={{ delay: 0.3 }}
           >
             <div className="text-3xl font-bold text-amber-400">{stats.totalGuests || 0}</div>
-            <div className="text-slate-400 text-sm mt-1">Total Guests</div>
+            <div className="text-slate-400 text-sm mt-1">Total Operatives</div>
           </motion.div>
 
           <motion.div
@@ -177,13 +166,13 @@ const AdminGuestList = () => {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th className="text-left py-3 px-4 text-slate-300 font-semibold">Name</th>
-                  <th className="text-left py-3 px-4 text-slate-300 font-semibold">Email</th>
+                  <th className="text-left py-3 px-4 text-slate-300 font-semibold">Agent Name</th>
+                  <th className="text-left py-3 px-4 text-slate-300 font-semibold">Codename</th>
+                  <th className="text-left py-3 px-4 text-slate-300 font-semibold">Contact</th>
                   <th className="text-left py-3 px-4 text-slate-300 font-semibold">Status</th>
-                  <th className="text-left py-3 px-4 text-slate-300 font-semibold">Guests</th>
+                  <th className="text-left py-3 px-4 text-slate-300 font-semibold">+Guests</th>
                   <th className="text-left py-3 px-4 text-slate-300 font-semibold">Dietary</th>
-                  <th className="text-left py-3 px-4 text-slate-300 font-semibold">Reminder</th>
-                  <th className="text-left py-3 px-4 text-slate-300 font-semibold">Submitted</th>
+                  <th className="text-left py-3 px-4 text-slate-300 font-semibold">Recruited</th>
                 </tr>
               </thead>
               <tbody>
@@ -192,8 +181,22 @@ const AdminGuestList = () => {
                     key={index}
                     className="border-b border-slate-800 hover:bg-slate-800/30 transition-colors"
                   >
-                    <td className="py-3 px-4 text-white">{rsvp.name}</td>
-                    <td className="py-3 px-4 text-slate-300 text-sm">{rsvp.email}</td>
+                    <td className="py-3 px-4 text-white font-semibold">{rsvp.name}</td>
+                    <td className="py-3 px-4">
+                      {rsvp.codename ? (
+                        <span className="text-emerald-400 font-mono text-sm">
+                          🎯 {rsvp.codename}
+                        </span>
+                      ) : (
+                        <span className="text-slate-500 text-sm">—</span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="text-slate-300 text-sm">{rsvp.email}</div>
+                      {rsvp.phone && (
+                        <div className="text-slate-500 text-xs">{rsvp.phone}</div>
+                      )}
+                    </td>
                     <td className="py-3 px-4">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -202,19 +205,16 @@ const AdminGuestList = () => {
                             : 'bg-red-500/20 text-red-400'
                         }`}
                       >
-                        {rsvp.attending === 'yes' ? '✓ Yes' : '✗ No'}
+                        {rsvp.attending === 'yes' ? '✓ ACTIVE' : '✗ DECLINED'}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-slate-300">
-                      {rsvp.attending === 'yes' ? rsvp.guests : '-'}
+                    <td className="py-3 px-4 text-slate-300 text-center">
+                      {rsvp.attending === 'yes' ? rsvp.guests : '—'}
                     </td>
                     <td className="py-3 px-4 text-slate-400 text-sm max-w-xs truncate">
-                      {rsvp.dietaryRestrictions || '-'}
+                      {rsvp.dietaryRestrictions || '—'}
                     </td>
-                    <td className="py-3 px-4 text-slate-400 text-sm">
-                      {rsvp.attending === 'yes' ? rsvp.reminderPreference : '-'}
-                    </td>
-                    <td className="py-3 px-4 text-slate-400 text-sm">
+                    <td className="py-3 px-4 text-slate-400 text-xs font-mono">
                       {new Date(rsvp.submittedAt).toLocaleDateString()}
                     </td>
                   </tr>
@@ -235,10 +235,12 @@ const AdminGuestList = () => {
             <button
               onClick={() => {
                 const csv = [
-                  ['Name', 'Email', 'Attending', 'Guests', 'Dietary', 'Reminder', 'Submitted'],
+                  ['Name', 'Codename', 'Email', 'Phone', 'Attending', 'Guests', 'Dietary', 'Reminders', 'Submitted'],
                   ...rsvps.map(r => [
                     r.name,
+                    r.codename || '',
                     r.email,
+                    r.phone || '',
                     r.attending,
                     r.guests || '',
                     r.dietaryRestrictions || '',
@@ -253,13 +255,13 @@ const AdminGuestList = () => {
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = `white-elephant-rsvps-${new Date().toISOString().split('T')[0]}.csv`;
+                link.download = `agent-roster-${new Date().toISOString().split('T')[0]}.csv`;
                 link.click();
                 URL.revokeObjectURL(url);
               }}
               className="btn-festive-green text-base px-6 py-3"
             >
-              📥 Export as CSV
+              📥 Export Agent Database
             </button>
           </motion.div>
         )}
