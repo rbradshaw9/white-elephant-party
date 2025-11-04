@@ -1,64 +1,82 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Snowfall from '../components/Snowfall';
+import ClassifiedPhoto from '../components/ClassifiedPhoto';
 import { Link } from 'react-router-dom';
 
 /**
  * Gallery Component
  * Showcase of last year's White Elephant Party
  * Features:
- * - Photo/video grid
+ * - Surveillance-style photo/video grid
  * - Lightbox modal for full-size viewing
- * - Festive animations
+ * - Classified file aesthetic
  */
 const Gallery = () => {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [filter, setFilter] = useState('all'); // 'all', 'photos', 'videos'
 
-  // TODO: Replace with your actual media files
-  // Place images in /public/gallery/ folder
+  // Surveillance-themed media with camera IDs and timestamps
   const media = [
     {
       id: 1,
       type: 'photo',
-      src: '/gallery/2024-1.jpg',
-      thumbnail: '/gallery/thumbs/2024-1.jpg',
-      caption: 'The chaos begins!',
+      src: '/gallery/2024-cam1.jpg',
+      thumbnail: '/gallery/thumbs/2024-cam1.jpg',
+      camera: 'CAM-01',
+      timestamp: '2024-12-13 19:23:17',
+      location: 'Gift Exchange Area',
+      caption: 'Gift Unwrapping Protocol - Subject A',
     },
     {
       id: 2,
       type: 'photo',
-      src: '/gallery/2024-2.jpg',
-      thumbnail: '/gallery/thumbs/2024-2.jpg',
-      caption: 'Gift opening shenanigans',
+      src: '/gallery/2024-cam2.jpg',
+      thumbnail: '/gallery/thumbs/2024-cam2.jpg',
+      camera: 'CAM-02',
+      timestamp: '2024-12-13 19:47:42',
+      location: 'Main Party Hall',
+      caption: 'Group Assembly - All Agents Present',
     },
     {
       id: 3,
       type: 'video',
-      src: '/gallery/2024-video-1.mp4',
-      thumbnail: '/gallery/thumbs/2024-video-1-thumb.jpg',
-      caption: 'The great steal of 2024',
+      src: '/gallery/2024-cam3.mp4',
+      thumbnail: '/gallery/thumbs/2024-cam3-thumb.jpg',
+      camera: 'CAM-03',
+      timestamp: '2024-12-13 20:15:08',
+      location: 'Refreshment Station',
+      caption: 'Cookie Acquisition in Progress',
     },
     {
       id: 4,
       type: 'photo',
-      src: '/gallery/2024-3.jpg',
-      thumbnail: '/gallery/thumbs/2024-3.jpg',
-      caption: 'Party vibes',
+      src: '/gallery/2024-cam4.jpg',
+      thumbnail: '/gallery/thumbs/2024-cam4.jpg',
+      camera: 'CAM-04',
+      timestamp: '2024-12-13 20:33:55',
+      location: 'Gift Exchange Area',
+      caption: 'Gift Steal Maneuver - Successful',
     },
     {
       id: 5,
       type: 'photo',
-      src: '/gallery/2024-4.jpg',
-      thumbnail: '/gallery/thumbs/2024-4.jpg',
-      caption: 'The winner\'s circle',
+      src: '/gallery/2024-cam5.jpg',
+      thumbnail: '/gallery/thumbs/2024-cam5.jpg',
+      camera: 'CAM-01',
+      timestamp: '2024-12-13 21:02:31',
+      location: 'Main Party Hall',
+      caption: 'Mission Completion - Team Photo',
     },
     {
       id: 6,
       type: 'video',
-      src: '/gallery/2024-video-2.mp4',
-      thumbnail: '/gallery/thumbs/2024-video-2-thumb.jpg',
-      caption: 'Someone got pranked',
+      src: '/gallery/2024-cam6.mp4',
+      thumbnail: '/gallery/thumbs/2024-cam6-thumb.jpg',
+      camera: 'CAM-02',
+      timestamp: '2024-12-13 21:18:19',
+      location: 'Exit Corridor',
+      caption: 'Subjects Departing - Operation Complete',
     },
   ];
 
@@ -98,32 +116,40 @@ const Gallery = () => {
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
           >
+            <div className="inline-flex items-center gap-3 mb-4 bg-black/80 px-6 py-3 rounded-full border border-red-500/50">
+              <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+              <span className="text-red-500 font-mono text-xs font-bold tracking-wider">CLASSIFIED ARCHIVE</span>
+            </div>
+            
             <h1 className="text-5xl md:text-7xl mb-4 font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-emerald-400">
-              📸 Last Year's Chaos
+              � Surveillance Footage
             </h1>
-            <p className="text-xl text-slate-300 mb-6">
-              Relive the madness from 2024
+            <p className="text-xl text-slate-300 mb-2">
+              Operation Santa's Manifest - December 13, 2024
+            </p>
+            <p className="text-sm text-slate-500 font-mono">
+              [SECURITY CLEARANCE: LEVEL 3 - PARTY PARTICIPANTS ONLY]
             </p>
             
             {/* Filter Buttons */}
-            <div className="flex gap-3 justify-center">
+            <div className="flex gap-3 justify-center mt-8">
               {['all', 'photos', 'videos'].map((f) => (
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
-                  className={`px-6 py-2 rounded-full font-medium transition-all ${
+                  className={`px-6 py-2 rounded-full font-mono text-sm transition-all ${
                     filter === f
-                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                      : 'bg-slate-800/50 text-slate-400 hover:bg-slate-700/50'
+                      ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/30 border border-cyan-400'
+                      : 'bg-slate-800/50 text-slate-400 hover:bg-slate-700/50 border border-slate-700'
                   }`}
                 >
-                  {f === 'all' ? '🎄 All' : f === 'photos' ? '📷 Photos' : '🎥 Videos'}
+                  {f === 'all' ? '[ALL CAMERAS]' : f === 'photos' ? '[STILLS]' : '[VIDEO]'}
                 </button>
               ))}
             </div>
           </motion.div>
 
-          {/* Media Grid */}
+          {/* Media Grid with Surveillance Styling */}
           <motion.div
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
             initial={{ opacity: 0 }}
@@ -133,43 +159,41 @@ const Gallery = () => {
             {filteredMedia.map((item, index) => (
               <motion.div
                 key={item.id}
-                className="relative group cursor-pointer glass-card rounded-2xl overflow-hidden"
+                className="relative group cursor-pointer"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * index }}
                 onClick={() => handleMediaClick(item)}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                {/* Thumbnail */}
-                <div className="aspect-video relative overflow-hidden bg-slate-800">
-                  <img
+                {item.type === 'photo' ? (
+                  <ClassifiedPhoto
                     src={item.thumbnail}
-                    alt={item.caption}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                    onError={(e) => {
-                      // Fallback to placeholder if image not found
-                      e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23334155" width="400" height="300"/%3E%3Ctext fill="%2394a3b8" font-family="sans-serif" font-size="24" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3E🎄 Photo%3C/text%3E%3C/svg%3E';
-                    }}
+                    camera={item.camera}
+                    timestamp={item.timestamp}
+                    location={item.location}
+                    caption={item.caption}
+                    className="aspect-video"
                   />
-                  
-                  {/* Video Indicator */}
-                  {item.type === 'video' && (
+                ) : (
+                  <div className="relative">
+                    <ClassifiedPhoto
+                      src={item.thumbnail}
+                      camera={item.camera}
+                      timestamp={item.timestamp}
+                      location={item.location}
+                      caption={item.caption}
+                      className="aspect-video"
+                    />
+                    {/* Video Play Indicator */}
                     <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/50 transition-colors">
-                      <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center">
-                        <div className="w-0 h-0 border-l-[16px] border-l-slate-800 border-y-[10px] border-y-transparent ml-1" />
+                      <div className="w-16 h-16 rounded-full bg-cyan-500/90 flex items-center justify-center border-2 border-cyan-300 shadow-lg shadow-cyan-500/50">
+                        <div className="w-0 h-0 border-l-[16px] border-l-black border-y-[10px] border-y-transparent ml-1" />
                       </div>
                     </div>
-                  )}
-                  
-                  {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-
-                {/* Caption */}
-                <div className="p-4">
-                  <p className="text-white font-semibold">{item.caption}</p>
-                </div>
+                  </div>
+                )}
               </motion.div>
             ))}
           </motion.div>
@@ -177,12 +201,17 @@ const Gallery = () => {
           {/* Empty State */}
           {filteredMedia.length === 0 && (
             <motion.div
-              className="glass-card rounded-3xl p-12 text-center"
+              className="glass-card rounded-3xl p-12 text-center border border-red-500/30"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
-              <div className="text-6xl mb-4">📸</div>
-              <div className="text-slate-400 text-xl">No {filter} found</div>
+              <div className="text-6xl mb-4">�</div>
+              <div className="text-slate-400 text-xl font-mono">
+                [NO {filter.toUpperCase()} FOOTAGE FOUND]
+              </div>
+              <div className="text-slate-600 text-sm mt-2">
+                Classified files may have been deleted
+              </div>
             </motion.div>
           )}
 
