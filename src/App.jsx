@@ -73,7 +73,7 @@ const AppContent = () => {
       {/* Main content routes */}
       <Routes>
         <Route path="/access" element={<AccessGate />} />
-        <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="/" element={<Home />} />
         <Route path="/rules" element={<ProtectedRoute><Rules /></ProtectedRoute>} />
         <Route path="/rsvp" element={<ProtectedRoute><RSVP /></ProtectedRoute>} />
         <Route path="/hq" element={<HQ />} />

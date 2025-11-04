@@ -5,10 +5,17 @@ import { motion, AnimatePresence } from 'framer-motion';
  * MusicToggle Component
  * Provides play/pause control for background music
  * Fixed position in top-right corner of the screen
+ * Music state persists across page navigation
  */
 const MusicToggle = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(() => {
+    // Restore playing state from localStorage
+    return localStorage.getItem('musicPlaying') === 'true';
+  });
+  const [showTooltip, setShowTooltip] = useState(() => {
+    // Only show tooltip if user hasn't dismissed it before
+    return localStorage.getItem('musicTooltipDismissed') !== 'true';
+  });
   const audioRef = useRef(null);
 
   // Toggle play/pause when button is clicked
@@ -16,6 +23,7 @@ const MusicToggle = () => {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
+        localStorage.setItem('musicPlaying', 'false');
       } else {
         // Handle play promise to avoid errors
         const playPromise = audioRef.current.play();
@@ -24,25 +32,40 @@ const MusicToggle = () => {
             console.log('Audio play failed:', error);
           });
         }
+        localStorage.setItem('musicPlaying', 'true');
       }
       setIsPlaying(!isPlaying);
-      setShowTooltip(false); // Hide tooltip after first interaction
+      setShowTooltip(false);
+      localStorage.setItem('musicTooltipDismissed', 'true');
     }
   };
 
-  // Set volume on mount and hide tooltip after 10 seconds
+  // Set volume and restore playback state on mount
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = 0.3; // 30% volume
+      
+      // Auto-play if music was playing before page navigation
+      if (isPlaying) {
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log('Auto-play failed:', error);
+            setIsPlaying(false);
+            localStorage.setItem('musicPlaying', 'false');
+          });
+        }
+      }
     }
     
     // Hide tooltip after 10 seconds if user hasn't interacted
     const timer = setTimeout(() => {
       setShowTooltip(false);
+      localStorage.setItem('musicTooltipDismissed', 'true');
     }, 10000);
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [isPlaying]);
 
   return (
     <>
