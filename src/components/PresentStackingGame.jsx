@@ -37,8 +37,15 @@ const PresentStackingGame = () => {
   const [highScore, setHighScore] = useState(0);
   const [lines, setLines] = useState(0);
   const [level, setLevel] = useState(1);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [playerName, setPlayerName] = useState('');
+  const [leaderboard, setLeaderboard] = useState(() => {
+    // Load from localStorage
+    const saved = localStorage.getItem('presentTetrisLeaderboard');
+    return saved ? JSON.parse(saved) : [];
+  });
 
-  // Sound effects using Web Audio API
+  // Sound effects using Web Audio API with Christmas-y tones
   const playSound = (type) => {
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
@@ -47,52 +54,90 @@ const PresentStackingGame = () => {
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
     
-    // Different sounds for different actions
+    // Christmas-themed sounds (using major scale and bell-like tones)
     switch(type) {
       case 'move':
-        oscillator.frequency.value = 200;
-        gainNode.gain.value = 0.1;
+        // Gentle sleigh bell tinkle
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 1047; // High C
+        gainNode.gain.value = 0.08;
         oscillator.start();
-        oscillator.stop(audioContext.currentTime + 0.05);
+        oscillator.stop(audioContext.currentTime + 0.04);
         break;
       case 'rotate':
-        oscillator.frequency.value = 400;
+        // Cheerful jingle
+        oscillator.type = 'triangle';
+        oscillator.frequency.value = 1319; // E
+        gainNode.gain.value = 0.12;
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.06);
+        break;
+      case 'land':
+        // Soft thud like present hitting floor
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 262; // Middle C
         gainNode.gain.value = 0.15;
         oscillator.start();
         oscillator.stop(audioContext.currentTime + 0.08);
         break;
-      case 'land':
-        oscillator.frequency.value = 150;
-        gainNode.gain.value = 0.2;
-        oscillator.start();
-        oscillator.stop(audioContext.currentTime + 0.1);
-        break;
       case 'line':
-        // Happy sound for clearing lines
-        oscillator.frequency.value = 600;
-        gainNode.gain.value = 0.2;
-        oscillator.start();
-        oscillator.stop(audioContext.currentTime + 0.15);
-        setTimeout(() => {
-          const osc2 = audioContext.createOscillator();
-          const gain2 = audioContext.createGain();
-          osc2.connect(gain2);
-          gain2.connect(audioContext.destination);
-          osc2.frequency.value = 800;
-          gain2.gain.value = 0.2;
-          osc2.start();
-          osc2.stop(audioContext.currentTime + 0.15);
-        }, 100);
+        // Jingle bells melody snippet (C-E-G-C)
+        const frequencies = [523, 659, 784, 1047];
+        frequencies.forEach((freq, i) => {
+          setTimeout(() => {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.value = 0.18;
+            osc.start();
+            osc.stop(audioContext.currentTime + 0.12);
+          }, i * 80);
+        });
         break;
       case 'gameover':
-        oscillator.frequency.value = 100;
-        gainNode.gain.value = 0.3;
+        // Descending "aww" sound
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(392, audioContext.currentTime); // G
+        oscillator.frequency.exponentialRampToValueAtTime(196, audioContext.currentTime + 0.4); // G (lower octave)
+        gainNode.gain.value = 0.2;
         oscillator.start();
-        oscillator.stop(audioContext.currentTime + 0.3);
+        oscillator.stop(audioContext.currentTime + 0.4);
         break;
       default:
         break;
     }
+  };
+
+  // Save score to leaderboard
+  const saveScore = () => {
+    if (!playerName.trim()) return;
+    
+    const newEntry = {
+      name: playerName.trim().slice(0, 20), // Max 20 chars
+      score,
+      lines,
+      level,
+      date: new Date().toISOString(),
+    };
+    
+    const updated = [...leaderboard, newEntry]
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 10); // Keep top 10
+    
+    setLeaderboard(updated);
+    localStorage.setItem('presentTetrisLeaderboard', JSON.stringify(updated));
+    setShowLeaderboard(true);
+    setPlayerName('');
+  };
+
+  // Check if score qualifies for leaderboard
+  const isHighScore = () => {
+    if (score === 0) return false;
+    if (leaderboard.length < 10) return true;
+    return score > leaderboard[leaderboard.length - 1].score;
   };
 
   // Initialize empty board
@@ -102,20 +147,9 @@ const PresentStackingGame = () => {
     );
   };
 
-  // Generate random piece (with slight bias toward I-piece)
+  // Generate random piece
   const randomPiece = () => {
-    // 25% chance for I-piece, 12.5% each for others
-    const rand = Math.random();
-    let shapeKey;
-    
-    if (rand < 0.25) {
-      shapeKey = 'I'; // 25% chance
-    } else {
-      // Remaining 75% split among other 6 pieces
-      const otherShapes = SHAPE_KEYS.filter(k => k !== 'I');
-      shapeKey = otherShapes[Math.floor(Math.random() * otherShapes.length)];
-    }
-    
+    const shapeKey = SHAPE_KEYS[Math.floor(Math.random() * SHAPE_KEYS.length)];
     return {
       shape: SHAPES[shapeKey].shape,
       color: SHAPES[shapeKey].color,
@@ -339,10 +373,66 @@ const PresentStackingGame = () => {
             <div className="text-xl font-bold text-purple-400">{level}</div>
           </div>
           <div>
-            <div className="text-xs text-slate-400">High</div>
-            <div className="text-xl font-bold text-amber-400">{highScore}</div>
+            <div className="text-xs text-slate-400">
+              <button 
+                onClick={() => setShowLeaderboard(!showLeaderboard)}
+                className="hover:text-amber-400 transition-colors"
+              >
+                🏆 Top 10
+              </button>
+            </div>
+            <div className="text-xl font-bold text-amber-400">
+              {leaderboard.length > 0 ? leaderboard[0].score : 0}
+            </div>
           </div>
         </div>
+
+        {/* Leaderboard */}
+        <AnimatePresence>
+          {showLeaderboard && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-4 overflow-hidden"
+            >
+              <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-lg font-bold text-amber-400">🏆 Top 10 Scores</h3>
+                  <button
+                    onClick={() => setShowLeaderboard(false)}
+                    className="text-slate-400 hover:text-white text-sm"
+                  >
+                    ✕
+                  </button>
+                </div>
+                {leaderboard.length === 0 ? (
+                  <p className="text-slate-400 text-sm text-center py-4">No scores yet. Be the first!</p>
+                ) : (
+                  <div className="space-y-2">
+                    {leaderboard.map((entry, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center text-sm bg-slate-900/50 rounded px-3 py-2"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className={`font-bold ${index < 3 ? 'text-amber-400' : 'text-slate-400'}`}>
+                            {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`}
+                          </span>
+                          <span className="text-white font-semibold">{entry.name}</span>
+                        </div>
+                        <div className="flex gap-4 text-slate-400">
+                          <span>{entry.score} pts</span>
+                          <span>L{entry.level}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Game Container */}
         <div className="flex justify-center">
@@ -393,17 +483,47 @@ const PresentStackingGame = () => {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                 >
-                  <div className="text-center">
+                  <div className="text-center px-4 max-w-sm">
                     <div className="text-6xl mb-4">🎁</div>
                     <h3 className="text-3xl font-bold text-red-400 mb-2">Game Over!</h3>
                     <p className="text-xl text-slate-300 mb-2">Score: {score}</p>
-                    <p className="text-lg text-slate-400 mb-4">Lines: {lines}</p>
-                    {score === highScore && score > 0 && (
-                      <p className="text-emerald-400 font-semibold mb-4">🎉 New High Score!</p>
+                    <p className="text-lg text-slate-400 mb-4">Lines: {lines} • Level: {level}</p>
+                    
+                    {isHighScore() && !showLeaderboard && (
+                      <div className="mb-4">
+                        <p className="text-emerald-400 font-semibold mb-3">🎉 Top 10 Score!</p>
+                        <input
+                          type="text"
+                          value={playerName}
+                          onChange={(e) => setPlayerName(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && saveScore()}
+                          placeholder="Enter your name"
+                          maxLength={20}
+                          className="w-full px-4 py-2 rounded-lg bg-slate-800 text-white border-2 border-emerald-500 focus:outline-none focus:border-emerald-400 mb-2"
+                        />
+                        <button
+                          onClick={saveScore}
+                          disabled={!playerName.trim()}
+                          className="btn-festive-green text-sm px-4 py-2 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Save Score
+                        </button>
+                      </div>
                     )}
-                    <button onClick={startGame} className="btn-festive-green text-lg px-6 py-3">
-                      Play Again
-                    </button>
+                    
+                    <div className="flex flex-col gap-2">
+                      {!showLeaderboard && (
+                        <button
+                          onClick={() => setShowLeaderboard(true)}
+                          className="btn-festive text-sm px-4 py-2"
+                        >
+                          View Leaderboard
+                        </button>
+                      )}
+                      <button onClick={startGame} className="btn-festive-green text-lg px-6 py-3">
+                        Play Again
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               )}
