@@ -120,6 +120,34 @@ export async function updateConversationLog(agentId, conversationLog) {
 }
 
 /**
+ * Update specific agent fields by codename
+ * @param {string} codename - Agent's codename
+ * @param {Object} updates - Fields to update
+ * @returns {Object} Updated agent record
+ */
+export async function updateAgentByCodename(codename, updates) {
+  try {
+    const { data, error } = await supabase
+      .from('agents')
+      .update(updates)
+      .eq('codename', codename)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Supabase update error:', error);
+      throw error;
+    }
+
+    console.log('✅ Agent updated:', data);
+    return data;
+  } catch (error) {
+    console.error('Failed to update agent:', error);
+    throw error;
+  }
+}
+
+/**
  * Get all attending agents for roster
  * @returns {Array} List of attending agents
  */

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { saveAgent, updateConversationLog, isCodenameAvailable } from '../utils/saveAgentData';
+import { saveAgent, updateConversationLog, isCodenameAvailable, updateAgentByCodename } from '../utils/saveAgentData';
 import { saveAISession } from '../utils/saveAISession';
 import { checkReturningAgent, storeAgentSession } from '../utils/returningAgent';
 import { generateNextQuestion, generateAICodename } from '../utils/aiConversation';
@@ -211,17 +211,20 @@ const HQTerminal = ({ onComplete }) => {
       return;
     }
 
-    // Update RSVP
+    // Update RSVP - Start interactive update flow
     if (lowerInput.includes('update') || lowerInput.includes('change') || lowerInput.includes('edit')) {
       addHQMessage(
-        `🔄 **RSVP UPDATE REQUEST**\n\n` +
-        `To update your RSVP details:\n\n` +
-        `1. Contact North Pole Command (the hosts) directly\n` +
-        `2. Or respond to the confirmation email\n` +
-        `3. Or message in the WhatsApp channel\n\n` +
-        `Need to change your codename, attendance, or guest count? Just let the hosts know!`,
+        `🔄 **RSVP UPDATE MODE**\n\n` +
+        `What would you like to update, ${agentData.codename}?\n\n` +
+        `• Type "attendance" to change attending/maybe/not attending\n` +
+        `• Type "guests" to change guest count or names\n` +
+        `• Type "dietary" to update dietary restrictions\n` +
+        `• Type "email" to update contact email\n` +
+        `• Type "phone" to update phone number\n` +
+        `• Type "cancel" to go back`,
         500
       );
+      setConversationState('update_menu');
       return;
     }
 
@@ -827,6 +830,268 @@ const HQTerminal = ({ onComplete }) => {
         // Interactive prompts are already shown
         break;
 
+      case 'update_menu':
+        const updateChoice = input.toLowerCase().trim();
+        
+        if (updateChoice.includes('cancel') || updateChoice.includes('back') || updateChoice.includes('nevermind')) {
+          addHQMessage(
+            `Update cancelled. Back to main menu!\n\n` +
+            `What else can I help you with?`,
+            300
+          );
+          setConversationState('complete');
+          return;
+        }
+        
+        if (updateChoice.includes('attend')) {
+          addHQMessage(
+            `📋 **UPDATE ATTENDANCE STATUS**\n\n` +
+            `Current status: **${agentData.attendance_status === 'attending' ? 'CONFIRMED ✅' : agentData.attendance_status === 'uncertain' ? 'MAYBE 🤔' : 'DECLINED ❌'}**\n\n` +
+            `What's your new status?\n` +
+            `• "yes" or "attending" - I'll be there!\n` +
+            `• "maybe" or "uncertain" - Still deciding\n` +
+            `• "no" or "not attending" - Can't make it`,
+            300
+          );
+          setConversationState('update_attendance');
+        } else if (updateChoice.includes('guest')) {
+          addHQMessage(
+            `👥 **UPDATE GUEST COUNT**\n\n` +
+            `Current guest count: **${agentData.guest_count}**\n` +
+            (agentData.guest_names?.length > 0 ? `Current guests: ${agentData.guest_names.join(', ')}\n\n` : '\n') +
+            `How many guests will you bring? (Enter a number, or "just me" for 0)`,
+            300
+          );
+          setConversationState('update_guests_count');
+        } else if (updateChoice.includes('dietary') || updateChoice.includes('diet') || updateChoice.includes('food')) {
+          addHQMessage(
+            `🍽️ **UPDATE DIETARY RESTRICTIONS**\n\n` +
+            `Current restrictions: **${agentData.dietary_restrictions || 'None'}**\n\n` +
+            `Enter your new dietary restrictions (or "none"):`,
+            300
+          );
+          setConversationState('update_dietary');
+        } else if (updateChoice.includes('email')) {
+          addHQMessage(
+            `📧 **UPDATE EMAIL ADDRESS**\n\n` +
+            `Current email: **${agentData.email || 'Not provided'}**\n\n` +
+            `Enter your new email address:`,
+            300
+          );
+          setConversationState('update_email');
+        } else if (updateChoice.includes('phone')) {
+          addHQMessage(
+            `📱 **UPDATE PHONE NUMBER**\n\n` +
+            `Current phone: **${agentData.phone || 'Not provided'}**\n\n` +
+            `Enter your new phone number (or "skip" to remove):`,
+            300
+          );
+          setConversationState('update_phone');
+        } else {
+          addHQMessage(
+            `I didn't catch that. Please choose one of:\n` +
+            `• attendance\n• guests\n• dietary\n• email\n• phone\n• cancel`,
+            200
+          );
+        }
+        break;
+
+      case 'update_attendance':
+        const newAttendance = input.toLowerCase().trim();
+        let newStatus;
+        
+        if (newAttendance.includes('yes') || newAttendance.includes('attend') || newAttendance.includes('confirm')) {
+          newStatus = 'attending';
+        } else if (newAttendance.includes('maybe') || newAttendance.includes('uncertain') || newAttendance.includes('unsure')) {
+          newStatus = 'uncertain';
+        } else if (newAttendance.includes('no') || newAttendance.includes('not') || newAttendance.includes('decline')) {
+          newStatus = 'not_attending';
+        } else {
+          addHQMessage(
+            `Please respond with "yes", "maybe", or "no"`,
+            200
+          );
+          return;
+        }
+        
+        setAgentData(prev => ({ ...prev, attendance_status: newStatus }));
+        
+        addHQMessage(
+          `✅ **ATTENDANCE UPDATED**\n\n` +
+          `New status: **${newStatus === 'attending' ? 'CONFIRMED ✅' : newStatus === 'uncertain' ? 'MAYBE 🤔' : 'DECLINED ❌'}**\n\n` +
+          `Saving changes to the database...`,
+          300
+        );
+        
+        setTimeout(async () => {
+          await updateAgentInDatabase({ attendance_status: newStatus });
+          addHQMessage(
+            `Changes saved! Anything else you'd like to update?\n\n` +
+            `Type "update" again, or ask me anything else!`,
+            500
+          );
+          setConversationState('complete');
+        }, 1500);
+        break;
+
+      case 'update_guests_count':
+        const guestInput = input.toLowerCase().trim();
+        let newGuestCount;
+        
+        // Use same natural language parsing as initial registration
+        if (guestInput.includes('just me') || guestInput.includes('solo') || guestInput.includes('alone') || 
+            guestInput === 'none' || guestInput === 'no one' || guestInput === 'nobody' || guestInput === 'no') {
+          newGuestCount = 0;
+        } else if (guestInput.includes('one') && !guestInput.includes('no one')) {
+          newGuestCount = 1;
+        } else if (guestInput.includes('two')) {
+          newGuestCount = 2;
+        } else if (guestInput.includes('three')) {
+          newGuestCount = 3;
+        } else if (guestInput.includes('four')) {
+          newGuestCount = 4;
+        } else if (guestInput.includes('five')) {
+          newGuestCount = 5;
+        } else {
+          newGuestCount = parseInt(input);
+        }
+        
+        if (isNaN(newGuestCount) || newGuestCount < 0) {
+          addHQMessage(
+            `Please enter a number (or "just me" for 0)`,
+            200
+          );
+          return;
+        }
+        
+        setAgentData(prev => ({ ...prev, guest_count: newGuestCount }));
+        
+        if (newGuestCount === 0) {
+          addHQMessage(
+            `✅ **GUEST COUNT UPDATED**\n\n` +
+            `Flying solo! Saving changes...`,
+            300
+          );
+          setTimeout(async () => {
+            await updateAgentInDatabase({ guest_count: newGuestCount, guest_names: [] });
+            addHQMessage(
+              `Changes saved! Anything else?\n\n` +
+              `Type "update" again, or ask me anything!`,
+              500
+            );
+            setConversationState('complete');
+          }, 1500);
+        } else {
+          addHQMessage(
+            `${newGuestCount} ${newGuestCount === 1 ? 'guest' : 'guests'} noted!\n\n` +
+            `Please provide their names (comma-separated if multiple):`,
+            300
+          );
+          setConversationState('update_guest_names');
+        }
+        break;
+
+      case 'update_guest_names':
+        const newNames = input.split(',').map(n => n.trim()).filter(n => n);
+        setAgentData(prev => ({ ...prev, guest_names: newNames }));
+        
+        addHQMessage(
+          `✅ **GUEST LIST UPDATED**\n\n` +
+          newNames.map(name => `• ${name}`).join('\n') +
+          `\n\nSaving changes...`,
+          300
+        );
+        
+        setTimeout(async () => {
+          await updateAgentInDatabase({ guest_names: newNames });
+          addHQMessage(
+            `Changes saved! Anything else?\n\n` +
+            `Type "update" again, or ask me anything!`,
+            500
+          );
+          setConversationState('complete');
+        }, 1500);
+        break;
+
+      case 'update_dietary':
+        const newDietary = input.trim();
+        const dietary = newDietary.toLowerCase() === 'none' ? '' : newDietary;
+        
+        setAgentData(prev => ({ ...prev, dietary_restrictions: dietary }));
+        
+        addHQMessage(
+          `✅ **DIETARY RESTRICTIONS UPDATED**\n\n` +
+          `${dietary || 'No restrictions'}\n\n` +
+          `Saving changes...`,
+          300
+        );
+        
+        setTimeout(async () => {
+          await updateAgentInDatabase({ dietary_restrictions: dietary });
+          addHQMessage(
+            `Changes saved! Anything else?\n\n` +
+            `Type "update" again, or ask me anything!`,
+            500
+          );
+          setConversationState('complete');
+        }, 1500);
+        break;
+
+      case 'update_email':
+        const newEmail = input.trim();
+        
+        if (!newEmail.includes('@')) {
+          addHQMessage(
+            `That doesn't look like a valid email. Please try again:`,
+            200
+          );
+          return;
+        }
+        
+        setAgentData(prev => ({ ...prev, email: newEmail }));
+        
+        addHQMessage(
+          `✅ **EMAIL UPDATED**\n\n` +
+          `New email: ${newEmail}\n\n` +
+          `Saving changes...`,
+          300
+        );
+        
+        setTimeout(async () => {
+          await updateAgentInDatabase({ email: newEmail });
+          addHQMessage(
+            `Changes saved! Anything else?\n\n` +
+            `Type "update" again, or ask me anything!`,
+            500
+          );
+          setConversationState('complete');
+        }, 1500);
+        break;
+
+      case 'update_phone':
+        const newPhone = input.trim();
+        const phone = newPhone.toLowerCase() === 'skip' ? '' : newPhone;
+        
+        setAgentData(prev => ({ ...prev, phone }));
+        
+        addHQMessage(
+          `✅ **PHONE NUMBER UPDATED**\n\n` +
+          `${phone || 'Phone removed'}\n\n` +
+          `Saving changes...`,
+          300
+        );
+        
+        setTimeout(async () => {
+          await updateAgentInDatabase({ phone });
+          addHQMessage(
+            `Changes saved! Anything else?\n\n` +
+            `Type "update" again, or ask me anything!`,
+            500
+          );
+          setConversationState('complete');
+        }, 1500);
+        break;
+
       case 'complete':
         // Handle post-completion questions with AI
         await handleInteractiveQuestion(input);
@@ -834,6 +1099,23 @@ const HQTerminal = ({ onComplete }) => {
 
       default:
         break;
+    }
+  };
+
+  /**
+   * Update agent data in database (for RSVP updates)
+   */
+  const updateAgentInDatabase = async (updates) => {
+    try {
+      await updateAgentByCodename(agentData.codename, updates);
+      console.log('✅ Agent updated successfully');
+    } catch (error) {
+      console.error('Failed to update agent:', error);
+      addHQMessage(
+        `⚠️ **UPDATE ERROR**\n\n` +
+        `There was a problem saving your changes. Please try again or contact the hosts.`,
+        200
+      );
     }
   };
 
