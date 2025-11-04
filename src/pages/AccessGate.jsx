@@ -305,7 +305,6 @@ const AccessGate = () => {
                         maxLength={20}
                         autoComplete="off"
                         spellCheck="false"
-                        placeholder="RED-SLEIGH-2025"
                       />
                       <motion.span
                         animate={{ opacity: [0, 1, 0] }}
