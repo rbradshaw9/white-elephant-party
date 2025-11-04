@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const BOARD_WIDTH = 10;
 const BOARD_HEIGHT = 20;
-const CELL_SIZE = 24;
+const CELL_SIZE = window.innerWidth < 768 ? 20 : 24; // Smaller cells on mobile
 
 // Tetromino shapes (present clusters)
 const SHAPES = {
@@ -314,6 +314,77 @@ const PresentStackingGame = () => {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [gameState, currentPiece, position, moveDown]);
 
+  // Touch/Swipe controls for mobile
+  useEffect(() => {
+    if (gameState !== 'playing') return;
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+
+    const handleTouchStart = (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchStartTime = Date.now();
+    };
+
+    const handleTouchEnd = (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      const touchDuration = Date.now() - touchStartTime;
+
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
+
+      // Ignore very small movements
+      if (Math.abs(deltaX) < 30 && Math.abs(deltaY) < 30) {
+        // Tap to rotate
+        if (touchDuration < 200 && currentPiece) {
+          const rotated = rotatePiece(currentPiece);
+          if (!checkCollision(rotated, position)) {
+            setCurrentPiece(rotated);
+            playSound('rotate');
+          }
+        }
+        return;
+      }
+
+      // Determine swipe direction
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Horizontal swipe
+        if (deltaX > 50 && currentPiece) {
+          // Swipe right
+          const newPos = { ...position, x: position.x + 1 };
+          if (!checkCollision(currentPiece, newPos)) {
+            setPosition(newPos);
+            playSound('move');
+          }
+        } else if (deltaX < -50 && currentPiece) {
+          // Swipe left
+          const newPos = { ...position, x: position.x - 1 };
+          if (!checkCollision(currentPiece, newPos)) {
+            setPosition(newPos);
+            playSound('move');
+          }
+        }
+      } else {
+        // Vertical swipe
+        if (deltaY > 50) {
+          // Swipe down - faster drop
+          moveDown();
+        }
+      }
+    };
+
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchend', handleTouchEnd);
+    
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [gameState, currentPiece, position, moveDown]);
+
   // Auto-drop piece
   useEffect(() => {
     if (gameState !== 'playing') return;
@@ -342,8 +413,11 @@ const PresentStackingGame = () => {
           <h2 className="text-3xl md:text-4xl font-display font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-emerald-400">
             🎁 Present Tetris
           </h2>
-          <p className="text-slate-300 text-sm">
-            Stack the presents! Use ← → to move, ↓ to drop faster, ↑ or Space to rotate
+          <p className="text-slate-300 text-sm hidden md:block">
+            Use ← → to move, ↓ to drop faster, ↑ or Space to rotate
+          </p>
+          <p className="text-slate-300 text-sm md:hidden">
+            Swipe or use buttons to play!
           </p>
         </div>
 
@@ -424,8 +498,8 @@ const PresentStackingGame = () => {
         </AnimatePresence>
 
         {/* Game Container */}
-        <div className="flex justify-center">
-          <div className="relative bg-slate-900/50 rounded-2xl border-2 border-slate-700 p-2">
+        <div className="flex justify-center overflow-x-auto">
+          <div className="relative bg-slate-900/50 rounded-2xl border-2 border-slate-700 p-2 mx-auto">
             {/* Board */}
             <div 
               className="grid gap-[1px] bg-slate-800/50 relative"
@@ -553,43 +627,58 @@ const PresentStackingGame = () => {
         {/* Mobile Controls (optional) */}
         {gameState === 'playing' && (
           <div className="mt-4 md:hidden">
-            <div className="flex justify-center gap-2 mb-2">
+            <div className="text-center text-slate-400 text-xs mb-3">
+              💡 Swipe left/right to move • Swipe down to drop • Tap to rotate
+            </div>
+            <div className="flex justify-center gap-3 mb-3">
               <button
-                onClick={() => {
+                onTouchStart={(e) => {
+                  e.preventDefault();
                   const newPos = { ...position, x: position.x - 1 };
                   if (!checkCollision(currentPiece, newPos)) {
                     setPosition(newPos);
+                    playSound('move');
                   }
                 }}
-                className="btn-festive px-6 py-3"
+                className="btn-festive px-8 py-4 text-2xl"
               >
                 ←
               </button>
               <button
-                onClick={() => {
+                onTouchStart={(e) => {
+                  e.preventDefault();
                   const rotated = rotatePiece(currentPiece);
                   if (!checkCollision(rotated, position)) {
                     setCurrentPiece(rotated);
+                    playSound('rotate');
                   }
                 }}
-                className="btn-festive-green px-6 py-3"
+                className="btn-festive-green px-8 py-4 text-2xl"
               >
                 ↻
               </button>
               <button
-                onClick={() => {
+                onTouchStart={(e) => {
+                  e.preventDefault();
                   const newPos = { ...position, x: position.x + 1 };
                   if (!checkCollision(currentPiece, newPos)) {
                     setPosition(newPos);
+                    playSound('move');
                   }
                 }}
-                className="btn-festive px-6 py-3"
+                className="btn-festive px-8 py-4 text-2xl"
               >
                 →
               </button>
             </div>
             <div className="flex justify-center">
-              <button onClick={moveDown} className="btn-festive px-12 py-3">
+              <button 
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  moveDown();
+                }}
+                className="btn-festive px-16 py-4 text-xl"
+              >
                 ↓ Drop
               </button>
             </div>
@@ -599,7 +688,7 @@ const PresentStackingGame = () => {
         {/* Instructions */}
         {gameState === 'playing' && (
           <motion.div
-            className="mt-4 text-center text-slate-400 text-xs"
+            className="mt-4 text-center text-slate-400 text-xs hidden md:block"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
