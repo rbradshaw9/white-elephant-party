@@ -242,7 +242,7 @@ const HeistHome = () => {
           </div>
         </motion.div>
 
-        {/* Codename Generator */}
+        {/* Call to Action */}
         <motion.div
           className="text-center"
           initial={{ opacity: 0 }}
@@ -254,21 +254,21 @@ const HeistHome = () => {
               Ready to Join the Operation?
             </h3>
             <p className="text-slate-300 mb-6">
-              Enter the access terminal to receive your AI-generated agent codename and register for the mission.
+              Begin your agent registration to receive an AI-generated codename and join the mission.
             </p>
             
-            <Link to="/access">
+            <Link to="/hq">
               <motion.button
                 className="px-8 py-4 bg-gradient-to-r from-sky-600 to-cyan-500 text-white font-bold rounded-xl shadow-lg shadow-sky-500/20"
                 whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(14, 165, 233, 0.5)' }}
                 whileTap={{ scale: 0.95 }}
               >
-                🔐 Enter Access Terminal
+                🎯 Begin Agent Registration
               </motion.button>
             </Link>
 
-            <p className="text-xs text-slate-500 mt-4">
-              Access Code Required
+            <p className="text-xs text-slate-500 mt-4 font-mono">
+              Secure HQ Terminal Access
             </p>
           </div>
         </motion.div>
