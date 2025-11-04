@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { saveAgent, updateConversationLog } from '../utils/saveAgentData';
 import { saveAISession } from '../utils/saveAISession';
+import { checkReturningAgent, storeAgentSession } from '../utils/returningAgent';
 import EVENT_CONFIG from '../config/config';
 
 /**
@@ -56,18 +57,50 @@ const HQTerminal = ({ onComplete }) => {
 
   // Initial greeting
   useEffect(() => {
-    setTimeout(() => {
-      addHQMessage(
-        `🎯 NORTH POLE INTELLIGENCE - CLASSIFIED TERMINAL\n\n` +
-        `> ACCESS GRANTED\n` +
-        `> SECURE CHANNEL ESTABLISHED\n` +
-        `> ENCRYPTION: ACTIVE\n\n` +
-        `Welcome to Operation Santa's Manifest.\n\n` +
-        `I'm HQ - your handler for this mission. Before we proceed with clearance protocols, I need to verify your identity.\n\n` +
-        `What's your real name, agent?`
-      );
-      setConversationState('name');
-    }, 1000);
+    // Check for returning agent first
+    const checkReturning = async () => {
+      const returningAgent = await checkReturningAgent();
+      
+      if (returningAgent) {
+        // Welcome back returning agent
+        setTimeout(() => {
+          addHQMessage(
+            `🎯 NORTH POLE INTELLIGENCE - CLASSIFIED TERMINAL\n\n` +
+            `> ACCESS GRANTED\n` +
+            `> AGENT CREDENTIALS VERIFIED\n` +
+            `> CLEARANCE: CONFIRMED\n\n` +
+            `Welcome back, **Agent ${returningAgent.codename}**.\n\n` +
+            `Your profile is already in our system. ` +
+            `Status: ${returningAgent.attendance_status === 'attending' ? 'MISSION CONFIRMED ✅' : returningAgent.attendance_status === 'not_attending' ? 'MISSION DECLINED' : 'PENDING CONFIRMATION'}\n\n` +
+            `Would you like to:\n` +
+            `• Type "update" to modify your RSVP\n` +
+            `• Type "card" to view your agent card\n` +
+            `• Type "roster" to see other confirmed agents\n` +
+            `• Ask me anything about the mission`
+          );
+          setAgentData(returningAgent);
+          setAgentId(returningAgent.id);
+          setConversationState('complete');
+        }, 1000);
+        return;
+      }
+
+      // New agent - normal greeting
+      setTimeout(() => {
+        addHQMessage(
+          `🎯 NORTH POLE INTELLIGENCE - CLASSIFIED TERMINAL\n\n` +
+          `> ACCESS GRANTED\n` +
+          `> SECURE CHANNEL ESTABLISHED\n` +
+          `> ENCRYPTION: ACTIVE\n\n` +
+          `Welcome to Operation Santa's Manifest.\n\n` +
+          `I'm HQ - your handler for this mission. Before we proceed with clearance protocols, I need to verify your identity.\n\n` +
+          `What's your real name, agent?`
+        );
+        setConversationState('name');
+      }, 1000);
+    };
+
+    checkReturning();
   }, []);
 
   /**
@@ -345,8 +378,7 @@ const HQTerminal = ({ onComplete }) => {
       await saveAISession(savedAgent.id, messages);
       
       // Store in localStorage for returning agents
-      localStorage.setItem('agent_codename', agentData.codename);
-      localStorage.setItem('agent_id', savedAgent.id);
+      storeAgentSession(savedAgent);
       
       // Show completion message
       addHQMessage(
