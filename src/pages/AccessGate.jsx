@@ -24,6 +24,7 @@ const AccessGate = () => {
   const [validationState, setValidationState] = useState(null); // 'validating', 'success', 'denied'
   const [attempts, setAttempts] = useState(0);
   const [bootText, setBootText] = useState([]);
+  const [progressPercent, setProgressPercent] = useState(0);
   const inputRef = useRef(null);
 
   // Boot sequence messages
@@ -31,7 +32,7 @@ const AccessGate = () => {
     '> INITIALIZING NORTH POLE INTELLIGENCE TERMINAL v4.2.5',
     '> Loading secure protocols...',
     '> Establishing encrypted connection...',
-    '> [████████████████████] 100%',
+    'PROGRESS_BAR', // Special marker for animated progress bar
     '> CONNECTION ESTABLISHED',
     '> OPERATION SANTA\'S MANIFEST - ACTIVE',
     '',
@@ -58,7 +59,25 @@ const AccessGate = () => {
     let index = 0;
     const interval = setInterval(() => {
       if (index < bootSequence.length) {
-        setBootText((prev) => [...prev, bootSequence[index]]);
+        const currentLine = bootSequence[index];
+        
+        // If we hit the progress bar marker, animate it
+        if (currentLine === 'PROGRESS_BAR') {
+          setBootText((prev) => [...prev, currentLine]);
+          
+          // Animate progress from 0 to 100
+          let progress = 0;
+          const progressInterval = setInterval(() => {
+            progress += 5;
+            setProgressPercent(progress);
+            if (progress >= 100) {
+              clearInterval(progressInterval);
+            }
+          }, 30); // Update every 30ms for smooth animation
+        } else {
+          setBootText((prev) => [...prev, currentLine]);
+        }
+        
         index++;
       } else {
         clearInterval(interval);
@@ -181,19 +200,44 @@ const AccessGate = () => {
           <div className="font-mono text-green-400 text-sm leading-relaxed min-h-[400px]">
             {/* Boot Sequence */}
             <AnimatePresence>
-              {bootText.map((line, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.1 }}
-                  className={line.startsWith('>') ? 'text-green-300' : 
-                             line.startsWith('⚠️') ? 'text-yellow-400 font-bold' : 
-                             'text-green-400'}
-                >
-                  {line || '\u00A0'}
-                </motion.div>
-              ))}
+              {bootText.map((line, index) => {
+                // Special rendering for progress bar
+                if (line === 'PROGRESS_BAR') {
+                  const barLength = 20;
+                  const filledLength = Math.floor((progressPercent / 100) * barLength);
+                  const emptyLength = barLength - filledLength;
+                  const progressBar = '█'.repeat(filledLength) + '░'.repeat(emptyLength);
+                  
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.1 }}
+                      className="text-green-300"
+                    >
+                      {`> [${progressBar}] ${progressPercent}%`}
+                    </motion.div>
+                  );
+                }
+                
+                // Regular line rendering
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.1 }}
+                    className={
+                      line && line.startsWith('>') ? 'text-green-300' : 
+                      line && line.startsWith('⚠️') ? 'text-yellow-400 font-bold' : 
+                      'text-green-400'
+                    }
+                  >
+                    {line || '\u00A0'}
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
 
             {/* Input Prompt */}
@@ -372,7 +416,7 @@ const AccessGate = () => {
       </div>
 
       {/* Custom CSS for animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes scan {
           0% { transform: translateY(-100%); }
           100% { transform: translateY(100%); }
