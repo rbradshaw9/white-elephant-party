@@ -65,6 +65,9 @@ const AccessGate = () => {
         if (currentLine === 'PROGRESS_BAR') {
           setBootText((prev) => [...prev, currentLine]);
           
+          // Pause the boot sequence while progress animates
+          clearInterval(interval);
+          
           // Animate progress from 0 to 100
           let progress = 0;
           const progressInterval = setInterval(() => {
@@ -72,19 +75,36 @@ const AccessGate = () => {
             setProgressPercent(progress);
             if (progress >= 100) {
               clearInterval(progressInterval);
+              // Resume boot sequence after progress completes
+              index++;
+              continueBootSequence(index);
             }
           }, 30); // Update every 30ms for smooth animation
         } else {
           setBootText((prev) => [...prev, currentLine]);
+          index++;
         }
-        
-        index++;
       } else {
         clearInterval(interval);
         setBootComplete(true);
         setTimeout(() => setShowInput(true), 1000);
       }
     }, 600); // Slowed from 300ms to 600ms per line
+
+    // Helper function to continue boot sequence after progress bar
+    const continueBootSequence = (startIndex) => {
+      let idx = startIndex;
+      const resumeInterval = setInterval(() => {
+        if (idx < bootSequence.length) {
+          setBootText((prev) => [...prev, bootSequence[idx]]);
+          idx++;
+        } else {
+          clearInterval(resumeInterval);
+          setBootComplete(true);
+          setTimeout(() => setShowInput(true), 1000);
+        }
+      }, 600);
+    };
 
     return () => clearInterval(interval);
   }, [setTheme, hasAccess]);
