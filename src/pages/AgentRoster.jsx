@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import Snowfall from '../components/Snowfall';
-import api from '../utils/api';
+import { getAttendingAgents } from '../utils/saveAgentData';
 
 /**
  * Public Agent Roster
- * Shows all attending agents and their codenames
+ * Shows all attending agents and their codenames from Supabase
  * No authentication required - anyone can see who's coming!
  */
 const AgentRoster = () => {
-  const [guestList, setGuestList] = useState({ rsvps: [], stats: {} });
+  const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -18,8 +19,8 @@ const AgentRoster = () => {
     setError('');
 
     try {
-      const data = await api.getPublicRoster();
-      setGuestList(data);
+      const data = await getAttendingAgents();
+      setAgents(data);
     } catch (err) {
       setError('Unable to load agent roster');
     } finally {
@@ -31,8 +32,7 @@ const AgentRoster = () => {
     fetchPublicRoster();
   }, []);
 
-  const { rsvps, stats } = guestList;
-  const attendingGuests = rsvps.filter(r => r.attending === 'yes');
+  const totalOperatives = agents.reduce((sum, agent) => sum + (agent.guest_count || 0) + 1, 0);
 
   return (
     <div className="relative min-h-screen">
@@ -67,7 +67,7 @@ const AgentRoster = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 }}
             >
-              <div className="text-4xl font-bold text-emerald-400">{stats.attending || 0}</div>
+              <div className="text-4xl font-bold text-emerald-400">{agents.length}</div>
               <div className="text-slate-400 text-sm mt-1">Active Agents</div>
             </motion.div>
 
@@ -77,7 +77,7 @@ const AgentRoster = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <div className="text-4xl font-bold text-amber-400">{stats.totalGuests || 0}</div>
+              <div className="text-4xl font-bold text-amber-400">{totalOperatives}</div>
               <div className="text-slate-400 text-sm mt-1">Total Operatives</div>
               <div className="text-slate-500 text-xs mt-1">(including guests)</div>
             </motion.div>
@@ -88,7 +88,7 @@ const AgentRoster = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3 }}
             >
-              <div className="text-4xl font-bold text-blue-400">{attendingGuests.length}</div>
+              <div className="text-4xl font-bold text-blue-400">{agents.length}</div>
               <div className="text-slate-400 text-sm mt-1">Codenames Assigned</div>
             </motion.div>
           </div>
@@ -110,7 +110,7 @@ const AgentRoster = () => {
             >
               <div className="text-red-400">{error}</div>
             </motion.div>
-          ) : attendingGuests.length === 0 ? (
+          ) : agents.length === 0 ? (
             <motion.div
               className="glass-card rounded-3xl p-12 text-center"
               initial={{ opacity: 0 }}
@@ -128,35 +128,43 @@ const AgentRoster = () => {
               transition={{ delay: 0.4 }}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {attendingGuests.map((agent, index) => (
-                  <motion.div
-                    key={index}
-                    className="bg-slate-800/50 rounded-xl p-4 border border-slate-700 hover:border-emerald-500/50 transition-all"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 * index }}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex-1">
-                        <div className="text-white font-semibold">{agent.name}</div>
-                        {agent.codename && (
-                          <div className="text-emerald-400 font-mono text-sm mt-1">
-                            🎯 {agent.codename}
+                {agents.map((agent, index) => (
+                  <Link key={index} to={`/agent/${agent.codename}`}>
+                    <motion.div
+                      className="bg-slate-800/50 rounded-xl p-4 border border-slate-700 hover:border-emerald-500/50 transition-all cursor-pointer"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 * index }}
+                      whileHover={{ scale: 1.02 }}
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <div className="text-white font-semibold">{agent.real_name}</div>
+                          {agent.codename && (
+                            <div className="text-emerald-400 font-mono text-sm mt-1">
+                              🎯 {agent.codename}
+                            </div>
+                          )}
+                        </div>
+                        {agent.guest_count > 0 && (
+                          <div className="text-amber-400 text-sm font-mono">
+                            +{agent.guest_count}
                           </div>
                         )}
                       </div>
-                      {agent.guests > 1 && (
-                        <div className="text-amber-400 text-sm font-mono">
-                          +{agent.guests - 1}
+                      {agent.guest_count > 0 && (
+                        <div className="text-slate-400 text-xs mt-2">
+                          Bringing {agent.guest_count} additional {agent.guest_count === 1 ? 'guest' : 'guests'}
                         </div>
                       )}
-                    </div>
-                    {agent.guests > 1 && (
-                      <div className="text-slate-400 text-xs mt-2">
-                        Bringing {agent.guests - 1} additional {agent.guests === 2 ? 'guest' : 'guests'}
-                      </div>
-                    )}
-                  </motion.div>
+                      {agent.guest_names && agent.guest_names.length > 0 && (
+                        <div className="text-slate-500 text-xs mt-1">
+                          {agent.guest_names.slice(0, 2).join(', ')}
+                          {agent.guest_names.length > 2 && '...'}
+                        </div>
+                      )}
+                    </motion.div>
+                  </Link>
                 ))}
               </div>
             </motion.div>

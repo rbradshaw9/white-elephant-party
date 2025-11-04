@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAccess } from '../context/AccessContext';
 import { useTheme } from '../context/ThemeContext';
-import CodenameQuiz from '../components/CodenameQuiz';
+import HQTerminal from '../components/HQTerminal';
 
 /**
  * Access Gate Component
@@ -12,7 +12,7 @@ import CodenameQuiz from '../components/CodenameQuiz';
  * - Retro CRT terminal aesthetics
  * - Typewriter boot sequence
  * - Code validation with animations
- * - AI-powered codename quiz
+ * - HQ Terminal chat for onboarding
  * - Vault unlock effect
  */
 const AccessGate = () => {
@@ -146,14 +146,9 @@ const AccessGate = () => {
         }, 3000);
       }
     }, 2000);
-  };  const handleCodenameComplete = (codename) => {
-    setAssignedCodename(codename);
-    // Store codename in access context
-    grantAccess(false, 'Agent', codename);
-    // Redirect to main site
-    setTimeout(() => {
-      navigate('/');
-    }, 500);
+  };  const handleCodenameComplete = (agentData) => {
+    // Agent data is saved in HQTerminal, just grant access
+    grantAccess(false, 'Agent', agentData.codename);
   };
 
   const handleInputChange = (e) => {
@@ -469,14 +464,13 @@ const AccessGate = () => {
       <AnimatePresence>
         {validationState === 'quiz' && (
           <motion.div
-            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black z-50 flex items-center justify-center p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <CodenameQuiz 
+            <HQTerminal 
               onComplete={handleCodenameComplete}
-              isHeistTheme={isHeistTheme}
             />
           </motion.div>
         )}

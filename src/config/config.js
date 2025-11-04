@@ -17,7 +17,7 @@ export const EVENT_CONFIG = {
   
   // Location
   location: {
-    name: 'The Beer Box',
+    name: 'The Bradshaws House',
     address: '123 Holiday Lane',
     city: 'San Juan',
     state: 'PR',
@@ -26,7 +26,7 @@ export const EVENT_CONFIG = {
       lat: 18.4655,
       lng: -66.1057
     },
-    mapUrl: 'https://maps.google.com/?q=The+Beer+Box+San+Juan+PR',
+    mapUrl: 'https://maps.app.goo.gl/URweto9CcnX4wwyj7',
     heistName: 'Tactical HQ',
     heistDescription: 'Classified Location'
   },

@@ -10,10 +10,14 @@
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.6",
+    "@supabase/supabase-js": "^2.79.0",
     "framer-motion": "^11.5.4",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.2"
+    "react-router-dom": "^6.26.2",
+    "react-to-pdf": "^2.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.5",

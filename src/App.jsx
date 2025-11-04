@@ -8,6 +8,7 @@ import AdminGuestList from './pages/AdminGuestList';
 import AgentRoster from './pages/AgentRoster';
 import AccessGate from './pages/AccessGate';
 import Gallery from './pages/Gallery';
+import AgentCard from './pages/AgentCard';
 import Snowfall from './components/Snowfall';
 import MusicToggle from './components/MusicToggle';
 import SleighAnimation from './components/SleighAnimation';
@@ -68,6 +69,7 @@ const AppContent = () => {
         <Route path="/rsvp" element={<ProtectedRoute><RSVP /></ProtectedRoute>} />
         <Route path="/roster" element={<AgentRoster />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/agent/:codename" element={<AgentCard />} />
         <Route path="/admin/guest-list" element={<AdminGuestList />} />
       </Routes>
     </>
