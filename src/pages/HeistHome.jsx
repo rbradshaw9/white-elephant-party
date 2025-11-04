@@ -9,8 +9,6 @@ import { useTheme } from '../context/ThemeContext';
  */
 const HeistHome = () => {
   const { theme } = useTheme();
-  const [codename, setCodename] = useState('');
-  const [showAccessGranted, setShowAccessGranted] = useState(false);
 
   // Countdown timer logic
   const calculateTimeLeft = () => {
@@ -38,15 +36,6 @@ const HeistHome = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-
-  // Generate random codename
-  const generateCodename = () => {
-    const adj = theme.codenames.adjectives[Math.floor(Math.random() * theme.codenames.adjectives.length)];
-    const noun = theme.codenames.nouns[Math.floor(Math.random() * theme.codenames.nouns.length)];
-    setCodename(`${adj} ${noun}`);
-    setShowAccessGranted(true);
-    setTimeout(() => setShowAccessGranted(false), 3000);
-  };
 
   return (
     <div 
@@ -260,61 +249,31 @@ const HeistHome = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5 }}
         >
-          <div className="max-w-2xl mx-auto bg-slate-900/40 backdrop-blur-xl border border-amber-500/30 rounded-2xl p-8">
+          <div className="max-w-2xl mx-auto bg-slate-900/40 backdrop-blur-xl border border-sky-500/30 rounded-2xl p-8 text-center">
             <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: theme.fonts.display, color: theme.palette.accent }}>
-              Generate Your Agent Codename
+              Ready to Join the Operation?
             </h3>
-            <p className="text-sm text-slate-400 mb-6">Every operative needs a cover identity</p>
+            <p className="text-slate-300 mb-6">
+              Enter the access terminal to receive your AI-generated agent codename and register for the mission.
+            </p>
             
-            <AnimatePresence mode="wait">
-              {codename && (
-                <motion.div
-                  key={codename}
-                  className="mb-6 p-6 bg-amber-500/10 border border-amber-500/50 rounded-xl"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                >
-                  <div className="text-xs uppercase tracking-wider text-amber-400 mb-2">Your Codename</div>
-                  <div className="text-3xl font-bold text-amber-300" style={{ fontFamily: theme.fonts.display }}>
-                    Agent {codename}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <Link to="/access">
+              <motion.button
+                className="px-8 py-4 bg-gradient-to-r from-sky-600 to-cyan-500 text-white font-bold rounded-xl shadow-lg shadow-sky-500/20"
+                whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(14, 165, 233, 0.5)' }}
+                whileTap={{ scale: 0.95 }}
+              >
+                🔐 Enter Access Terminal
+              </motion.button>
+            </Link>
 
-            <motion.button
-              onClick={generateCodename}
-              className="px-8 py-4 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold rounded-xl"
-              whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(251, 191, 36, 0.5)' }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {codename ? 'Generate New Codename' : 'Generate Codename'}
-            </motion.button>
+            <p className="text-xs text-slate-500 mt-4">
+              Access Code Required
+            </p>
           </div>
         </motion.div>
 
-        {/* Access Granted Animation */}
-        <AnimatePresence>
-          {showAccessGranted && (
-            <motion.div
-              className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <motion.div
-                className="text-6xl font-bold text-emerald-400"
-                style={{ fontFamily: theme.fonts.display }}
-                initial={{ scale: 0.5, rotate: -10 }}
-                animate={{ scale: 1, rotate: 0 }}
-                exit={{ scale: 0.5, opacity: 0 }}
-              >
-                🔓 ACCESS GRANTED
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Remove the "Access Granted" animation section completely */}
       </div>
     </div>
   );

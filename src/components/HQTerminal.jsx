@@ -23,15 +23,18 @@ const HQTerminal = ({ onComplete }) => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [conversationState, setConversationState] = useState('greeting'); // greeting, name, personality, codename_gen, codename_confirm, rsvp, guests_count, guest_names, complete
+  const [conversationState, setConversationState] = useState('greeting'); // greeting, name, personality, codename_gen, codename_confirm, rsvp, guests_count, guest_names, reminders_email, reminders_phone, interactive_chat, complete
   const [agentData, setAgentData] = useState({
     real_name: '',
     codename: '',
+    email: '',
+    phone: '',
     attendance_status: '',
     guest_count: 0,
     guest_names: [],
     personality_responses: [],
     access_code: 'RED-SLEIGH-2025',
+    wants_reminders: false,
   });
   const [agentId, setAgentId] = useState(null);
   const [currentPersonalityQ, setCurrentPersonalityQ] = useState(0);
@@ -151,6 +154,126 @@ const HQTerminal = ({ onComplete }) => {
       timestamp: new Date().toISOString(),
     };
     setMessages(prev => [...prev, message]);
+  };
+
+  /**
+   * Show interactive prompt buttons after registration
+   */
+  const showInteractivePrompts = () => {
+    addHQMessage(
+      `✅ **AGENT PROFILE CREATED**\n\n` +
+      `Welcome to the operation, Agent ${agentData.codename}!\n\n` +
+      `Your profile is saved. I'm here if you need mission support.\n\n` +
+      `**Quick Actions:**\n` +
+      `• Type "gift ideas" for great gift suggestions\n` +
+      `• Type "food" to see what's on the menu\n` +
+      `• Type "rules" for White Elephant game rules\n` +
+      `• Type "card" to view your agent card\n` +
+      `• Type "exit" when you're ready to leave\n\n` +
+      `Or just ask me anything about the mission!`,
+      500
+    );
+    setConversationState('complete');
+  };
+
+  /**
+   * Handle interactive questions after registration
+   */
+  const handleInteractiveQuestion = async (input) => {
+    const lowerInput = input.toLowerCase();
+
+    if (lowerInput.includes('exit') || lowerInput.includes('leave')) {
+      addHQMessage(
+        `Roger that, Agent ${agentData.codename}. Redirecting to your Agent Card...\n\n` +
+        `You can return to this terminal anytime from your profile.`,
+        300
+      );
+      setTimeout(() => {
+        navigate(`/agent/${agentData.codename}`);
+      }, 2000);
+      return;
+    }
+
+    if (lowerInput.includes('card') || lowerInput.includes('profile')) {
+      navigate(`/agent/${agentData.codename}`);
+      return;
+    }
+
+    if (lowerInput.includes('gift')) {
+      addHQMessage(
+        `🎁 **GIFT IDEAS FOR $25-$50**\n\n` +
+        `Based on mission intel, here are some crowd-pleasers:\n\n` +
+        `**Cozy & Practical:**\n` +
+        `• Fleece blanket or heated throw\n` +
+        `• Quality coffee beans + fun mug\n` +
+        `• Fuzzy socks or slippers\n\n` +
+        `**Fun & Games:**\n` +
+        `• Card game (Exploding Kittens, Cards Against Humanity)\n` +
+        `• Puzzle or board game\n` +
+        `• Cocktail kit or fancy hot chocolate set\n\n` +
+        `**Wildcard Winners:**\n` +
+        `• Nice bottle of wine or craft spirits\n` +
+        `• Bluetooth speaker\n` +
+        `• Plant or succulent with cute pot\n` +
+        `• Gourmet snack basket\n\n` +
+        `Remember: The most stolen gifts are usually cozy, boozy, or hilariously unexpected!\n\n` +
+        `Need more ideas? Just ask!`,
+        500
+      );
+      return;
+    }
+
+    if (lowerInput.includes('food') || lowerInput.includes('menu')) {
+      addHQMessage(
+        `🍽️ **MISSION MENU INTEL**\n\n` +
+        `HQ will provide the main dishes, but contributions are welcome!\n\n` +
+        `**Great Additions:**\n` +
+        `• Appetizers or finger foods\n` +
+        `• Desserts (cookies, brownies, etc.)\n` +
+        `• Drinks (wine, beer, festive cocktails)\n` +
+        `• Chips and dip\n\n` +
+        `Coordinate with other agents in the WhatsApp channel to avoid duplicates!\n\n` +
+        `Any dietary restrictions? Let the hosts know.`,
+        500
+      );
+      return;
+    }
+
+    if (lowerInput.includes('rule') || lowerInput.includes('how')) {
+      addHQMessage(
+        `📋 **WHITE ELEPHANT RULES**\n\n` +
+        `**Setup:**\n` +
+        `1. Everyone brings a wrapped gift ($25-$50)\n` +
+        `2. Draw numbers to determine order\n\n` +
+        `**Gameplay:**\n` +
+        `1. First person picks a gift and opens it\n` +
+        `2. Next person can either:\n` +
+        `   • Steal an opened gift, OR\n` +
+        `   • Pick a new wrapped gift\n` +
+        `3. If your gift is stolen, repeat step 2\n` +
+        `4. Each gift can only be stolen 3 times max\n` +
+        `5. After 3 steals, that gift is "locked"\n\n` +
+        `**Strategy Tips:**\n` +
+        `• Going first = control the steal chain\n` +
+        `• Going last = ultimate power of choice\n` +
+        `• Wrap creatively to influence picks!\n\n` +
+        `Most importantly: Have fun with the chaos!`,
+        500
+      );
+      return;
+    }
+
+    // Default AI response for other questions
+    addHQMessage(
+      `I can help with:\n` +
+      `• "gift ideas" - Perfect gifts for $25-$50\n` +
+      `• "food" - Menu and what to bring\n` +
+      `• "rules" - How White Elephant works\n` +
+      `• "card" - View your agent profile\n` +
+      `• "exit" - Leave terminal\n\n` +
+      `Or ask me anything specific about the mission!`,
+      300
+    );
   };
 
   /**
@@ -343,14 +466,10 @@ const HQTerminal = ({ onComplete }) => {
         if (guestCount === 0) {
           addHQMessage(
             `Solo mission confirmed. Sometimes the best ops are run alone.\n\n` +
-            `Your mission profile is being finalized...`,
+            `Would you like mission reminders sent to you? (yes/no)`,
             500
           );
-          
-          setTimeout(async () => {
-            await saveAgentToDatabase();
-            setConversationState('complete');
-          }, 2000);
+          setConversationState('reminders_email');
         } else {
           addHQMessage(
             `${guestCount} additional ${guestCount === 1 ? 'operative' : 'operatives'} noted.\n\n` +
@@ -366,32 +485,74 @@ const HQTerminal = ({ onComplete }) => {
         setAgentData(prev => ({ 
           ...prev, 
           guest_names: names,
-          rsvp_confirmed_at: new Date().toISOString() 
         }));
         
         addHQMessage(
           `Perfect. Your team is registered:\n` +
           names.map(name => `• ${name}`).join('\n') +
-          `\n\nAll operatives accounted for. Finalizing your mission dossier...`,
+          `\n\nWould you like mission reminders sent to you? (yes/no)`,
           500
+        );
+        setConversationState('reminders_email');
+        break;
+
+      case 'reminders_email':
+        const wantsReminders = input.toLowerCase();
+        
+        if (wantsReminders.includes('yes')) {
+          setAgentData(prev => ({ ...prev, wants_reminders: true }));
+          addHQMessage(
+            `Great! What's your email address for mission updates?`,
+            300
+          );
+          setConversationState('reminders_phone');
+        } else {
+          addHQMessage(
+            `No problem. Finalizing your mission dossier...`,
+            300
+          );
+          setTimeout(async () => {
+            await saveAgentToDatabase();
+            setConversationState('interactive_chat');
+          }, 1500);
+        }
+        break;
+
+      case 'reminders_phone':
+        // Store email
+        setAgentData(prev => ({ ...prev, email: input }));
+        
+        addHQMessage(
+          `Email logged. And your phone number for SMS reminders? (Or type 'skip')`,
+          300
+        );
+        setConversationState('save_and_continue');
+        break;
+
+      case 'save_and_continue':
+        if (!input.toLowerCase().includes('skip')) {
+          setAgentData(prev => ({ ...prev, phone: input }));
+        }
+        
+        addHQMessage(
+          `✅ All set! Saving your profile...`,
+          300
         );
         
         setTimeout(async () => {
           await saveAgentToDatabase();
-          setConversationState('complete');
-        }, 2000);
+          setConversationState('interactive_chat');
+        }, 1500);
+        break;
+
+      case 'interactive_chat':
+        // Show interactive prompt buttons
+        showInteractivePrompts();
         break;
 
       case 'complete':
-        // Handle post-completion chat (gift ideas, food intel, etc.)
-        addHQMessage(
-          `I'm here if you need mission support. Try asking about:\n` +
-          `• "gift ideas" - Get intel on great gifts in your budget\n` +
-          `• "food intel" - What's on the menu\n` +
-          `• "mission rules" - White Elephant game rules\n` +
-          `• "location" - Get directions to HQ`,
-          500
-        );
+        // Handle post-completion questions with AI
+        await handleInteractiveQuestion(input);
         break;
 
       default:

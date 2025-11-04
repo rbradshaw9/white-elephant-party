@@ -79,48 +79,60 @@ export async function generateAICodename(agentName, personalityResponses) {
   }
 
   try {
-    const personalityProfile = personalityResponses.join('\n- ');
+    // Extract words from their responses to avoid using them
+    const avoidWords = personalityResponses
+      .join(' ')
+      .toLowerCase()
+      .split(/\s+/)
+      .filter(word => word.length > 3);
     
-    const systemPrompt = `You are Santa's elite Codename Generator for The Great Gift Heist - a Christmas white elephant party with a playful spy theme. You create magical, memorable elf-style agent codenames.
+    const systemPrompt = `You are Santa's CREATIVE Codename Generator for The Great Gift Heist. Your job is to create WHIMSICAL, UNEXPECTED, and DELIGHTFUL elf-style codenames that make people smile.
 
-Your specialty: Matching personality to perfectly festive, Christmas-themed codenames that sound like they belong in Santa's workshop crossed with a spy movie.
+🎯 YOUR MISSION:
+Generate codenames that are:
+- Surprisingly creative (NOT predictable combinations)
+- Fun to say out loud
+- Memorable and unique
+- Christmas-themed but IMAGINATIVE
 
-CRITICAL RULES:
-1. ALWAYS use Christmas/winter/elf themes - never generic spy names
-2. Must be EXACTLY 2 words: [Christmas Adjective] [Christmas Noun]
-3. Both words MUST be festive/winter/holiday related
-4. Make it match their personality while staying Christmas-themed
-5. Return ONLY the codename - no quotes, no explanations
+⚠️ CRITICAL RULES:
+1. Be CREATIVE - avoid obvious or common combinations
+2. Must be EXACTLY 2 words: [Festive Adjective] [Festive Noun]
+3. NEVER use words the person mentioned in their answers
+4. Mix unexpected combinations (Nutmeg Dreams, Frosted Jingle, Velvet Snowdrift)
+5. Return ONLY the codename - no quotes, explanations, or punctuation
 
-APPROVED ADJECTIVES (use these or similar Christmas themes):
-Jolly, Merry, Sparkle, Twinkle, Frosty, Snowy, Sugar, Candy, Ginger, Peppermint, Cinnamon, Cocoa, Jingle, Tinsel, Glitter, Mistletoe, Holly, Starlight, Moonbeam, Crystal, Shimmer, Cozy, Silent, Golden, Silver, Midnight (for night owls), Shadow (for mysterious types), Whisper, Arctic, Frosted, Icy, Evergreen, Pine, Nutmeg, Clove, Velvet, Crimson, Emerald
+🎨 CREATIVE WORD POOL (mix these unexpectedly):
 
-APPROVED NOUNS (use these or similar Christmas themes):
-Snowflake, Cookie, Bells, Cocoa, Mittens, Muffin, Pudding, Gumdrops, Stocking, Ornament, Ribbon, Wreath, Sleigh, Reindeer, Icicle, Pine, Star, Candle, Chestnuts, Snowball, Frost, Gift, Angel, Sugarplum, Gingerbread, Eggnog, Nutcracker, Tinsel, Garland, Holly, Boots, Scarf, Cane (candy cane), Lights, Fireside, Caroler, Elf, Wishlist
+Magical Adjectives:
+Whispering, Gleaming, Dancing, Twinkling, Humming, Glittering, Frosted, Velvet, Crystal, Moonlit, Starlit, Sparkling, Shimmering, Glowing, Merry, Jolly, Snowy, Icy, Arctic, Winter, Festive, Jolly, Cozy, Silent, Golden, Silver, Crimson, Emerald, Sapphire, Ruby
 
-EXAMPLES OF GREAT CODENAMES:
-- Jolly Snowflake (cheerful personality)
-- Midnight Cookie (night owl, sneaky)
-- Sparkle Frost (energetic, bright)
-- Shadow Cocoa (mysterious but warm)
-- Crystal Bells (elegant, clear)
-- Peppermint Starlight (sweet with flair)
-- Velvet Gingerbread (cozy, sophisticated)
-- Arctic Tinsel (cool demeanor, flashy)
-- Silent Snowfall (quiet, peaceful)
-- Crimson Ornament (bold, stands out)
+Whimsical Nouns:
+Snowdrift, Sleighbell, Snowglobe, Mistletoe, Sugarplum, Gingerbread, Wonderland, Fireside, Starlight, Moonbeam, Snowfall, Icicle, Wintermint, Candlelight, Evergreen, Pinecone, Nutmeg, Eggnog, Tinseltown, Wonderland, Dreams, Whisper, Jingle, Chime, Flurry, Frost, Sparkle
 
-BAD EXAMPLES (too generic, not Christmas-y):
-- Shadow Agent ❌
-- Steel Falcon ❌  
-- Quick Strike ❌
-- Dark Phoenix ❌`;
+🌟 INSPIRATION (create something DIFFERENT from these):
+- Velvet Snowdrift (NOT Velvet Gingerbread)
+- Frosted Jingle (NOT Frosted Cookie)
+- Moonlit Sugarplum (NOT Midnight anything)
+- Whispering Evergreen (NOT Silent Pine)
+- Dancing Snowglobe (NOT Sparkle Snowflake)
+- Nutmeg Dreams (NOT Cinnamon Cookie)
+- Crystal Wonderland (NOT Crystal Bells)
+- Humming Wintermint (NOT Peppermint Star)
 
-    const userPrompt = `Generate ONE unique codename for ${agentName} based on their personality:
+❌ AVOID:
+- Anything too literal or predictable
+- Using ANY words from their responses
+- Common combinations everyone uses
+- Generic spy terms`;
 
-${personalityProfile}
+    const userPrompt = `Create ONE completely unique, creative, whimsical Christmas codename based on this personality vibe (but DON'T use these exact words):
 
-Remember: MUST be Christmas/winter/elf themed. Match their personality to festive words. Return ONLY the two-word codename.`;
+PERSONALITY ESSENCE: ${personalityResponses.map((r, i) => `Q${i + 1}: ${r}`).join(' | ')}
+
+WORDS TO AVOID: ${avoidWords.slice(0, 10).join(', ')}
+
+Generate something unexpected and delightful that captures their spirit without being literal. Return ONLY the two-word codename.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -129,7 +141,7 @@ Remember: MUST be Christmas/winter/elf themed. Match their personality to festiv
         'Authorization': `Bearer ${OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',  // Using full GPT-4 for better creativity
         messages: [
           {
             role: 'system',
@@ -140,8 +152,10 @@ Remember: MUST be Christmas/winter/elf themed. Match their personality to festiv
             content: userPrompt
           }
         ],
-        max_tokens: 20,
-        temperature: 0.95  // Higher creativity for unique names
+        max_tokens: 15,
+        temperature: 1.2,  // Maximum creativity
+        presence_penalty: 0.6,  // Encourage novelty
+        frequency_penalty: 0.3  // Reduce repetition
       })
     });
 
