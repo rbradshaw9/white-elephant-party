@@ -17,29 +17,48 @@ const MusicToggle = () => {
       if (isPlaying) {
         audioRef.current.pause();
       } else {
-        audioRef.current.play();
+        // Handle play promise to avoid errors
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log('Audio play failed:', error);
+          });
+        }
       }
       setIsPlaying(!isPlaying);
     }
   };
 
+  // Set volume on mount
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = 0.3; // 30% volume
+    }
+  }, []);
+
   return (
     <>
       {/* 
-        Audio element - Replace src with actual sleigh bells audio file
-        For now using a placeholder. You can add an MP3 file to /public/audio/
+        Audio element - Using a free Christmas music sample
+        You can replace with your own audio file in /public/audio/
       */}
-      <audio ref={audioRef} loop>
-        <source src="/audio/sleigh-bells.mp3" type="audio/mpeg" />
+      <audio 
+        ref={audioRef} 
+        loop
+        preload="auto"
+      >
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
       </audio>
 
       {/* Music toggle button - fixed top right with festive styling */}
       <motion.button
         onClick={toggleMusic}
-        className="fixed top-6 right-6 z-50 bg-christmas-gold text-blue-900 p-4 rounded-full shadow-xl hover:shadow-2xl transition-shadow"
+        className="fixed top-6 right-6 z-50 bg-gradient-to-br from-amber-400 to-amber-500 text-slate-900 p-4 rounded-full shadow-xl hover:shadow-2xl transition-all hover:from-amber-300 hover:to-amber-400"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         title={isPlaying ? 'Pause Music' : 'Play Music'}
+        aria-label={isPlaying ? 'Pause Music' : 'Play Music'}
       >
         {isPlaying ? (
           // Pause icon

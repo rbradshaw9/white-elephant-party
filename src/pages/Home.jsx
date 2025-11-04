@@ -1,27 +1,34 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import MatchingGame from '../components/MatchingGame';
+import PresentStackingGame from '../components/PresentStackingGame';
 
 /**
  * Home Page Component
  * Modern 2025 design with hilarious copy and engaging content
  */
 const Home = () => {
-  // Countdown timer to party date
-  const partyDate = new Date('2025-12-20T19:00:00');
-  const [timeLeft, setTimeLeft] = useState(getTimeRemaining());
+  // Countdown timer logic
+  const calculateTimeLeft = () => {
+    const partyDate = new Date('2025-12-13T18:30:00');
+    const now = new Date();
+    const difference = partyDate - now;
 
-  function getTimeRemaining() {
-    const total = partyDate - new Date();
-    const days = Math.floor(total / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
-    return { total, days, hours };
-  }
+    if (difference > 0) {
+      return {
+        total: difference,
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+      };
+    }
+    return { total: 0, days: 0, hours: 0 };
+  };
+
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft(getTimeRemaining());
+      setTimeLeft(calculateTimeLeft());
     }, 60000);
     return () => clearInterval(timer);
   }, []);
@@ -43,7 +50,7 @@ const Home = () => {
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: 'spring' }}
           >
-            <span className="text-sm font-medium text-emerald-400">December 20, 2025 • 7:00 PM</span>
+            <span className="text-sm font-medium text-emerald-400">Saturday, December 13, 2025 • 6:30 PM</span>
           </motion.div>
 
           <h1 className="text-6xl md:text-8xl lg:text-9xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-emerald-400 leading-tight">
@@ -118,8 +125,9 @@ const Home = () => {
               <div className="text-4xl">🎁</div>
               <h3 className="text-xl font-semibold text-emerald-400">The Gifts</h3>
               <p className="text-slate-300 text-sm leading-relaxed">
-                $15-25 budget. Expect everything from "actually useful kitchen gadgets" to "is this from a gas station?" 
-                Last year's highlights: a Nicolas Cage sequin pillow, pickle-scented candle, and something called a "desk vacuum."
+                $20-40 budget. Anything goes. Last year we had everything from top-shelf tequila to sex toys to landscape lighting. 
+                Someone brought a heated bidet seat. Another brought a life-size cardboard cutout of Danny DeVito. 
+                The bar is on the floor, but somehow we keep limbo-ing under it.
               </p>
             </div>
 
@@ -127,19 +135,18 @@ const Home = () => {
               <div className="text-4xl">⚔️</div>
               <h3 className="text-xl font-semibold text-amber-400">The Drama</h3>
               <p className="text-slate-300 text-sm leading-relaxed">
-                Watch friendships tested as Sarah steals Mike's coveted gift for the third time. 
-                Witness the emotional rollercoaster when someone unwraps a Snuggie in 2025. 
-                It's not about winning—it's about making others lose.
+                Watch friendships tested as people fight over the stupidest gifts.
+                Witness the emotional rollercoaster when someone steals your prized tequila for a garden gnome. 
+                It's not about winning—it's about the stories you'll tell for years.
               </p>
             </div>
 
             <div className="space-y-3">
-              <div className="text-4xl">🍕</div>
+              <div className="text-4xl">�</div>
               <h3 className="text-xl font-semibold text-red-400">The Food</h3>
               <p className="text-slate-300 text-sm leading-relaxed">
-                Pizza, wings, and enough cookies to put you in a sugar coma. 
-                Someone always brings those fancy charcuterie items from Trader Joe's. 
-                We pretend it's classy while fighting over mozzarella sticks.
+                We're making chili! Bring something to share if you want (drinks, sides, desserts, whatever). 
+                No pressure, but if you show up with just yourself, you might get judged. Just kidding. Maybe.
               </p>
             </div>
           </div>
@@ -246,14 +253,14 @@ const Home = () => {
           </div>
         </motion.div>
 
-        {/* Game Section - Compact */}
+        {/* Game Section - Present Stacking */}
         <motion.div
           className="glass-card rounded-3xl p-6 md:p-8"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2 }}
         >
-          <MatchingGame />
+          <PresentStackingGame />
         </motion.div>
 
         {/* Party Details */}
@@ -266,9 +273,13 @@ const Home = () => {
           <h3 className="text-2xl font-display font-bold mb-4">The Details</h3>
           <div className="text-slate-300 space-y-2">
             <p className="text-lg">📍 TBD (check your email after RSVP)</p>
-            <p className="text-lg">🕖 7:00 PM - Until someone cries or midnight, whichever comes first</p>
-            <p className="text-lg">🎁 Bring a wrapped gift ($15-25) and your competitive spirit</p>
-            <p className="text-sm text-slate-400 mt-4 italic">
+            <p className="text-lg">🕖 6:30 PM - Until someone cries or midnight, whichever comes first</p>
+            <p className="text-lg">🎁 Bring a wrapped gift ($20-40)</p>
+            <p className="text-sm text-slate-400 mt-4">
+              <strong>Coming as a couple?</strong> You can bring one gift and play as a team, 
+              or bring two gifts and compete against each other. Choose chaos wisely.
+            </p>
+            <p className="text-sm text-slate-400 italic mt-4">
               "It's not about the destination, it's about the friends you betray along the way."
             </p>
           </div>

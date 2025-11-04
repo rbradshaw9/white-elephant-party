@@ -10,56 +10,63 @@ const RULES = [
     number: 1,
     title: 'The Gift Budget',
     description:
-      'Keep gifts between $15-$25. The goal is fun, not breaking the bank! 💰',
+      'Keep gifts between $20-$40. Enough to get something good, not enough to ruin your month. Pro tip: the gas station across the street does NOT count as "shopping." 💰',
     icon: '💵',
   },
   {
     number: 2,
     title: 'Wrap It Up!',
     description:
-      'All gifts MUST be wrapped. No gift bags, no peeking! Mystery is half the fun. 🎁',
+      'All gifts MUST be wrapped. No gift bags, no "creative" newspaper wrapping, no showing up with an Amazon box. If we can tell what it is before it\'s opened, you\'ve failed. 🎁',
     icon: '🎁',
   },
   {
     number: 3,
     title: 'Drawing Numbers',
     description:
-      'Everyone draws a number to determine their turn. Lowest goes first! 🎯',
+      'Everyone draws a number to determine their turn. Going first sounds terrible but you get revenge later. Going last means you know what everyone wants. Strategy matters. 🎯',
     icon: '🎲',
   },
   {
     number: 4,
     title: 'Pick or Steal',
     description:
-      'On your turn, either unwrap a new gift OR steal an already-opened gift from someone else. 👀',
+      'On your turn: unwrap a mystery gift OR crush someone\'s dreams by stealing theirs. Choose violence wisely. 👀',
     icon: '🤔',
   },
   {
     number: 5,
     title: 'Steal Limits',
     description:
-      'Each gift can only be stolen 3 times total. After the third steal, it\'s "frozen" with that person. ❄️',
+      'Each gift can only be stolen 3 times total. After the third steal, it\'s "frozen" forever. Yes, this means gift #1 might get stolen immediately. Yes, that\'s hilarious. ❄️',
     icon: '🔒',
   },
   {
     number: 6,
     title: 'No Immediate Steal-Backs',
     description:
-      'If your gift gets stolen, you can\'t immediately steal it back. Pick someone else to bother! 😈',
+      'If someone steals your gift, you can\'t immediately steal it back. That\'s called being petty. Instead, steal from someone ELSE and start a chain reaction of chaos. 😈',
     icon: '🚫',
   },
   {
     number: 7,
     title: 'First Player Advantage',
     description:
-      'Player #1 gets a bonus turn at the END to potentially steal any gift they want! 🎊',
+      'Player #1 gets screwed by going first, so they get a bonus turn at the END to steal anything they want (if it\'s not frozen). It\'s like delayed gratification, but with vengeance. 👑',
     icon: '👑',
   },
   {
     number: 8,
+    title: 'Coming as a Couple?',
+    description:
+      'Couples can bring one gift and play as a team, OR bring two gifts and compete individually. Competing against your partner is peak entertainment for the rest of us. 💑',
+    icon: '�',
+  },
+  {
+    number: 9,
     title: 'The Golden Rule',
     description:
-      'Have fun! It\'s not about the gift, it\'s about the laughs, the chaos, and the memories! 🎉',
+      'It\'s just a game. A deeply competitive, friendship-testing, potentially relationship-ending game. But ultimately, it\'s about the memories. And the tequila. Mostly the memories. 🎉',
     icon: '⭐',
   },
 ];
@@ -139,8 +146,8 @@ const Rules = () => {
               Remember
             </h3>
             <p className="text-slate-300">
-              It's all fun and games. Well, mostly games. Okay, it's competitive chaos.
-              But the point is: bring something good or prepare to go home empty-handed.
+              The most important rule: Don't take it too seriously. Unless someone steals your favorite gift. 
+              Then by all means, hold that grudge until next year's party. We're all here for the drama anyway.
             </p>
           </div>
         </motion.div>

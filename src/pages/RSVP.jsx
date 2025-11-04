@@ -24,10 +24,10 @@ const RSVP = () => {
   const generateCalendarFile = () => {
     const event = {
       title: 'White Elephant Party 2025',
-      description: 'Annual White Elephant Gift Exchange - Bring a $20-30 gift!',
+      description: 'Annual White Elephant Gift Exchange - Bring a $20-40 gift!',
       location: "Ryan's Place",
-      start: '20251220T190000',
-      end: '20251220T230000',
+      start: '20251213T183000',
+      end: '20251213T230000',
     };
 
     const icsContent = [
