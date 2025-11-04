@@ -147,8 +147,10 @@ const AccessGate = () => {
       }
     }, 2000);
   };  const handleCodenameComplete = (agentData) => {
-    // Agent data is saved in HQTerminal, just grant access
-    grantAccess(false, 'Agent', agentData.codename);
+    // HQTerminal handles its own navigation to /agent/:codename
+    // Don't call grantAccess here - it will redirect to home
+    // Just close the quiz overlay and let HQTerminal navigate
+    console.log('Agent onboarding complete:', agentData);
   };
 
   const handleInputChange = (e) => {
