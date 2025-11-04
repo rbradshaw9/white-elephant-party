@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { getAgentByCodename } from '../utils/saveAgentData';
+import { getAgentByCodename, getAllAgents } from '../utils/saveAgentData';
 import Snowfall from '../components/Snowfall';
 import HQTransmissions from '../components/HQTransmissions';
+import AgentAchievements from '../components/AgentAchievements';
 import EVENT_CONFIG from '../config/config';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -15,6 +16,7 @@ import jsPDF from 'jspdf';
 const AgentCard = () => {
   const { codename } = useParams();
   const [agent, setAgent] = useState(null);
+  const [allAgents, setAllAgents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const cardRef = useRef(null);
@@ -26,12 +28,16 @@ const AgentCard = () => {
   const loadAgentData = async () => {
     try {
       setLoading(true);
-      const agentData = await getAgentByCodename(codename);
+      const [agentData, allAgentsData] = await Promise.all([
+        getAgentByCodename(codename),
+        getAllAgents()
+      ]);
       
       if (!agentData) {
         setError('Agent not found in database');
       } else {
         setAgent(agentData);
+        setAllAgents(allAgentsData);
       }
     } catch (err) {
       console.error('Failed to load agent:', err);
@@ -264,6 +270,15 @@ const AgentCard = () => {
                 <span className="text-emerald-400 text-xs font-mono">ACTIVE</span>
               </div>
             </div>
+          </motion.div>
+
+          {/* Agent Achievements */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45 }}
+          >
+            <AgentAchievements agent={agent} allAgents={allAgents} />
           </motion.div>
 
           {/* Action Buttons */}

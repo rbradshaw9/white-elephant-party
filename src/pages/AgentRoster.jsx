@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Snowfall from '../components/Snowfall';
 import HQTransmissions from '../components/HQTransmissions';
+import MissionCountdown from '../components/MissionCountdown';
 import { getAttendingAgents } from '../utils/saveAgentData';
 
 /**
@@ -93,6 +94,16 @@ const AgentRoster = () => {
               <div className="text-slate-400 text-sm mt-1">Codenames Assigned</div>
             </motion.div>
           </div>
+
+          {/* Mission Countdown */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mb-8"
+          >
+            <MissionCountdown />
+          </motion.div>
 
           {/* Agent Grid */}
           {loading ? (
