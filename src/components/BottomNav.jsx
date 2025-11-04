@@ -32,13 +32,19 @@ const BottomNav = () => {
       active: location.pathname === '/'
     },
     {
+      path: '/gallery',
+      icon: isHeistTheme ? '📹' : '📸',
+      label: isHeistTheme ? 'Footage' : 'Memories',
+      active: location.pathname === '/gallery'
+    },
+    {
       path: '/roster',
       icon: isHeistTheme ? '👥' : '🧝',
       label: isHeistTheme ? 'Roster' : 'Elves',
       active: location.pathname === '/roster'
     },
     {
-      path: agentCodename ? `/agent/${agentCodename}` : '/access',
+      path: agentCodename ? `/agent/${agentCodename}` : '/hq',
       icon: isHeistTheme ? '🎯' : '🎁',
       label: agentCodename ? 'My Card' : 'Join',
       active: location.pathname.startsWith('/agent')

@@ -242,7 +242,7 @@ const MissionBrief = () => {
             </motion.button>
           </Link>
 
-          <Link to="/rsvp">
+          <Link to="/hq">
             <motion.button
               className="px-8 py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-lg font-semibold text-lg shadow-lg shadow-sky-500/20 hover:shadow-xl hover:shadow-sky-500/30 transition-all duration-300 w-full sm:w-auto"
               whileHover={{ scale: 1.03 }}
